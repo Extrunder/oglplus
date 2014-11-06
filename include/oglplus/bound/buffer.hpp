@@ -62,6 +62,7 @@ public:
 	}
 
 
+#if GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Buffer::Mapped()
 	 *  @see Buffer::Mapped()
 	 */
@@ -71,6 +72,7 @@ public:
 			this->target
 		);
 	}
+#endif
 
 
 	/** Wrapper for Buffer::Resize()
@@ -337,6 +339,7 @@ public:
 	}
 
 
+#if GL_VERSION_3_0 || GL_ES_VERSION_2_0
 	/** Wrapper for Buffer::Access()
 	 *  @see Buffer::Access()
 	 */
@@ -346,6 +349,7 @@ public:
 			this->target
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_NV_shader_buffer_load
 

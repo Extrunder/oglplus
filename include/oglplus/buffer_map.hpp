@@ -21,7 +21,7 @@
 
 namespace oglplus {
 
-#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_2_0
 /// Untyped mapping of the buffer to the client address space
 class BufferRawMap
 {
@@ -47,6 +47,7 @@ private:
 		return GLsizeiptr(value);
 	}
 
+#if GL_VERSION_3_0
 	static GLenum _translate(GLbitfield access)
 	{
 		switch(access)
@@ -60,6 +61,7 @@ private:
 		}
 		return GL_READ_ONLY;
 	}
+#endif
 public:
 	/// Maps a range of the buffer
 	/**
@@ -73,6 +75,28 @@ public:
 	 *
 	 *  @throws Error
 	 */
+#if GL_ES_VERSION_2_0 && GL_OES_mapbuffer
+    BufferRawMap(
+		BufferTarget target,
+		BufferSize byte_offset,
+		BufferSize size_bytes,
+		GLenum access
+	): _offset(GLintptr(byte_offset.Get()))
+	 , _size(GLsizeiptr(size_bytes.Get()))
+	 , _ptr(
+		OGLPLUS_GLFUNC(MapBufferOES)(
+			GLenum(target),
+			access
+		)
+	), _target(target)
+	{
+		OGLPLUS_CHECK(
+            MapBufferOES,
+			Error,
+			EnumParam(target)
+		);
+	}
+#else
 	BufferRawMap(
 		BufferTarget target,
 		BufferSize byte_offset,
@@ -95,6 +119,7 @@ public:
 			EnumParam(target)
 		);
 	}
+#endif
 
 	/// Maps the whole buffer
 	/**
@@ -108,14 +133,40 @@ public:
 	 *
 	 *  @throws Error
 	 */
+#if GL_ES_VERSION_2_0 && GL_OES_mapbuffer
+	BufferRawMap(BufferTarget target, GLenum access)
+	 : _offset(0)
+	 , _size(_get_size(target))
+	 , _ptr(
+		OGLPLUS_GLFUNC(MapBufferOES)(
+			GLenum(target),
+			access
+		)
+	), _target(target)
+	{
+		OGLPLUS_CHECK(
+			MapBufferOES,
+			ObjectError,
+			ObjectBinding(_target)
+		);
+	}
+#else
 	BufferRawMap(BufferTarget target, Bitfield<BufferMapAccess> access)
 	 : _offset(0)
 	 , _size(_get_size(target))
 	 , _ptr(
+#   if GL_ES_VERSION_3_0
+        OGLPLUS_GLFUNC(MapBufferRange)(
+			GLenum(target),
+            _offset, _size,
+			GLbitfield(access)
+		)
+#   else
 		OGLPLUS_GLFUNC(MapBuffer)(
 			GLenum(target),
 			_translate(GLbitfield(access))
 		)
+#   endif
 	), _target(target)
 	{
 		OGLPLUS_CHECK(
@@ -124,6 +175,7 @@ public:
 			ObjectBinding(_target)
 		);
 	}
+#endif
 
 #if !OGLPLUS_NO_DELETED_FUNCTIONS
 	BufferRawMap(const BufferRawMap&) = delete;
@@ -160,12 +212,21 @@ public:
 	{
 		if(_ptr != nullptr)
 		{
+#if GL_ES_VERSION_2_0 && GL_OES_mapbuffer
+            OGLPLUS_GLFUNC(UnmapBufferOES)(GLenum(_target));
+			OGLPLUS_VERIFY(
+				UnmapBufferOES,
+				ObjectError,
+				ObjectBinding(_target)
+			);
+#else
 			OGLPLUS_GLFUNC(UnmapBuffer)(GLenum(_target));
 			OGLPLUS_VERIFY(
 				UnmapBuffer,
 				ObjectError,
 				ObjectBinding(_target)
 			);
+#endif
 			_ptr = nullptr;
 		}
 	}
@@ -202,6 +263,7 @@ public:
 		return _ptr;
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Indicate modifications to a mapped range
 	/**
 	 *  @glsymbols
@@ -224,6 +286,7 @@ public:
 			ObjectBinding(_target)
 		);
 	}
+#endif
 };
 
 /// Typed mapping of the buffer to the client address space

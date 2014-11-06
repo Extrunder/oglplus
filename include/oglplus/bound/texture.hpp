@@ -76,6 +76,7 @@ public:
 	}
 
 
+#if GL_VERSION_3_0
 	/** Wrapper for Texture::GetIntParam()
 	 *  @see Texture::GetIntParam()
 	 */
@@ -423,8 +424,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::Image3D()
 	 *  @see Texture::Image3D()
 	 */
@@ -529,6 +532,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::Image2D()
@@ -629,6 +633,7 @@ public:
 	}
 
 
+#if GL_VERSION_3_0
 	/** Wrapper for Texture::Image1D()
 	 *  @see Texture::Image1D()
 	 */
@@ -717,6 +722,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::Image()
@@ -784,6 +790,7 @@ public:
 	}
 
 
+#if GL_VERSION_3_0
 	/** Wrapper for Texture::CopyImage1D()
 	 *  @see Texture::CopyImage1D()
 	 */
@@ -807,8 +814,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::CopySubImage3D()
 	 *  @see Texture::CopySubImage3D()
 	 */
@@ -836,6 +845,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::CopySubImage2D()
@@ -865,6 +875,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/** Wrapper for Texture::CopySubImage1D()
 	 *  @see Texture::CopySubImage1D()
 	 */
@@ -886,8 +897,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::CompressedImage3D()
 	 *  @see Texture::CompressedImage3D()
 	 */
@@ -915,6 +928,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::CompressedImage2D()
@@ -944,6 +958,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/** Wrapper for Texture::CompressedImage1D()
 	 *  @see Texture::CompressedImage1D()
 	 */
@@ -967,8 +982,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::CompressedSubImage3D()
 	 *  @see Texture::CompressedSubImage3D()
 	 */
@@ -1000,6 +1017,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::CompressedSubImage2D()
@@ -1031,6 +1049,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/** Wrapper for Texture::CompressedSubImage1D()
 	 *  @see Texture::CompressedSubImage1D()
 	 */
@@ -1054,6 +1073,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2 || GL_ARB_texture_multisample
 
@@ -1219,6 +1239,7 @@ public:
 #endif // GL_VERSION_4_2 GL_ARB_texture_storage
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::BaseLevel()
 	 *  @see Texture::BaseLevel()
 	 */
@@ -1243,8 +1264,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/** Wrapper for Texture::BorderColor()
 	 *  @see Texture::BorderColor()
 	 */
@@ -1330,8 +1353,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::CompareMode()
 	 *  @see Texture::CompareMode()
 	 */
@@ -1382,8 +1407,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/** Wrapper for Texture::LODBias()
 	 *  @see Texture::LODBias()
 	 */
@@ -1408,6 +1435,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::Filter()
@@ -1477,6 +1505,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::MinLOD()
 	 *  @see Texture::MinLOD()
 	 */
@@ -1553,6 +1582,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Texture::MaxAnisotropy()
@@ -1900,6 +1930,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Texture::WrapR()
 	 *  @see Texture::WrapR()
 	 */
@@ -1924,6 +1955,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3
 

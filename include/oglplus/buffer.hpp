@@ -135,6 +135,7 @@ public:
 		return BufferName(_binding(target, idx));
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Bind the specified @p buffer to the specified indexed @p target
 	/**
 	 *  @throws Error
@@ -184,6 +185,7 @@ public:
 			BindTarget(target)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_4 || GL_ARB_multi_bind
 	static void BindBase(
@@ -283,8 +285,10 @@ protected:
 	ObjCommonOps(void){ }
 public:
 	using ObjBindingOps<tag::Buffer>::Bind;
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	using ObjBindingOps<tag::Buffer>::BindBase;
 	using ObjBindingOps<tag::Buffer>::BindRange;
+#endif
 
 	/// Binds this buffer to the specified @p target
 	/**
@@ -296,6 +300,7 @@ public:
 		Bind(target, *this);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	void Bind(IndexedTarget target, GLuint index) const
 	{
 		BindBase(target, index, *this);
@@ -310,6 +315,7 @@ public:
 	{
 		BindBase(target, index, *this);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback3
 	/// Bind this buffer to the specified uniform buffer binding point
@@ -365,6 +371,7 @@ public:
 	}
 #endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Binds a range in this buffer to the specified indexed @p target
 	/**
 	 *  @glsymbols
@@ -379,6 +386,7 @@ public:
 	{
 		BindRange(target, index, *this, offset, size);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3 || GL_ARB_invalidate_subdata
 	/// Invalidate the buffer data
@@ -448,7 +456,7 @@ public:
 		typedef BufferMapAccess MapAccess;
 	};
 
-#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Mapping of the buffer to the client address space
 	typedef BufferTypedMap<GLubyte> Map;
 
@@ -842,7 +850,7 @@ public:
 		return BufferUsage(GetIntParam(target, GL_BUFFER_USAGE));
 	}
 
-#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_2_0
 	/// Returns the buffer usage
 	/**
 	 *  @see Usage
@@ -856,7 +864,11 @@ public:
 	static Bitfield<BufferMapAccess> Access(Target target)
 	{
 		return Bitfield<BufferMapAccess>(
+#   if GL_ES_VERSION_2_0
+			GLbitfield(GetIntParam(target, GL_BUFFER_ACCESS_OES))
+#   else
 			GLbitfield(GetIntParam(target, GL_BUFFER_ACCESS))
+#   endif
 		);
 	}
 #endif
@@ -1003,6 +1015,7 @@ inline BufferTarget operator << (
 }
 
 // BindBase
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 inline const BufferOps& operator << (
 	const BufferOpsAndIdxTgt& bat,
 	GLuint index
@@ -1011,6 +1024,7 @@ inline const BufferOps& operator << (
 	bat.buf.BindBase(bat.target, index);
 	return bat.buf;
 }
+#endif
 
 // Data
 inline BufferTarget operator << (

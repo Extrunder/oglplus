@@ -481,8 +481,13 @@ void xpm_load(
 
 	std::size_t channels = bipp / 8;
 	GLenum gl_format = 0;
+#if GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	if     (channels == 1) gl_format = GL_RED;
 	else if(channels == 2) gl_format = GL_RG;
+#else
+    if     (channels == 1) gl_format = GL_LUMINANCE;
+	else if(channels == 2) gl_format = GL_LUMINANCE_ALPHA;
+#endif
 	else if(channels == 3) gl_format = GL_RGB;
 	else if(channels == 4) gl_format = GL_RGBA;
 	else throw std::runtime_error(

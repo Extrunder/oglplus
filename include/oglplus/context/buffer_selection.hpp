@@ -68,6 +68,7 @@ public:
 	}
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Sets the source color buffer for read operations
 	/**
 	 *  @glsymbols
@@ -78,6 +79,7 @@ public:
 		OGLPLUS_GLFUNC(ReadBuffer)(GLenum(buffer));
 		OGLPLUS_VERIFY_SIMPLE(ReadBuffer);
 	}
+#endif
 };
 
 } // namespace context

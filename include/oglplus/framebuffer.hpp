@@ -260,6 +260,7 @@ public:
 		);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Attach a @p renderbuffer to the color @p attachment_no of @p target
 	/**
 	 *  @see AttachRenderbuffer
@@ -292,6 +293,7 @@ public:
 			ObjectBinding(target)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2
 	/// Attach a @p texture to the @p attachment point of @p target
@@ -483,6 +485,7 @@ public:
 	}
 #endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2 || GL_ES_VERSION_3_0
 	/// Attach a @p texture layer to the @p attachment point of @p target
 	/**
 	 *  @see AttachRenderbuffer
@@ -519,6 +522,7 @@ public:
 			Index(level)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3 || GL_ARB_invalidate_subdata
 	/// Invalidates the specified attachments or buffers of the Framebuffer

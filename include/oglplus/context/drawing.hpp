@@ -254,6 +254,7 @@ public:
 		);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Draws a sequence of primitives from the bound element array buffers
 	/**
 	 *  @throws Error
@@ -311,6 +312,7 @@ public:
 			EnumParam(primitive)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_2
 	/// Draws a sequence of primitives from the bound element array buffers
@@ -438,6 +440,7 @@ public:
 	}
 #endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ES_VERSION_3_0
 	/// Draws a sequence of primitives from the bound element array buffers
 	/**
 	 *  @throws Error
@@ -499,6 +502,7 @@ public:
 			EnumParam(primitive)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_draw_indirect
 	/// Draws a sequence of primitives from the bound element array buffers

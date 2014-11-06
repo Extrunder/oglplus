@@ -49,6 +49,7 @@ _binding(BufferTarget target)
 	return name;
 }
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 OGLPLUS_LIB_FUNC
 GLuint ObjBindingOps<tag::Buffer>::
 _binding(BufferIndexedTarget target, GLuint index)
@@ -62,6 +63,7 @@ _binding(BufferIndexedTarget target, GLuint index)
 	);
 	return name;
 }
+#endif
 
 OGLPLUS_LIB_FUNC
 GLint ObjectOps<tag::ExplicitSel, tag::Buffer>::

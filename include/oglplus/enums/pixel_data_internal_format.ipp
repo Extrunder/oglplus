@@ -19,6 +19,12 @@ DepthStencil,
 StencilIndex8,
 /// RED
 Red,
+/// ALPHA
+Alpha,
+/// LUMINANCE
+Luminance,
+/// LUMINANCE_ALPHA
+LuminanceAlpha,
 /// RG
 RG,
 /// RGB

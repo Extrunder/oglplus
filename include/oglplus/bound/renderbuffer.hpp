@@ -96,6 +96,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/** Wrapper for Renderbuffer::StorageMultisample()
 	 *  @see Renderbuffer::StorageMultisample()
 	 */
@@ -115,6 +116,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Renderbuffer::Width()
@@ -205,6 +207,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/** Wrapper for Renderbuffer::Samples()
 	 *  @see Renderbuffer::Samples()
 	 */
@@ -214,6 +217,7 @@ public:
 			this->target
 		);
 	}
+#endif
 
 
 	/** Wrapper for Renderbuffer::InternalFormat()

@@ -357,6 +357,7 @@ public:
 	 */
 	ObjectOps& Validate(void);
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Sets the variables that will be captured during transform feedback
 	/**
 	 *  @throws Error
@@ -405,6 +406,7 @@ public:
 		const std::vector<String>& varyings,
 		TransformFeedbackMode mode
 	) const;
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY
 	/// Information about a single active vertex attribute or uniform
@@ -486,10 +488,12 @@ public:
 		aux::ActiveSubroutineUniformInfo
 	> ActiveSubroutineUniformRange;
 #endif
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	typedef aux::ContextElementRange<
 		aux::ProgramInterfaceContext,
 		aux::TransformFeedbackVaryingInfo
 	> TransformFeedbackVaryingRange;
+#endif
 
 	struct ShaderIterationContext
 	{
@@ -611,6 +615,7 @@ public:
 	 */
 	InterfaceContext TransformFeedbackVaryingContext(void) const;
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Returns a range allowing to do the traversal of feedback varyings
 	/** This instance of Program must be kept alive during the whole
 	 *  lifetime of the returned range, i.e. the returned range must not
@@ -619,6 +624,7 @@ public:
 	 *  @throws Error
 	 */
 	TransformFeedbackVaryingRange TransformFeedbackVaryings(void) const;
+#endif
 
 	/// Returns a range allowing to traverse shaders attached to this program
 	ShaderRange AttachedShaders(void) const;
@@ -705,6 +711,7 @@ public:
 	void Binary(const std::vector<GLubyte>& binary, GLenum format);
 #endif // get program binary
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Returns the transform feedback buffer mode
 	/**
 	 *  @glsymbols
@@ -717,6 +724,7 @@ public:
 			GetIntParam(GL_TRANSFORM_FEEDBACK_BUFFER_MODE)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2
 	/// Returns the number of vertices that the geometry shader will output
@@ -896,6 +904,7 @@ inline ProgAndXFBMode operator << (
 	return ProgAndXFBMode(prog, mode);
 }
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 template <std::size_t N>
 inline ProgramOps& operator << (
 	ProgAndXFBMode pam,
@@ -905,7 +914,9 @@ inline ProgramOps& operator << (
 	pam.prog.TransformFeedbackVaryings(varyings, pam.mode);
 	return pam.prog;
 }
+#endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 struct ProgXFBModeAndNames
 {
 	ProgramOps& prog;
@@ -972,6 +983,7 @@ inline ProgXFBModeAndNames operator << (
 	return ProgXFBModeAndNames(std::move(pman), name);
 }
 
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_1 || GL_ARB_separate_shader_objects
 /// A standalone program with a single shader of a specified type from GLSL source

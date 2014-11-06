@@ -13,6 +13,22 @@
 # undef OGLPLUS_LIST_NEEDS_COMMA
 #endif
 
+#if defined GL_FRAMEBUFFER
+# if OGLPLUS_LIST_NEEDS_COMMA
+   OGLPLUS_ENUM_CLASS_COMMA
+# endif
+# if defined ReadWrite
+#  pragma push_macro("ReadWrite")
+#  undef ReadWrite
+   OGLPLUS_ENUM_CLASS_VALUE(ReadWrite, GL_FRAMEBUFFER)
+#  pragma pop_macro("ReadWrite")
+# else
+   OGLPLUS_ENUM_CLASS_VALUE(ReadWrite, GL_FRAMEBUFFER)
+# endif
+# ifndef OGLPLUS_LIST_NEEDS_COMMA
+#  define OGLPLUS_LIST_NEEDS_COMMA 1
+# endif
+#endif
 #if defined GL_DRAW_FRAMEBUFFER
 # if OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA

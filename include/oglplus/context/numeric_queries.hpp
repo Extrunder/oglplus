@@ -33,6 +33,7 @@ namespace context {
 class NumericQueries
 {
 public:
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/**
 	 *  @throws Error
 	 *
@@ -67,6 +68,7 @@ public:
 		OGLPLUS_VERIFY_SIMPLE(GetIntegerv);
 		return result;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ARB_timer_query
 	/// Query the current GL timestamp

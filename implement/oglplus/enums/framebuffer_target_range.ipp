@@ -19,6 +19,9 @@ OGLPLUS_LIB_FUNC aux::CastIterRange<
 #define OGLPLUS_IMPL_EVR_FRAMEBUFFERTARGET
 {
 static const GLenum _values[] = {
+#if defined GL_FRAMEBUFFER
+GL_FRAMEBUFFER,
+#endif
 #if defined GL_DRAW_FRAMEBUFFER
 GL_DRAW_FRAMEBUFFER,
 #endif

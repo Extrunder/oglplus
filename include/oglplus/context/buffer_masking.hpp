@@ -129,6 +129,7 @@ public:
 		OGLPLUS_VERIFY_SIMPLE(StencilMaskSeparate);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/// Returns the value of color buffer write mask
 	/**
 	 *  @glsymbols
@@ -150,6 +151,7 @@ public:
 		);
 		return result;
 	}
+#endif
 
 	/// Returns the value of depth buffer write mask
 	/**

@@ -57,7 +57,11 @@ protected:
 	static GLboolean IsA(GLuint name)
 	{
 		assert(name != 0);
+#if GL_OES_vertex_array_object
+        GLboolean result = OGLPLUS_GLFUNC(IsVertexArrayOES)(name);
+#else
 		GLboolean result = OGLPLUS_GLFUNC(IsVertexArray)(name);
+#endif
 		OGLPLUS_VERIFY_SIMPLE(IsVertexArray);
 		return result;
 	}
@@ -71,12 +75,21 @@ protected:
 	static GLuint _binding(void)
 	{
 		GLint name = 0;
+#if GL_OES_vertex_array_object
+        OGLPLUS_GLFUNC(GetIntegerv)(GL_VERTEX_ARRAY_BINDING_OES, &name);
+        OGLPLUS_VERIFY(
+            GetIntegerv,
+            ObjectError,
+            EnumParam(GLenum(GL_VERTEX_ARRAY_BINDING_OES))
+        );
+#else
 		OGLPLUS_GLFUNC(GetIntegerv)(GL_VERTEX_ARRAY_BINDING, &name);
 		OGLPLUS_VERIFY(
 			GetIntegerv,
 			ObjectError,
 			EnumParam(GLenum(GL_VERTEX_ARRAY_BINDING))
 		);
+#endif
 		return name;
 	}
 public:

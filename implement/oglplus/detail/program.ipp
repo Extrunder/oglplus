@@ -185,6 +185,8 @@ SLDataType ActiveSubroutineUniformInfo::Type(void) const
 
 #endif // GL_VERSION_4_0 || GL_ARB_shader_subroutine
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
+
 OGLPLUS_LIB_FUNC
 TransformFeedbackVaryingInfo::TransformFeedbackVaryingInfo(
 	ProgramInterfaceContext& context,
@@ -241,6 +243,8 @@ ActiveUniformBlockInfo::ActiveUniformBlockInfo(
 	);
 	_name = String(context.Buffer().data(), strlen);
 }
+
+#endif
 
 OGLPLUS_LIB_FUNC
 SLDataType ActiveUniformBlockInfo::Type(void) const

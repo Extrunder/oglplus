@@ -997,6 +997,7 @@ public:
 	);
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Specifies a three dimensional texture image
 	/**
 	 *  @glsymbols
@@ -1102,6 +1103,7 @@ public:
 		GLint zoffs,
 		GLint level = 0
 	);
+#endif
 
 	/// Specifies a two dimensional texture image
 	/**
@@ -1461,6 +1463,7 @@ public:
 	}
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Copies a three dimensional texture sub image from the framebuffer
 	/**
 	 *  @glsymbols
@@ -1496,6 +1499,7 @@ public:
 			Index(level)
 		);
 	}
+#endif
 
 	/// Copies a two dimensional texture sub image from the framebuffer
 	/**
@@ -1563,6 +1567,7 @@ public:
 	}
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Specifies a three dimensional compressed texture image
 	/**
 	 *  @glsymbols
@@ -1599,6 +1604,7 @@ public:
 			Index(level)
 		);
 	}
+#endif
 
 	/// Specifies a two dimensional compressed texture image
 	/**
@@ -1670,6 +1676,7 @@ public:
 	}
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Specifies a three dimensional compressed texture sub image
 	/**
 	 *  @glsymbols
@@ -1710,6 +1717,7 @@ public:
 			Index(level)
 		);
 	}
+#endif
 
 	/// Specifies a two dimensional compressed texture sub image
 	/**
@@ -1998,6 +2006,7 @@ public:
 	}
 #endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Returns the texture base level (TEXTURE_BASE_LEVEL)
 	/**
 	 *  @glsymbols
@@ -2029,6 +2038,7 @@ public:
 			Index(level)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/// Gets the texture border color (TEXTURE_BORDER_COLOR)
@@ -2158,6 +2168,7 @@ public:
 	}
 #endif // GL_VERSION_3_0
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Gets the compare mode (TEXTURE_COMPARE_MODE)
 	/**
 	 *  @glsymbols
@@ -2227,6 +2238,7 @@ public:
 			EnumParam(func)
 		);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/// Gets the LOD bias value (TEXTURE_LOD_BIAS)
@@ -2364,6 +2376,7 @@ public:
 		);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Gets minimal LOD value (TEXTURE_MIN_LOD)
 	/**
 	 *  @glsymbols
@@ -2456,6 +2469,7 @@ public:
 			ObjectBinding(target)
 		);
 	}
+#endif
 
 	/// Gets the maximum anisotropy level
 	/**
@@ -2841,6 +2855,7 @@ public:
 		Wrap(target, TextureWrapCoord::T, mode);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 	/// Gets the wrap parameter (TEXTURE_WRAP_R)
 	/**
 	 *  @glsymbols
@@ -2862,6 +2877,7 @@ public:
 	{
 		Wrap(target, TextureWrapCoord::R, mode);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3
 	/// Gets the depth stencil mode parameter (DEPTH_STENCIL_TEXTURE_MODE)
@@ -3071,6 +3087,7 @@ inline TextureTarget operator << (TextureTarget target, TextureMagFilter filter)
 	return target;
 }
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0
 // CompareMode
 inline TextureTarget operator << (TextureTarget target, TextureCompareMode mode)
 {
@@ -3084,13 +3101,16 @@ inline TextureTarget operator << (TextureTarget target, CompareFunction func)
 	DefaultTextureOps::CompareFunc(target, func);
 	return target;
 }
+#endif
 
 // Wrap
 inline TextureTarget operator << (TextureTarget target, TextureWrap wrap)
 {
 	switch(TextureTargetDimensions(target))
 	{
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case 3: DefaultTextureOps::WrapR(target, wrap);
+#endif
 		case 2: DefaultTextureOps::WrapT(target, wrap);
 		case 1: DefaultTextureOps::WrapS(target, wrap);
 		case 0: break;
@@ -3109,7 +3129,9 @@ inline TextureTargetAndSlot operator << (
 	{
 		case 0: DefaultTextureOps::WrapS(tas.target, wrap); break;
 		case 1: DefaultTextureOps::WrapT(tas.target, wrap); break;
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case 2: DefaultTextureOps::WrapR(tas.target, wrap); break;
+#endif
 		default: assert(!"Invalid texture wrap slot");
 	}
 	return tas;

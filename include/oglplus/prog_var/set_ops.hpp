@@ -37,13 +37,14 @@ private:
 
 	OGLPLUS_ERROR_REUSE_CONTEXT(Setters)
 
-	typedef std::false_type _set_done;
-	typedef std::true_type  _set_cont;
+    template <bool V> struct _set_mode_t : std::integral_constant<bool, V> {};
+	typedef _set_mode_t<false> _set_done;
+	typedef _set_mode_t<true>  _set_cont;
 
 	template <std::size_t N>
-	static std::integral_constant<bool,  (N > 4)> _set_mode(void)
+	static _set_mode_t<(N > 4)> _set_mode(void)
 	{
-		return std::integral_constant<bool, (N > 4)>();
+		return _set_mode_t<(N > 4)>();
 	}
 
 	template <std::size_t N, typename V>
@@ -235,7 +236,7 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+            Index(location)
 		);
 	}
 
@@ -252,7 +253,7 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+            Index(location)
 		);
 	}
 
@@ -269,7 +270,7 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+            Index(location)
 		);
 	}
 #endif //NO_VARIADIC_TEMPLATES

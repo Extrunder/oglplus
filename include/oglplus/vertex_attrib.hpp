@@ -474,6 +474,7 @@ public:
 			);
 		}
 #endif
+#if GL_VERSION_3_0 || GL_ES_VERSION_3_0
 		else
 		{
 			IPointer(
@@ -484,6 +485,9 @@ public:
 			);
 		}
 		return *this;
+#else
+        return Setup(values_per_vertex, DataType::Float);
+#endif
 	}
 
 	const VertexArrayAttrib& Setup(
@@ -515,6 +519,7 @@ public:
 	}
 #endif
 
+#if GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	template <DataType DataTypeValue>
 	const VertexArrayAttrib& Setup(
 		GLint values_per_vertex,
@@ -528,6 +533,7 @@ public:
 			nullptr
 		);
 	}
+#endif
 
 	/// Setup the properties of this vertex attribute array
 	/**
@@ -579,6 +585,7 @@ public:
 		return *this;
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Setup the properties of this vertex attribute array
 	/**
 	 *  @glsymbols
@@ -606,6 +613,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_2 || GL_ARB_vertex_attrib_64bit

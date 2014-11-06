@@ -109,6 +109,54 @@
 #  define OGLPLUS_LIST_NEEDS_COMMA 1
 # endif
 #endif
+#if defined GL_ALPHA
+# if OGLPLUS_LIST_NEEDS_COMMA
+   OGLPLUS_ENUM_CLASS_COMMA
+# endif
+# if defined Alpha
+#  pragma push_macro("Alpha")
+#  undef Alpha
+   OGLPLUS_ENUM_CLASS_VALUE(Alpha, GL_ALPHA)
+#  pragma pop_macro("Alpha")
+# else
+   OGLPLUS_ENUM_CLASS_VALUE(Alpha, GL_ALPHA)
+# endif
+# ifndef OGLPLUS_LIST_NEEDS_COMMA
+#  define OGLPLUS_LIST_NEEDS_COMMA 1
+# endif
+#endif
+#if defined GL_LUMINANCE
+# if OGLPLUS_LIST_NEEDS_COMMA
+   OGLPLUS_ENUM_CLASS_COMMA
+# endif
+# if defined Luminance
+#  pragma push_macro("Luminance")
+#  undef Luminance
+   OGLPLUS_ENUM_CLASS_VALUE(Luminance, GL_LUMINANCE)
+#  pragma pop_macro("Luminance")
+# else
+   OGLPLUS_ENUM_CLASS_VALUE(Luminance, GL_LUMINANCE)
+# endif
+# ifndef OGLPLUS_LIST_NEEDS_COMMA
+#  define OGLPLUS_LIST_NEEDS_COMMA 1
+# endif
+#endif
+#if defined GL_LUMINANCE_ALPHA
+# if OGLPLUS_LIST_NEEDS_COMMA
+   OGLPLUS_ENUM_CLASS_COMMA
+# endif
+# if defined LuminanceAlpha
+#  pragma push_macro("LuminanceAlpha")
+#  undef LuminanceAlpha
+   OGLPLUS_ENUM_CLASS_VALUE(LuminanceAlpha, GL_LUMINANCE_ALPHA)
+#  pragma pop_macro("LuminanceAlpha")
+# else
+   OGLPLUS_ENUM_CLASS_VALUE(LuminanceAlpha, GL_LUMINANCE_ALPHA)
+# endif
+# ifndef OGLPLUS_LIST_NEEDS_COMMA
+#  define OGLPLUS_LIST_NEEDS_COMMA 1
+# endif
+#endif
 #if defined GL_RG
 # if OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA

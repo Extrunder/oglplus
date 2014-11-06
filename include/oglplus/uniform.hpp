@@ -75,7 +75,9 @@ class ProgVarSetters<tag::ImplicitSel, tag::Uniform, tag::NativeTypes>
 protected:
 	OGLPLUS_ERROR_CONTEXT(Uniform, Uniform)
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	OGLPLUS_AUX_VARPARA_FNS(Uniform, ui, t, GLuint)
+#endif
 	OGLPLUS_AUX_VARPARA_FNS(Uniform, i, t, GLint)
 #if GL_ARB_bindless_texture
 	OGLPLUS_AUX_VARPARA_FNC(UniformHandle, ui64ARB, t, GLuint64, 1)
@@ -218,6 +220,15 @@ protected:
 public:
 	void SetValue(const Matrix<T, R, C>& value)
 	{
+#if GL_ES_VERSION_2_0
+		this->template _do_set_mat<C, R>(
+			this->_program,
+			this->_location,
+            1,
+			false,
+            Data(Transposed(value))
+		);
+#else
 		this->template _do_set_mat<C, R>(
 			this->_program,
 			this->_location,
@@ -225,6 +236,7 @@ public:
 			true,
 			Data(value)
 		);
+#endif
 	}
 
 	void SetValues(std::size_t n, bool row_major, const T* values)

@@ -37,6 +37,15 @@ GL_GREEN,
 #if defined GL_BLUE
 GL_BLUE,
 #endif
+#if defined GL_ALPHA
+GL_ALPHA,
+#endif
+#if defined GL_LUMINANCE
+GL_LUMINANCE,
+#endif
+#if defined GL_LUMINANCE_ALPHA
+GL_LUMINANCE_ALPHA,
+#endif
 #if defined GL_RG
 GL_RG,
 #endif

@@ -13,6 +13,7 @@
 #ifndef OGLPLUS_QUERY_1107121519_HPP
 #define OGLPLUS_QUERY_1107121519_HPP
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_1_5 || GL_ES_VERSION_3_0
 #include <oglplus/glfunc.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/object/reference.hpp>
@@ -538,4 +539,5 @@ typedef Object<QueryOps> Query;
 
 } // namespace oglplus
 
+#endif // discard by gl version
 #endif // include guard

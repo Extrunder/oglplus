@@ -114,6 +114,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/** Wrapper for Framebuffer::AttachColorRenderbuffer()
 	 *  @see Framebuffer::AttachColorRenderbuffer()
 	 */
@@ -129,6 +130,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2
 
@@ -152,6 +154,7 @@ public:
 #endif // GL_VERSION_3_2
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2
 	/** Wrapper for Framebuffer::AttachColorTexture()
 	 *  @see Framebuffer::AttachColorTexture()
 	 */
@@ -190,6 +193,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
 	/** Wrapper for Framebuffer::AttachTexture2D()
@@ -213,6 +217,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2
 	/** Wrapper for Framebuffer::AttachTexture3D()
 	 *  @see Framebuffer::AttachTexture3D()
 	 */
@@ -234,8 +239,10 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_2 || GL_ES_VERSION_3_0
 	/** Wrapper for Framebuffer::AttachTextureLayer()
 	 *  @see Framebuffer::AttachTextureLayer()
 	 */
@@ -255,6 +262,7 @@ public:
 		);
 		return *this;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3 || GL_ARB_invalidate_subdata
 

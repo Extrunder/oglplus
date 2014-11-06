@@ -31,6 +31,8 @@
 // at the beginning but undefs it at the end of the header
 #if defined(__MINGW32__) || defined(__CYGWIN__)
 #  define GLAPIENTRY __stdcall
+#elif defined(__S3E__)
+#  define GLAPIENTRY S3E_AAPCS_ATTRIBUTE
 #elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
 #  define GLAPIENTRY __stdcall
 #else

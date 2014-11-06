@@ -32,6 +32,15 @@ switch(value)
 #if defined GL_RED
 	case GL_RED: return StrCRef("RED");
 #endif
+#if defined GL_ALPHA
+	case GL_ALPHA: return StrCRef("ALPHA");
+#endif
+#if defined GL_LUMINANCE
+	case GL_LUMINANCE: return StrCRef("LUMINANCE");
+#endif
+#if defined GL_LUMINANCE_ALPHA
+	case GL_LUMINANCE_ALPHA: return StrCRef("LUMINANCE_ALPHA");
+#endif
 #if defined GL_RG
 	case GL_RG: return StrCRef("RG");
 #endif

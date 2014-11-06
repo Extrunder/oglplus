@@ -39,6 +39,7 @@ public:
 		return result;
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Gets the implementation-dependent indexed limit value
 	/**
 	 *  @glsymbols
@@ -51,6 +52,7 @@ public:
 		OGLPLUS_VERIFY_SIMPLE(GetIntegeri_v);
 		return result;
 	}
+#endif
 
 	/// Gets the implementation-dependent limit value
 	/**
@@ -107,6 +109,7 @@ public:
 		ThrowIfOverLimit(limit, value, IntLimit(limit));
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Raises a LimitError if @p value is greater than the specified @p limit
 	/**
 	 *  @glsymbols
@@ -118,6 +121,7 @@ public:
 	{
 		ThrowIfOverLimit(limit, value, IntLimit(limit, index));
 	}
+#endif
 };
 
 } // namespace context

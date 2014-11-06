@@ -26,7 +26,7 @@ class FramebufferColorAttachmentNumber
 public:
 	FramebufferColorAttachmentNumber(GLuint count);
 };
-#else
+#elif GL_VERSION_3_0 || GL_ES_VERSION_3_0
 OGLPLUS_DECLARE_LIMITED_COUNT_TYPE(
 	FramebufferColorAttachmentNumber,
 	MAX_COLOR_ATTACHMENTS

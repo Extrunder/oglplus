@@ -292,9 +292,15 @@ bool GLSLtoCppTypeMatcher_Vec::_does_match(
 			GL_INT_VEC4
 		}, {
 			GL_UNSIGNED_INT,
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 			GL_UNSIGNED_INT_VEC2,
 			GL_UNSIGNED_INT_VEC3,
 			GL_UNSIGNED_INT_VEC4
+#else
+            GL_UNSIGNED_INT,
+            GL_UNSIGNED_INT,
+            GL_UNSIGNED_INT,
+#endif
 		}, {
 			GL_FLOAT,
 			GL_FLOAT_VEC2,
@@ -325,6 +331,7 @@ bool GLSLtoCppTypeMatcher_Mat::_does_match(
 {
 	const GLenum allowed[][3][3] = {
 		{
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 			{
 				GL_FLOAT_MAT2,
 				GL_FLOAT_MAT3x2,
@@ -338,6 +345,21 @@ bool GLSLtoCppTypeMatcher_Mat::_does_match(
 				GL_FLOAT_MAT3x4,
 				GL_FLOAT_MAT4
 			}
+#else
+            {
+				GL_FLOAT_MAT2,
+                GL_FLOAT_MAT2,
+                GL_FLOAT_MAT2
+			}, {
+                GL_FLOAT_MAT3,
+				GL_FLOAT_MAT3,
+                GL_FLOAT_MAT3
+			}, {
+                GL_FLOAT_MAT4,
+                GL_FLOAT_MAT4,
+				GL_FLOAT_MAT4
+			}
+#endif
 		}
 #if defined(GL_DOUBLE_MAT4)
 		 , {

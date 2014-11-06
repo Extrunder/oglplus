@@ -91,6 +91,7 @@ public:
 		);
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Transfers a rectangle of pixels from the read buffer the draw buffer
 	/**
 	 *  @glsymbols
@@ -123,6 +124,7 @@ public:
 		);
 		OGLPLUS_CHECK_SIMPLE(BlitFramebuffer);
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_5 || GL_ARB_direct_state_access
 	/// Transfers a rectangle of pixels from the read buffer the draw buffer

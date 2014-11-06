@@ -31,6 +31,15 @@ GL_STENCIL_INDEX8,
 #if defined GL_RED
 GL_RED,
 #endif
+#if defined GL_ALPHA
+GL_ALPHA,
+#endif
+#if defined GL_LUMINANCE
+GL_LUMINANCE,
+#endif
+#if defined GL_LUMINANCE_ALPHA
+GL_LUMINANCE_ALPHA,
+#endif
 #if defined GL_RG
 GL_RG,
 #endif

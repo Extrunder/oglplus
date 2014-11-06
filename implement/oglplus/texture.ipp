@@ -288,6 +288,7 @@ GetCompressedImage(
 
 #endif
 
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 OGLPLUS_LIB_FUNC
 void ObjZeroOps<tag::ExplicitSel, tag::Texture>::
 Image3D(
@@ -348,6 +349,7 @@ SubImage3D(
 		Index(level)
 	);
 }
+#endif
 
 OGLPLUS_LIB_FUNC
 void ObjZeroOps<tag::ExplicitSel, tag::Texture>::
@@ -504,11 +506,13 @@ Image(
 {
 	switch(TextureTargetDimensions(target))
 	{
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case 3:
 		{
 			Image3D(target, image, level, border);
 			break;
 		}
+#endif
 		case 2:
 		{
 			Image2D(target, image, level, border);
@@ -536,6 +540,7 @@ Image(
 {
 	switch(TextureTargetDimensions(target))
 	{
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case 3:
 		{
 			Image3D(
@@ -552,6 +557,7 @@ Image(
 			);
 			break;
 		}
+#endif
 		case 2:
 		{
 			Image2D(

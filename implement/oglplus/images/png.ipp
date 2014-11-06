@@ -69,7 +69,7 @@ private:
 
 	PNGHeaderValidator _validate_header;
 
-	friend class PNGReadInfoEndStruct;
+	friend struct PNGReadInfoEndStruct;
 
 	// data read functions
 	void _read_data(::png_bytep data, ::png_size_t size);
@@ -248,10 +248,17 @@ GLenum PNGLoader::_translate_format(GLuint color_type, bool /*has_alpha*/)
 {
 	switch(color_type)
 	{
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case PNG_COLOR_TYPE_GRAY:
 			return GL_RED;
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
 			return GL_RG;
+#else
+        case PNG_COLOR_TYPE_GRAY:
+            return GL_LUMINANCE;
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            return GL_LUMINANCE_ALPHA;
+#endif
 		case PNG_COLOR_TYPE_RGB:
 			return GL_RGB;
 		case PNG_COLOR_TYPE_RGB_ALPHA:

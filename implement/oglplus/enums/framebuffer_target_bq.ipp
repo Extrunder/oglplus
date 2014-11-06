@@ -9,6 +9,10 @@
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
+#if defined GL_FRAMEBUFFER && defined GL_FRAMEBUFFER_BINDING
+case GL_FRAMEBUFFER:
+	return GL_FRAMEBUFFER_BINDING;
+#endif
 #if defined GL_DRAW_FRAMEBUFFER && defined GL_DRAW_FRAMEBUFFER_BINDING
 case GL_DRAW_FRAMEBUFFER:
 	return GL_DRAW_FRAMEBUFFER_BINDING;

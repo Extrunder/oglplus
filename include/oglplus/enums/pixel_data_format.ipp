@@ -23,6 +23,12 @@ Red,
 Green,
 /// BLUE
 Blue,
+/// ALPHA
+Alpha,
+/// LUMINANCE
+Luminance,
+/// LUMINANCE_ALPHA
+LuminanceAlpha,
 /// RG
 RG,
 /// RGB

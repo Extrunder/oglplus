@@ -287,6 +287,7 @@ public:
 	}
 
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	/// Clears the specified color draw buffer
 	/** This function clears the specified color draw buffer of the currently
 	 *  bound framebuffer.
@@ -504,6 +505,7 @@ public:
 		);
 		OGLPLUS_CHECK_SIMPLE(ClearBufferfi);
 	}
+#endif
 
 	/// Returns the color value used for clearing of the color buffer
 	/**

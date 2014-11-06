@@ -173,6 +173,7 @@ GetInfoLog(void) const
 	);
 }
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 OGLPLUS_LIB_FUNC
 void ObjectOps<tag::DirectState, tag::Program>::
 TransformFeedbackVaryings(
@@ -223,6 +224,7 @@ TransformFeedbackVaryings(
 		Object(*this)
 	);
 }
+#endif
 
 #if GL_VERSION_4_1 || GL_ARB_separate_shader_objects
 
@@ -480,6 +482,7 @@ ActiveSubroutineUniforms(ShaderType stage) const
 }
 #endif
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 OGLPLUS_LIB_FUNC
 ObjectOps<tag::DirectState, tag::Program>::InterfaceContext
 ObjectOps<tag::DirectState, tag::Program>::
@@ -501,6 +504,7 @@ TransformFeedbackVaryings(void) const
 		GetIntParam(GL_TRANSFORM_FEEDBACK_VARYINGS)
 	);
 }
+#endif
 
 OGLPLUS_LIB_FUNC
 ObjectOps<tag::DirectState, tag::Program>::ShaderRange
@@ -514,6 +518,7 @@ AttachedShaders(void) const
 	);
 }
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 OGLPLUS_LIB_FUNC
 ObjectOps<tag::DirectState, tag::Program>::ActiveUniformBlockRange
 ObjectOps<tag::DirectState, tag::Program>::
@@ -532,6 +537,7 @@ ActiveUniformBlocks(void) const
 		0, count
 	);
 }
+#endif
 
 #if GL_VERSION_4_1 || GL_ARB_separate_shader_objects
 

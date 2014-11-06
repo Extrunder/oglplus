@@ -20,6 +20,9 @@ OGLPLUS_LIB_FUNC StrCRef ValueName_(
 {
 switch(value)
 {
+#if defined GL_FRAMEBUFFER
+	case GL_FRAMEBUFFER: return StrCRef("FRAMEBUFFER");
+#endif
 #if defined GL_DRAW_FRAMEBUFFER
 	case GL_DRAW_FRAMEBUFFER: return StrCRef("DRAW_FRAMEBUFFER");
 #endif

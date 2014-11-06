@@ -68,6 +68,7 @@ include(config/FindGLX.cmake)
 include(config/FindOpenAL.cmake)
 
 include(config/FindEGL.cmake)
+include(config/FindS3E.cmake)
 
 include(config/FindGLM.cmake)
 include(config/FindPNG.cmake)

@@ -18,10 +18,16 @@
 
 namespace oglplus {
 
+#ifdef __llvm__
+#   define OGLPLUS_AUX_VARPARA_LLVM_PTR *
+#else
+#   define OGLPLUS_AUX_VARPARA_LLVM_PTR
+#endif
+
 #define OGLPLUS_AUX_VARPARA_FNC(NAME, SUFFIX, SELECTOR, TYPE, NPARAM)\
 	static inline std::decay< \
 		decltype( :: gl ## NAME ## SUFFIX ) \
-	>::type _fns_ ## SELECTOR( \
+    >::type OGLPLUS_AUX_VARPARA_LLVM_PTR _fns_ ## SELECTOR(\
 		std::integral_constant<std::size_t, NPARAM>, \
 		const TYPE*, ... \
 	) \
@@ -41,7 +47,7 @@ namespace oglplus {
 #define OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, C, R, CxR)\
 	static inline std::decay< \
 		decltype( :: gl ## NAME ## CxR ## SUFFIX ) \
-	>::type _fns_ ## SELECTOR( \
+    >::type OGLPLUS_AUX_VARPARA_LLVM_PTR _fns_ ## SELECTOR(\
 		std::integral_constant<std::size_t, C>, \
 		std::integral_constant<std::size_t, R>, \
 		const TYPE*, ... \
@@ -50,6 +56,7 @@ namespace oglplus {
 		return OGLPLUS_GLFUNC(NAME ## CxR ## SUFFIX); \
 	}
 
+#if GL_VERSION_3_3 || GL_ES_VERSION_3_0
 #define OGLPLUS_AUX_VARPARA_MAT_FNS(NAME, SUFFIX, SELECTOR, TYPE) \
 	OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 2, 2, 2) \
 	OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 2, 3, 2x3) \
@@ -60,6 +67,12 @@ namespace oglplus {
 	OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 4, 2, 4x2) \
 	OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 4, 3, 4x3) \
 	OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 4, 4, 4)
+#else
+#define OGLPLUS_AUX_VARPARA_MAT_FNS(NAME, SUFFIX, SELECTOR, TYPE) \
+    OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 2, 2, 2) \
+    OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 3, 3, 3) \
+    OGLPLUS_AUX_VARPARA_MAT_FNC(NAME, SUFFIX, SELECTOR, TYPE, 4, 4, 4)
+#endif
 
 #define OGLPLUS_AUX_VARPARA_MAT_FNS_EXT(NAME, SUFFIX, EXT, SELECTOR, TYPE) \
 	OGLPLUS_AUX_VARPARA_MAT_FNS(NAME, SUFFIX##EXT, SELECTOR, TYPE)

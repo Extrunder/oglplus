@@ -181,6 +181,7 @@ public:
 	 */
 	static void Storage(Target target, const images::ImageSpec& image_spec);
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Set the renderbuffer multisample storage parameters
 	/**
 	 *  @glsymbols
@@ -208,6 +209,7 @@ public:
 			EnumParam(internalformat)
 		);
 	}
+#endif
 
 
 	/// Returns the width of the renderbuffer as it was specified by Storage*
@@ -336,6 +338,7 @@ public:
 		return GLsizei(GetIntParam(target,GL_RENDERBUFFER_STENCIL_SIZE));
 	}
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Returns the number of samples of the renderbuffer
 	/**
 	 *  @glsymbols
@@ -346,6 +349,7 @@ public:
 	{
 		return GLsizei(GetIntParam(target,GL_RENDERBUFFER_SAMPLES));
 	}
+#endif
 
 	/// Returns the internal format of the renderbuffer
 	/**
