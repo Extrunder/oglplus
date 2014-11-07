@@ -103,7 +103,7 @@ void ConvertCodePointsToUTF8(
 {
 	std::size_t u8len = UTF8BytesRequired(cps, len);
 	result.resize(u8len);
-	char* cptr = result.data();
+	char* cptr = &result.front();
 	std::size_t clen = 0;
 	while(len)
 	{
@@ -245,7 +245,7 @@ void ConvertUTF8ToCodePoints(
 {
 	std::size_t ulen = CodePointsRequired(str, len);
 	result.resize(ulen);
-	UnicodeCP* cpptr = result.data();
+	UnicodeCP* cpptr = &result.front();
 	std::size_t cplen = 0;
 	while(len)
 	{

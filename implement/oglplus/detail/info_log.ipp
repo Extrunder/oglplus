@@ -41,14 +41,14 @@ String GetInfoLog(
 			object_name,
 			buffer.size(),
 			&real_length,
-			buffer.data()
+			&buffer.front()
 		);
 		OGLPLUS_GLFUNC_CHECK(
 			name_GetObjectInfoLog,
 			Error,
 			NoInfo()
 		);
-		return String(buffer.data(), buffer.size());
+		return String(&buffer.front(), buffer.size());
 	}
 	else return String();
 }

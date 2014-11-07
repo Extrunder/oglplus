@@ -123,7 +123,7 @@ std::vector<GLchar> InputStreamGLSLSrcWrap::_read_data(
 OGLPLUS_LIB_FUNC
 InputStreamGLSLSrcWrap::InputStreamGLSLSrcWrap(std::istream& input)
  : _storage(_read_data(input, _check_and_get_size(input)))
- , _pdata(_storage.data())
+ , _pdata(&_storage.front())
  , _size(_storage.size())
 { }
 

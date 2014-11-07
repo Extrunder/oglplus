@@ -86,12 +86,12 @@ public:
 
 	const GLchar* const* Parts(void) const
 	{
-		return _ptrs.data();
+        return &_ptrs.front();
 	}
 
 	const GLint* Lengths(void) const
 	{
-		return _sizes.data();
+        return &_sizes.front();
 	}
 };
 
@@ -159,12 +159,12 @@ public:
 
 	const GLchar* const* Parts(void) const
 	{
-		return _ptrs.data();
+        return &_ptrs.front();
 	}
 
 	const GLint* Lengths(void) const
 	{
-		return _sizes.data();
+        return &_sizes.front();
 	}
 };
 

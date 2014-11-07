@@ -24,7 +24,7 @@ std::size_t FindResourceFile(
 {
 	for(std::size_t e=0; e!=nexts; ++e)
 	{
-		file.open(path + exts[e], std::ios::binary);
+        file.open((std::string(path) + exts[e]).c_str(), std::ios::binary);
 		if(file.good()) return e;
 	}
 	return nexts;

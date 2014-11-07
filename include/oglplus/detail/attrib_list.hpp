@@ -56,7 +56,7 @@ public:
 	/// Returns the terminated array of attribute/value pairs
 	const Int* Get(void) const
 	{
-		return _attribs.data();
+		return &_attribs.front();
 	}
 };
 

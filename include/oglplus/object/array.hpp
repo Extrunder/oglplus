@@ -52,7 +52,7 @@ protected:
 
 	void _init(Nothing)
 	{
-		GenDelOps::Gen(GenTag(), GLsizei(_names.size()), _names.data());
+		GenDelOps::Gen(GenTag(), GLsizei(_names.size()), &_names.front());
 	}
 
 	template <typename ObjectSubtype>
@@ -87,7 +87,7 @@ public:
 		{
 			GenDelOps::Delete(
 				GLsizei(_names.size()),
-				_names.data()
+				&_names.front()
 			);
 		}
 	}

@@ -48,9 +48,9 @@ ActiveVariableInfo::ActiveVariableInfo(
 		&strlen,
 		&_size,
 		&_type,
-		context.Buffer().data()
+		&context.Buffer().front()
 	);
-	_name = String(context.Buffer().data(), strlen);
+	_name = String(&context.Buffer().front(), strlen);
 }
 
 OGLPLUS_LIB_FUNC
@@ -233,7 +233,7 @@ ActiveUniformBlockInfo::ActiveUniformBlockInfo(
 		index,
 		context.Buffer().size(),
 		&strlen,
-		context.Buffer().data()
+		&context.Buffer().front()
 	);
 	OGLPLUS_CHECK(
 		GetActiveUniformBlockName,
@@ -241,7 +241,7 @@ ActiveUniformBlockInfo::ActiveUniformBlockInfo(
 		Object(context.Program()).
 		Index(index)
 	);
-	_name = String(context.Buffer().data(), strlen);
+	_name = String(&context.Buffer().front(), strlen);
 }
 
 #endif

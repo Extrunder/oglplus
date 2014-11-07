@@ -57,7 +57,7 @@ public:
 	template <typename T>
 	BufferData(const std::vector<T>& v)
 	 : _size(v)
-	 , _data(v.data())
+	 , _data(&v.front())
 	{ }
 
 	GLsizeiptr Size(void) const

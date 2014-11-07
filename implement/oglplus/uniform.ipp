@@ -68,7 +68,7 @@ GetType(ProgramName program, GLint /*location*/, StrCRef identifier)
 			&length,
 			&size,
 			&type,
-			buffer.data()
+			&buffer.front()
 		);
 		OGLPLUS_VERIFY(
 			GetActiveUniform,
@@ -80,7 +80,7 @@ GetType(ProgramName program, GLint /*location*/, StrCRef identifier)
 		{
 			if(std::strncmp(
 				identifier.c_str(),
-				buffer.data(),
+				&buffer.front(),
 				length
 			) == 0)
 			{

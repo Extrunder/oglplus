@@ -109,7 +109,7 @@ std::size_t xpm_load_color_code_bipp(
 {
 	if(color.empty()) return 0;
 
-	if(color.front() == '#')
+	if(color[0] == '#')
 	{
 		return (color.size()-1)*4;
 	}
@@ -245,7 +245,7 @@ bool xpm_load_convert_color(
 	assert(bipp % 8 == 0);
 	std::size_t bpp = bipp/8;
 
-	if(color.front() == '#')
+    if (color[0] == '#')
 	{
 		std::size_t ebipp = (color.size()-1)*4;
 		const char* begin = color.data()+1;
@@ -557,7 +557,7 @@ void xpm_load(
 		height,
 		depth,
 		channels,
-		data.data(),
+		&data.front(),
 		PixelDataFormat(gl_format),
 		PixelDataInternalFormat(gl_format)
 	);

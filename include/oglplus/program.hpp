@@ -960,7 +960,7 @@ public:
 		{
 			prog.TransformFeedbackVaryings(
 				names.size(),
-				names.data(),
+                &names.front(),
 				mode
 			);
 		}

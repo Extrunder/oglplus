@@ -162,7 +162,7 @@ public:
 
 	const GLenum* Values(void) const
 	{
-		return _enums.data();
+		return &_enums.front();
 	}
 };
 

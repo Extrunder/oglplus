@@ -60,13 +60,13 @@ public:
 	{ }
 
 	GLSLString(const std::vector<GLchar>& v)
-	 : _str(v.data())
+	 : _str(&v.front())
 	 , _len(GLint(v.size()))
 	{ }
 
 	template <std::size_t N>
 	GLSLString(const std::array<GLchar, N>& a)
-	 : _str(a.data())
+	 : _str(&a.front())
 	 , _len(GLint(a.size()))
 	{ }
 
@@ -124,14 +124,14 @@ public:
 
 	GLSLStrings(const std::vector<const GLchar*>& v)
 	 : _count(GLsizei(v.size()))
-	 , _strs(v.data())
+     , _strs(&v.front())
 	 , _lens(nullptr)
 	{ }
 
 	template <std::size_t N>
 	GLSLStrings(const std::array<const GLchar*, N>& a)
 	 : _count(GLsizei(a.size()))
-	 , _strs(a.data())
+     , _strs(&a.front())
 	 , _lens(nullptr)
 	{ }
 

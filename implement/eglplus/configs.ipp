@@ -27,7 +27,7 @@ void Configs::_get_all(void)
 		_configs.resize(num);
 		EGLPLUS_EGLFUNC(GetConfigs)(
 			GetEGLHandle(_display),
-			_configs.data(),
+			&_configs.front(),
 			num,
 			&num
 		);
@@ -53,7 +53,7 @@ void Configs::_choose(const FinishedConfigAttribs& attribs)
 		EGLPLUS_EGLFUNC(ChooseConfig)(
 			GetEGLHandle(_display),
 			attribs.Get(),
-			_configs.data(),
+			&_configs.front(),
 			num,
 			&num
 		);

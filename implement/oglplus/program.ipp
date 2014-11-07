@@ -215,7 +215,7 @@ TransformFeedbackVaryings(
 	OGLPLUS_GLFUNC(TransformFeedbackVaryings)(
 		_name,
 		GLsizei(tmp.size()),
-		tmp.data(),
+		&tmp.front(),
 		GLenum(mode)
 	);
 	OGLPLUS_CHECK(
@@ -324,7 +324,7 @@ ShaderIterationContext::ShaderIterationContext(
 		name,
 		_shader_names.size(),
 		nullptr,
-		_shader_names.data()
+		&_shader_names.front()
 	);
 	OGLPLUS_CHECK(
 		GetAttachedShaders,

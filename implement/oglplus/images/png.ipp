@@ -331,11 +331,11 @@ PNGLoader::PNGLoader(
 		{
 			GLsizei row = y_is_up? (height-r-1): r;
 			GLsizei offs = row * rowsize;
-			rows[r] = (::png_bytep)data.data() + offs;
+			rows[r] = (::png_bytep)&data.front() + offs;
 		}
 
 		// read
-		::png_read_image(_png._read, rows.data());
+		::png_read_image(_png._read, &rows.front());
 
 		if(!x_is_right)
 		{
@@ -364,7 +364,7 @@ PNGLoader::PNGLoader(
 		height,
 		1,
 		channels,
-		data.data(),
+		&data.front(),
 		PixelDataFormat(gl_format),
 		PixelDataInternalFormat(gl_format)
 	);
