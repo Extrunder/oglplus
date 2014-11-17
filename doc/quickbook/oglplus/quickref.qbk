@@ -46,6 +46,7 @@ the concept.
 [include quickref/program_pipeline.qbk]
 [include quickref/query.qbk]
 [include quickref/transform_feedback.qbk]
+[include quickref/sync.qbk]
 
 [include quickref/context.qbk]
 
@@ -57,6 +58,7 @@ the concept.
 [include quickref/stencil_operation.qbk]
 [include quickref/access_specifier.qbk]
 
+[include quickref/data_type.qbk]
 [include quickref/face_mode.qbk]
 [include quickref/blend_function.qbk]
 [include quickref/color_buffer.qbk]

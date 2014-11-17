@@ -118,6 +118,7 @@
 [def __ImageUnitSelector [link oglplus.quickref.texture.unit_selector ImageUnitSelector]]
 
 [def __Sampler [link oglplus.quickref.sampler Sampler]]
+[def __NoSampler [link oglplus.quickref.sampler NoSampler]]
 
 [def __Framebuffer [link oglplus.quickref.framebuffer.def Framebuffer]]
 [def __DefaultFramebuffer [link oglplus.quickref.framebuffer.def DefaultFramebuffer]]
@@ -135,7 +136,14 @@
 [def __Shader [link oglplus.quickref.shader Shader]]
 [def __Program [link oglplus.quickref.program Program]]
 [def __ProgramPipeline [link oglplus.quickref.program_pipeline ProgramPipeline]]
+
 [def __Query [link oglplus.quickref.query Query]]
+[def __QueryActivator [link oglplus.quickref.query.activator QueryActivator]]
+[def __ConditionalRender [link oglplus.quickref.query.conditional_render ConditionalRender]]
+[def __QueryExecution [link oglplus.quickref.query.execution QueryExecution]]
+[def __QueryTarget [link oglplus.quickref.query.target QueryTarget]]
+[def __ConditionalRenderMode [link oglplus.quickref.query.conditional_render_mode ConditionalRenderMode]]
+
 [def __TransformFeedback [link oglplus.quickref.transform_feedback TransformFeedback]]
 
 [def __OptionalObject [link oglplus.quickref.object.optional Optional]]
@@ -154,6 +162,12 @@
 [def __ProgramBuildError [link oglplus.quickref.error.program ProgramBuildError]]
 [def __IncompleteFramebuffer [link oglplus.quickref.error.framebuffer IncompleteFramebuffer]]
 
+[def __Sync [link oglplus.quickref.sync Sync]]
+[def __SyncCondition [link oglplus.quickref.sync.condition SyncCondition]]
+[def __SyncType [link oglplus.quickref.sync.type SyncType]]
+[def __SyncStatus [link oglplus.quickref.sync.status SyncStatus]]
+[def __SyncWaitResult [link oglplus.quickref.sync.wait_result SyncWaitResult]]
+
 [def __Context [link oglplus.quickref.context Context]]
 
 [def __Capability [link oglplus.quickref.capability Capability]]
@@ -168,6 +182,8 @@
 [def __StencilOp [link oglplus.quickref.stencil_operation.typedefs StencilOp]]
 [def __AccessSpecifier [link oglplus.quickref.access_specifier AccessSpecifier]]
 [def __Access [link oglplus.quickref.access_specifier.typedefs Access]]
+[def __DataType [link oglplus.quickref.data_type DataType]]
+[def __TypeTag [link oglplus.quickref.data_type.utils TypeTag]]
 
 [def __Face [link oglplus.quickref.face_mode.face Face]]
 [def __FaceOrientation [link oglplus.quickref.face_mode.orientation FaceOrientation]]
