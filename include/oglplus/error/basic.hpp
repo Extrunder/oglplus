@@ -333,7 +333,7 @@ template <typename ErrorType>
 inline void HandleError(ErrorType& error)
 {
 #ifdef __S3E__
-#   if defined IW_DEBUG
+#   if defined IW_DEBUG_H
     IwAssertMsg(OGLPLUS, error.what() == nullptr, ("%s", error.what()));
 #   endif
 #endif
