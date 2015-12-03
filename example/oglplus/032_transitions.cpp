@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{032_transitions}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -41,7 +41,7 @@ private:
 
 		prog.AttachShader(VertexShader(
 			ObjectDesc("Draw vertex"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 			"uniform vec3 LightPosition;"
 			"uniform mat4 ModelMatrix;"
 			"in vec4 Position;"
@@ -70,7 +70,7 @@ private:
 
 		prog.AttachShader(GeometryShader(
 			ObjectDesc("Draw geometry"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 			"layout(triangles) in;"
 			"layout(triangle_strip, max_vertices = 6) out;"
 
@@ -120,7 +120,7 @@ private:
 
 		prog.AttachShader(FragmentShader(
 			ObjectDesc("Draw fragment"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 			"uniform sampler2D MetalTexture;"
 			"in vec3 geomNormal;"
 			"in vec3 geomTangent;"
@@ -199,8 +199,7 @@ public:
 			.GenerateMipmap()
 			.MinFilter(TextureMinFilter::LinearMipmapLinear)
 			.MagFilter(TextureMagFilter::Linear)
-			.WrapS(TextureWrap::Repeat)
-			.WrapT(TextureWrap::Repeat);
+			.Wrap(TextureWrap::Repeat);
 	}
 };
 
@@ -213,10 +212,8 @@ public:
 		Texture::Active(unit);
 		oglplus::Context::Bound<Texture>(Texture::Target::_2D, *this)
 			.Image2D(images::RandomRedUByte(512, 512))
-			.MinFilter(TextureMinFilter::Linear)
-			.MagFilter(TextureMagFilter::Linear)
-			.WrapS(TextureWrap::Repeat)
-			.WrapT(TextureWrap::Repeat);
+			.Filter(TextureFilter::Linear)
+			.Wrap(TextureWrap::Repeat);
 	}
 };
 
@@ -231,19 +228,13 @@ public:
 	{
 		Texture::Active(depth_unit);
 		oglplus::Context::Bound(Texture::Target::_2DArray, depth_tex)
-			.MinFilter(TextureMinFilter::Linear)
-			.MagFilter(TextureMagFilter::Linear)
-			.WrapS(TextureWrap::ClampToEdge)
-			.WrapT(TextureWrap::ClampToEdge)
-			.WrapR(TextureWrap::ClampToEdge);
+			.Filter(TextureFilter::Linear)
+			.Wrap(TextureWrap::ClampToEdge);
 
 		Texture::Active(color_unit);
 		oglplus::Context::Bound(Texture::Target::_2DArray, color_tex)
-			.MinFilter(TextureMinFilter::Linear)
-			.MagFilter(TextureMagFilter::Linear)
-			.WrapS(TextureWrap::ClampToEdge)
-			.WrapT(TextureWrap::ClampToEdge)
-			.WrapR(TextureWrap::ClampToEdge);
+			.Filter(TextureFilter::Linear)
+			.Wrap(TextureWrap::ClampToEdge);
 
 		Resize(256, 256);
 	}
@@ -289,7 +280,7 @@ private:
 
 		prog.AttachShader(VertexShader(
 			ObjectDesc("Clear vertex"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 			"in vec4 Position;"
 			"void main(void)"
 			"{"
@@ -299,7 +290,7 @@ private:
 
 		prog.AttachShader(GeometryShader(
 			ObjectDesc("Clear geometry"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 			"layout(triangles) in;"
 			"layout(triangle_strip, max_vertices = 6) out;"
 
@@ -331,7 +322,7 @@ private:
 
 		prog.AttachShader(FragmentShader(
 			ObjectDesc("Clear fragment"),
-			StrCRef("#version 330\n"
+			StrCRef("#version 150\n"
 
 			"in vec3 geomColor1, geomColor2;"
 			"in vec2 geomPosition, geomOrigin;"
@@ -655,7 +646,7 @@ private:
 
 	// torus vertex attribute names and count and
 	// a wraper for the torus builder, VAO and VBOs
-	static std::size_t torus_vert_attr_count(void) { return 4; }
+	static GLuint torus_vert_attr_count(void) { return 4; }
 	static const GLchar** torus_vert_attr_names(void)
 	{
 		static const GLchar* attrs[] = {"Position", "Normal", "Tangent", "TexCoord"};
@@ -739,23 +730,23 @@ public:
 
 		projection_0 = CamMatrixf::PerspectiveX(
 			Degrees(70),
-			float(width)/height,
+			width, height,
 			1, 20
 		);
 		projection_1 = CamMatrixf::PerspectiveX(
 			Degrees(24),
-			float(width)/height,
+			width, height,
 			1, 40
 		);
 	}
 
 	void RenderFrames(double time)
 	{
-		Vec3f origin = Vec3f(0.0, 0.0, 0.0);
-		Vec3f target_0 = Vec3f(0.0, 1.5, 0.0);
+		Vec3f origin = Vec3f(0.0f, 0.0f, 0.0f);
+		Vec3f target_0 = Vec3f(0.0f, 1.5f, 0.0f);
 		auto camera_0 = CamMatrixf::Orbiting(
 			target_0,
-			4.0 + SineWave(time / 11.0)*2.0,
+			GLfloat(4.0 + SineWave(time / 11.0)*2.0),
 			FullCircles(time / 19.0),
 			Degrees(SineWave(time / 20.0) * 30 + 35)
 		);
@@ -764,10 +755,10 @@ public:
 		draw_prog.camera_position_0 = camera_0.Position();
 		clear_prog.origin_0 = (cm_0*Vec4f(origin, 1.0)).xy();
 
-		Vec3f target_1 = Vec3f(0.0,-0.1, 0.1);
+		Vec3f target_1 = Vec3f(0.0f,-0.1f, 0.1f);
 		auto camera_1 = CamMatrixf::Orbiting(
 			target_1,
-			12.5,
+			12.5f,
 			FullCircles(time / 37.0),
 			Degrees(SineWave(time / 11.0) * 85)
 		);
@@ -801,7 +792,7 @@ public:
 		gl.Disable(Capability::DepthTest);
 
 		trans_prog.Use();
-		trans_prog.SetMixFactor(-CosineWave(time / 6.0)*0.5+0.5);
+		trans_prog.SetMixFactor(GLfloat(-CosineWave(time / 6.0)*0.5+0.5));
 
 		screen.Draw();
 	}
@@ -831,7 +822,7 @@ std::unique_ptr<ExampleThread> makeExampleThread(
 
 std::unique_ptr<Example> makeExample(const ExampleParams& /*params*/)
 {
-	std::srand(std::time(0));
+	std::srand(unsigned(std::time(0)));
 	return std::unique_ptr<Example>(new TransitionExample);
 }
 

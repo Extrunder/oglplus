@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -35,7 +35,44 @@ template <>
 class ObjectOps<tag::DirectState, tag::VertexArray>
  : public ObjZeroOps<tag::DirectState, tag::VertexArray>
 {
+protected:
+	ObjectOps(VertexArrayName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::VertexArray>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::VertexArray> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	/// Bind buffer to VAO's element buffer binding point
 	/**
 	 *  @glsymbols
@@ -44,7 +81,7 @@ public:
 	ObjectOps& ElementBuffer(BufferName buffer)
 	{
 		OGLPLUS_GLFUNC(VertexArrayElementBuffer)(
-			_name,
+			_obj_name(),
 			GetGLName(buffer)
 		);
 		OGLPLUS_CHECK(
@@ -61,10 +98,10 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{EnableVertexArrayAttrib}
 	 */
-	const ObjectOps& EnableVertexAttrib(VertexAttribSlot location)
+	ObjectOps& EnableVertexAttrib(VertexAttribSlot location)
 	{
 		OGLPLUS_GLFUNC(EnableVertexArrayAttrib)(
-			_name,
+			_obj_name(),
 			GLuint(location)
 		);
 		OGLPLUS_CHECK(
@@ -81,10 +118,10 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{DisableVertexArrayAttrib}
 	 */
-	const ObjectOps& DisableVertexAttrib(VertexAttribSlot location)
+	ObjectOps& DisableVertexAttrib(VertexAttribSlot location)
 	{
 		OGLPLUS_GLFUNC(DisableVertexArrayAttrib)(
-			_name,
+			_obj_name(),
 			GLuint(location)
 		);
 		OGLPLUS_CHECK(

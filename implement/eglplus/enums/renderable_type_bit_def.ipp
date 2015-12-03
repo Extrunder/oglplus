@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/eglplus/renderable_type_bit.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined EGL_OPENGL_BIT
-# if EGLPLUS_LIST_NEEDS_COMMA
+# ifdef EGLPLUS_LIST_NEEDS_COMMA
    EGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined OpenGL
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined EGL_OPENGL_ES_BIT
-# if EGLPLUS_LIST_NEEDS_COMMA
+# ifdef EGLPLUS_LIST_NEEDS_COMMA
    EGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined OpenGL_ES
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined EGL_OPENGL_ES2_BIT
-# if EGLPLUS_LIST_NEEDS_COMMA
+# ifdef EGLPLUS_LIST_NEEDS_COMMA
    EGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined OpenGL_ES2
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined EGL_OPENGL_ES3_BIT
-# if EGLPLUS_LIST_NEEDS_COMMA
+# ifdef EGLPLUS_LIST_NEEDS_COMMA
    EGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined OpenGL_ES3
@@ -78,7 +78,7 @@
 # endif
 #endif
 #if defined EGL_OPENVG_BIT
-# if EGLPLUS_LIST_NEEDS_COMMA
+# ifdef EGLPLUS_LIST_NEEDS_COMMA
    EGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined OpenVG

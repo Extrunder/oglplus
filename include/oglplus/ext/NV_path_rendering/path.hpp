@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -19,6 +19,7 @@
 #include <oglplus/error/object.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/data_type.hpp>
+#include <oglplus/size_type.hpp>
 
 #include <oglplus/ext/NV_path_rendering/command.hpp>
 #include <oglplus/ext/NV_path_rendering/format.hpp>
@@ -54,7 +55,9 @@ protected:
 		assert(names != nullptr);
 		GLuint base = OGLPLUS_GLFUNC(GenPathsNV)(count);
 		for(GLsizei i=0; i!=count; ++i)
-			names[i] = base+i;
+		{
+			names[i] = base+GLuint(i);
+		}
 		OGLPLUS_CHECK_SIMPLE(GenPathsNV);
 	}
 
@@ -65,10 +68,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeletePathsNV);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsPathNV)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsPathNV)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsPathNV);
 		return result;
 	}
@@ -82,8 +87,43 @@ class ObjectOps<tag::DirectState, tag::PathNV>
  : public ObjZeroOps<tag::DirectState, tag::PathNV>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(ObjectName<tag::PathNV> name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::PathNV>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::PathNV> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	/// Specifies the path via a sequence of commands and coordinates
 	/**
 	 *  @glsymbols
@@ -91,19 +131,19 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& Commands(
-		GLsizei num_commands,
+		SizeType num_commands,
 		const PathNVCommand* commands,
-		GLsizei num_coords,
+		SizeType num_coords,
 		const CoordType* coords
 	)
 	{
 		OGLPLUS_GLFUNC(PathCommandsNV)(
-			this->_name,
+			_obj_name(),
 			num_commands,
-			(const GLubyte*)commands,
+			reinterpret_cast<const GLubyte*>(commands),
 			num_coords,
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords
+			static_cast<const void*>(coords)
 		);
 		OGLPLUS_CHECK(
 			PathCommandsNV,
@@ -125,12 +165,12 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(PathCommandsNV)(
-			this->_name,
+			_obj_name(),
 			GLsizei(commands.size()),
-			(const GLubyte*)commands.data(),
+			reinterpret_cast<const GLubyte*>(commands.data()),
 			GLsizei(coords.size()),
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords.data()
+			static_cast<const void*>(coords.data())
 		);
 		OGLPLUS_CHECK(
 			PathCommandsNV,
@@ -161,10 +201,10 @@ public:
 	 *  @glfunref{PathCoordsNV}
 	 */
 	template <typename CoordType>
-	ObjectOps& Coords(GLsizei num_coords, const CoordType* coords)
+	ObjectOps& Coords(SizeType num_coords, const CoordType* coords)
 	{
 		OGLPLUS_GLFUNC(PathCoordsNV)(
-			this->_name,
+			_obj_name(),
 			num_coords,
 			GLenum(GetDataType<CoordType>()),
 			static_cast<const void*>(coords)
@@ -186,10 +226,10 @@ public:
 	ObjectOps& Coords(const std::vector<CoordType>& coords)
 	{
 		OGLPLUS_GLFUNC(PathCoordsNV)(
-			this->_name,
+			_obj_name(),
 			GLsizei(coords.size()),
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords.data()
+			static_cast<const void*>(coords.data())
 		);
 		OGLPLUS_CHECK(
 			PathCoordsNV,
@@ -206,23 +246,23 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& SubCommands(
-		GLsizei command_start,
-		GLsizei commands_to_delete,
-		GLsizei num_commands,
+		SizeType command_start,
+		SizeType commands_to_delete,
+		SizeType num_commands,
 		const PathNVCommand* commands,
-		GLsizei num_coords,
+		SizeType num_coords,
 		const CoordType* coords
 	)
 	{
 		OGLPLUS_GLFUNC(PathSubCommandsNV)(
-			this->_name,
+			_obj_name(),
 			command_start,
 			commands_to_delete,
 			num_commands,
-			(const GLubyte*)commands,
+			reinterpret_cast<const GLubyte*>(commands),
 			num_coords,
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords
+			static_cast<const void*>(coords)
 		);
 		OGLPLUS_CHECK(
 			PathSubCommandsNV,
@@ -239,21 +279,21 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& SubCommands(
-		GLsizei command_start,
-		GLsizei commands_to_delete,
+		SizeType command_start,
+		SizeType commands_to_delete,
 		const std::vector<PathNVCommand>& commands,
 		const std::vector<CoordType>& coords
 	)
 	{
 		OGLPLUS_GLFUNC(PathSubCommandsNV)(
-			this->_name,
+			_obj_name(),
 			command_start,
 			commands_to_delete,
 			GLsizei(commands.size()),
-			(const GLubyte*)commands.data(),
+			reinterpret_cast<const GLubyte*>(commands.data()),
 			GLsizei(coords.size()),
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords.data()
+			static_cast<const void*>(coords.data())
 		);
 		OGLPLUS_CHECK(
 			PathSubCommandsNV,
@@ -271,8 +311,8 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& SubSpec(
-		GLsizei command_start,
-		GLsizei commands_to_delete,
+		SizeType command_start,
+		SizeType commands_to_delete,
 		const PathNVSpec<CoordType>& spec
 	)
 	{
@@ -292,13 +332,13 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& SubCoords(
-		GLsizei coord_start,
-		GLsizei num_coords,
+		SizeType coord_start,
+		SizeType num_coords,
 		const CoordType* coords
 	)
 	{
 		OGLPLUS_GLFUNC(PathSubCoordsNV)(
-			this->_name,
+			_obj_name(),
 			coord_start,
 			num_coords,
 			GLenum(GetDataType<CoordType>()),
@@ -319,16 +359,16 @@ public:
 	 */
 	template <typename CoordType>
 	ObjectOps& SubCoords(
-		GLsizei coord_start,
+		SizeType coord_start,
 		const std::vector<CoordType>& coords
 	)
 	{
 		OGLPLUS_GLFUNC(PathSubCoordsNV)(
-			this->_name,
+			_obj_name(),
 			coord_start,
 			GLsizei(coords.size()),
 			GLenum(GetDataType<CoordType>()),
-			(const void*)coords
+			static_cast<const void*>(coords)
 		);
 		OGLPLUS_CHECK(
 			PathSubCoordsNV,
@@ -346,12 +386,12 @@ public:
 	 */
 	ObjectOps& PathString(
 		PathNVFormat format,
-		GLsizei length,
+		SizeType length,
 		const GLchar* path_string
 	)
 	{
 		OGLPLUS_GLFUNC(PathStringNV)(
-			this->_name,
+			_obj_name(),
 			GLenum(format),
 			length,
 			static_cast<const void*>(path_string)
@@ -372,9 +412,9 @@ public:
 	ObjectOps& PathString(PathNVFormat format, StrCRef path_string)
 	{
 		OGLPLUS_GLFUNC(PathStringNV)(
-			this->_name,
+			_obj_name(),
 			GLenum(format),
-			path_string.size(),
+			GLsizei(path_string.size()),
 			static_cast<const void*>(path_string.c_str())
 		);
 		OGLPLUS_CHECK(
@@ -391,7 +431,7 @@ public:
 	 *  @glfunref{PathStringNV}
 	 *  @gldefref{PATH_FORMAT_SVG_NV}
 	 */
-	ObjectOps& SVGString(GLsizei length, const GLchar* path_string)
+	ObjectOps& SVGString(SizeType length, const GLchar* path_string)
 	{
 		PathString(PathNVFormat::SVG, length, path_string);
 		return *this;
@@ -415,7 +455,7 @@ public:
 	 *  @glfunref{PathStringNV}
 	 *  @gldefref{PATH_FORMAT_PS_NV}
 	 */
-	ObjectOps& PSString(GLsizei length, const GLchar* path_string)
+	ObjectOps& PSString(SizeType length, const GLchar* path_string)
 	{
 		PathString(PathNVFormat::PS, length, path_string);
 		return *this;
@@ -438,19 +478,21 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{IsPointInFillPathNV}
 	 */
-	bool IsPointInFill(GLuint mask, GLfloat x, GLfloat y) const
+	Boolean IsPointInFill(GLuint mask, GLfloat x, GLfloat y) const
 	{
-		GLboolean result = OGLPLUS_GLFUNC(IsPointInFillPathNV)(
-			this->_name,
-			mask,
-			x, y
+		Boolean result(
+			OGLPLUS_GLFUNC(IsPointInFillPathNV)(
+				_obj_name(),
+				mask,
+				x, y
+			), std::nothrow
 		);
 		OGLPLUS_VERIFY(
 			IsPointInFillPathNV,
 			ObjectError,
 			Object(*this)
 		);
-		return result == GL_TRUE;
+		return result;
 	}
 
 	/// Checks if the specified point is on the path outline
@@ -458,18 +500,20 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{IsPointInStrokePathNV}
 	 */
-	bool IsPointInStroke(GLfloat x, GLfloat y) const
+	Boolean IsPointInStroke(GLfloat x, GLfloat y) const
 	{
-		GLboolean result = OGLPLUS_GLFUNC(IsPointInStrokePathNV)(
-			this->_name,
-			x, y
+		Boolean result(
+			OGLPLUS_GLFUNC(IsPointInStrokePathNV)(
+				_obj_name(),
+				x, y
+			), std::nothrow
 		);
 		OGLPLUS_VERIFY(
 			IsPointInStrokePathNV,
 			ObjectError,
 			Object(*this)
 		);
-		return result == GL_TRUE;
+		return result;
 	}
 
 	/// Returns the approximation of the length of the path
@@ -477,10 +521,10 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{GetPathLengthNV}
 	 */
-	GLfloat GetLength(GLsizei start_segment, GLsizei num_segments) const
+	GLfloat GetLength(SizeType start_segment, SizeType num_segments) const
 	{
 		GLfloat result = OGLPLUS_GLFUNC(GetPathLengthNV)(
-			this->_name,
+			_obj_name(),
 			start_segment,
 			num_segments
 		);
@@ -497,9 +541,9 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{PointAlongPathNV}
 	 */
-	bool PointAlong(
-		GLsizei start_segment,
-		GLsizei num_segments,
+	Boolean PointAlong(
+		SizeType start_segment,
+		SizeType num_segments,
 		GLfloat distance,
 		GLfloat& ref_x,
 		GLfloat& ref_y,
@@ -507,22 +551,24 @@ public:
 		GLfloat& ref_tg_y
 	) const
 	{
-		GLboolean result = OGLPLUS_GLFUNC(PointAlongPathNV)(
-			this->_name,
-			start_segment,
-			num_segments,
-			distance,
-			&ref_x,
-			&ref_y,
-			&ref_tg_x,
-			&ref_tg_y
+		Boolean result(
+			OGLPLUS_GLFUNC(PointAlongPathNV)(
+				_obj_name(),
+				start_segment,
+				num_segments,
+				distance,
+				&ref_x,
+				&ref_y,
+				&ref_tg_x,
+				&ref_tg_y
+			), std::nothrow
 		);
 		OGLPLUS_CHECK(
 			PointAlongPathNV,
 			ObjectError,
 			Object(*this)
 		);
-		return result == GL_TRUE;
+		return result;
 	}
 
 	/// Sets the stroke width value
@@ -534,7 +580,7 @@ public:
 	ObjectOps& StrokeWidth(GLfloat width)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_STROKE_WIDTH_NV,
 			width
 		);
@@ -556,7 +602,7 @@ public:
 	{
 		GLfloat result;
 		OGLPLUS_GLFUNC(GetPathParameterfvNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_STROKE_WIDTH_NV,
 			&result
 		);
@@ -577,7 +623,7 @@ public:
 	ObjectOps& MiterLimit(GLfloat width)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_MITER_LIMIT_NV,
 			width
 		);
@@ -599,7 +645,7 @@ public:
 	{
 		GLfloat result;
 		OGLPLUS_GLFUNC(GetPathParameterfvNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_MITER_LIMIT_NV,
 			&result
 		);
@@ -620,7 +666,7 @@ public:
 	ObjectOps& JoinStyle(PathNVJoinStyle style)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_JOIN_STYLE_NV,
 			GLenum(style)
 		);
@@ -641,7 +687,7 @@ public:
 	ObjectOps& InitialEndCap(PathNVCapStyle style)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_INITIAL_END_CAP_NV,
 			GLenum(style)
 		);
@@ -662,7 +708,7 @@ public:
 	ObjectOps& TerminalEndCap(PathNVCapStyle style)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_TERMINAL_END_CAP_NV,
 			GLenum(style)
 		);
@@ -683,7 +729,7 @@ public:
 	ObjectOps& InitialDashCap(PathNVCapStyle style)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_INITIAL_DASH_CAP_NV,
 			GLenum(style)
 		);
@@ -704,7 +750,7 @@ public:
 	ObjectOps& TerminalDashCap(PathNVCapStyle style)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_TERMINAL_DASH_CAP_NV,
 			GLenum(style)
 		);
@@ -725,7 +771,7 @@ public:
 	ObjectOps& DashOffset(GLfloat width)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_DASH_OFFSET_NV,
 			width
 		);
@@ -747,7 +793,7 @@ public:
 	{
 		GLfloat result;
 		OGLPLUS_GLFUNC(GetPathParameterfvNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_DASH_OFFSET_NV,
 			&result
 		);
@@ -768,7 +814,7 @@ public:
 	ObjectOps& DashOffsetReset(PathNVDashOffsetReset mode)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_DASH_OFFSET_RESET_NV,
 			GLenum(mode)
 		);
@@ -785,10 +831,10 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{PathDashArrayNV}
 	 */
-	ObjectOps& DashArray(GLsizei dash_count, const GLfloat* dash_array)
+	ObjectOps& DashArray(SizeType dash_count, const GLfloat* dash_array)
 	{
 		OGLPLUS_GLFUNC(PathDashArrayNV)(
-			this->_name,
+			_obj_name(),
 			dash_count,
 			dash_array
 		);
@@ -824,7 +870,7 @@ public:
 	ObjectOps& ClientLength(GLfloat value)
 	{
 		OGLPLUS_GLFUNC(PathParameterfNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_CLIENT_LENGTH_NV,
 			value
 		);
@@ -846,7 +892,7 @@ public:
 	{
 		GLfloat result;
 		OGLPLUS_GLFUNC(GetPathParameterfvNV)(
-			this->_name,
+			_obj_name(),
 			GL_PATH_CLIENT_LENGTH_NV,
 			&result
 		);
@@ -867,7 +913,7 @@ public:
 	ObjectOps& StencilFill(PathNVFillMode mode, GLuint mask)
 	{
 		OGLPLUS_GLFUNC(StencilFillPathNV)(
-			this->_name,
+			_obj_name(),
 			GLenum(mode),
 			mask
 		);
@@ -886,7 +932,7 @@ public:
 	 */
 	ObjectOps& CoverFill(PathNVFillCoverMode mode)
 	{
-		OGLPLUS_GLFUNC(CoverFillPathNV)(this->_name, GLenum(mode));
+		OGLPLUS_GLFUNC(CoverFillPathNV)(_obj_name(), GLenum(mode));
 		OGLPLUS_CHECK(
 			CoverFillPathNV,
 			ObjectError,
@@ -903,7 +949,7 @@ public:
 	ObjectOps& StencilStroke(GLint reference, GLuint mask)
 	{
 		OGLPLUS_GLFUNC(StencilStrokePathNV)(
-			this->_name,
+			_obj_name(),
 			reference,
 			mask
 		);
@@ -922,7 +968,7 @@ public:
 	 */
 	ObjectOps& CoverStroke(PathNVStrokeCoverMode mode)
 	{
-		OGLPLUS_GLFUNC(CoverStrokePathNV)(this->_name, GLenum(mode));
+		OGLPLUS_GLFUNC(CoverStrokePathNV)(_obj_name(), GLenum(mode));
 		OGLPLUS_CHECK(
 			CoverStrokePathNV,
 			ObjectError,

@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{012_checker_sphere}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -58,7 +58,12 @@ public:
 		VertexShader vs;
 		// Set the vertex shader source and compile it
 		vs.Source(
+			"#if GL_ARB_explicit_attrib_location\n"
+			"#version 140\n"
+			"#extension GL_ARB_explicit_attrib_location : enable\n"
+			"#else\n"
 			"#version 330\n"
+			"#endif\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"layout(location = 0) in vec4 Position;"
 			"layout(location = 1) in vec2 TexCoord;"
@@ -77,7 +82,7 @@ public:
 		FragmentShader fs;
 		// set the fragment shader source and compile it
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"in vec2 vertTexCoord;"
 			"out vec4 fragColor;"
 			"void main(void)"
@@ -134,7 +139,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				float(width)/height,
 				1, 20
 			)
 		);

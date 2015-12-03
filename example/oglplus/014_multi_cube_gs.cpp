@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{014_multi_cube_gs}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -62,7 +62,7 @@ public:
 	{
 		// Set the vertex shader source and compile it
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec4 Position;"
 			"void main(void)"
 			"{"
@@ -72,7 +72,7 @@ public:
 
 		// Set the geometry shader source and compile it
 		gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout(triangles) in;"
 			"layout(triangle_strip, max_vertices = 108) out;"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
@@ -113,7 +113,7 @@ public:
 
 		// set the fragment shader source and compile it
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec3 vertColor;"
 			"out vec4 fragColor;"
 			"void main(void)"
@@ -157,7 +157,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(70),
-				double(width)/height,
+				width, height,
 				1, 50
 			)
 		);

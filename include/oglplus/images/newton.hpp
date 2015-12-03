@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -97,7 +97,7 @@ private:
 			Vector<float, N> c = _mix(
 				c1,
 				c2,
-				mixer(float(n) / float(max-1))
+				float(mixer(float(n) / float(max-1)))
 			);
 			for(n=0; n!=N; ++n)
 			{
@@ -124,7 +124,7 @@ public:
 		{
 			return 3.0f * Vec2f(
 				n.x()*n.x() - n.y()*n.y(),
-				2.0 * n.x() * n.y()
+				2.0f * n.x() * n.y()
 			);
 		}
 	};
@@ -203,15 +203,15 @@ public:
 		typename Mixer = DefaultMixer
 	>
 	NewtonFractal(
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		Vec3f c1,
 		Vec3f c2,
 		Vec2f lb = Vec2f(-1.0f, -1.0f),
 		Vec2f rt = Vec2f( 1.0f,  1.0f),
 		Function func = Function(),
 		Mixer mixer = Mixer()
-	): Image(width, height, 1, 3, (GLfloat*)0)
+	): Image(width, height, 1, 3, &TypeTag<GLfloat>())
 	{
 		_make(width, height, func, mixer, lb, rt, c1, c2);
 	}
@@ -230,11 +230,11 @@ public:
 		typename Mixer = DefaultMixer
 	>
 	NewtonFractal(
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		Function func = Function(),
 		Mixer mixer = Mixer()
-	): Image(width, height, 1, 1, (GLfloat*)0)
+	): Image(width, height, 1, 1, &TypeTag<GLfloat>())
 	{
 		_make(
 			width, height,
@@ -247,8 +247,8 @@ public:
 #else
 	template <typename Function, typename Mixer>
 	NewtonFractal(
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		Vec3f c1,
 		Vec3f c2,
 		Vec2f lb,
@@ -262,8 +262,8 @@ public:
 
 	template <typename Function, typename Mixer>
 	NewtonFractal(
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		Function func,
 		Mixer mixer
 	): Image(width, height, 1, 1, (GLfloat*)0)

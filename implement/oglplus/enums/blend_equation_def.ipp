@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/blend_equation.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_FUNC_ADD
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Add
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_FUNC_SUBTRACT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Subtract
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_FUNC_REVERSE_SUBTRACT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined ReverseSubtract
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined GL_MIN
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Min
@@ -78,7 +78,7 @@
 # endif
 #endif
 #if defined GL_MAX
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Max

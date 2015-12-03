@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oalplus/context_attrib.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined ALC_FREQUENCY
-# if OALPLUS_LIST_NEEDS_COMMA
+# ifdef OALPLUS_LIST_NEEDS_COMMA
    OALPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Frequency
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined ALC_REFRESH
-# if OALPLUS_LIST_NEEDS_COMMA
+# ifdef OALPLUS_LIST_NEEDS_COMMA
    OALPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Refresh
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined ALC_SYNC
-# if OALPLUS_LIST_NEEDS_COMMA
+# ifdef OALPLUS_LIST_NEEDS_COMMA
    OALPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Sync
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined ALC_MONO_SOURCES
-# if OALPLUS_LIST_NEEDS_COMMA
+# ifdef OALPLUS_LIST_NEEDS_COMMA
    OALPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined MonoSources
@@ -78,7 +78,7 @@
 # endif
 #endif
 #if defined ALC_STEREO_SOURCES
-# if OALPLUS_LIST_NEEDS_COMMA
+# ifdef OALPLUS_LIST_NEEDS_COMMA
    OALPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined StereoSources

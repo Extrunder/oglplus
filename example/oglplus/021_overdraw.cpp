@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{021_overdraw}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -47,7 +47,7 @@ private:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"layout (std140) uniform OffsetBlock {vec3 Offset[16*16*16];};"
 			"in vec3 Position;"
@@ -62,7 +62,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"out float fragValue;"
 			"void main(void)"
 			"{"
@@ -96,7 +96,7 @@ private:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform vec2 ScreenSize;"
 			"in vec4 Position;"
 			"in vec2 TexCoord;"
@@ -110,7 +110,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform sampler1D Palette;"
 			"uniform sampler2DRect Tex;"
 			"in vec2 vertTexCoord;"
@@ -205,14 +205,14 @@ public:
 				16,
 				Vec3f(0, 0, 0),
 				std::map<GLfloat, Vec3f>({
-					{  0.0/16.0, Vec3f(0.0, 0.0, 0.0)},
-					{  1.0/16.0, Vec3f(0.5, 0.0, 1.0)},
-					{  3.0/16.0, Vec3f(0.0, 0.0, 1.0)},
-					{  6.0/16.0, Vec3f(0.0, 0.6, 0.6)},
-					{  8.0/16.0, Vec3f(0.0, 1.0, 0.0)},
-					{ 11.0/16.0, Vec3f(0.6, 0.6, 0.0)},
-					{ 13.0/16.0, Vec3f(1.0, 0.1, 0.0)},
-					{ 16.0/16.0, Vec3f(0.7, 0.0, 0.0)}
+					{  0.f/16.f, Vec3f(0.0f, 0.0f, 0.0f)},
+					{  1.f/16.f, Vec3f(0.5f, 0.0f, 1.0f)},
+					{  3.f/16.f, Vec3f(0.0f, 0.0f, 1.0f)},
+					{  6.f/16.f, Vec3f(0.0f, 0.6f, 0.6f)},
+					{  8.f/16.f, Vec3f(0.0f, 1.0f, 0.0f)},
+					{ 11.f/16.f, Vec3f(0.6f, 0.6f, 0.0f)},
+					{ 13.f/16.f, Vec3f(1.0f, 0.1f, 0.0f)},
+					{ 16.f/16.f, Vec3f(0.7f, 0.0f, 0.0f)}
 				})
 			);
 
@@ -248,7 +248,7 @@ public:
 		draw_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(70),
-				double(width)/height,
+				width, height,
 				1, 100
 			)
 		);

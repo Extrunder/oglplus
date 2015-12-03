@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/pixel_data_format.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_DEPTH_COMPONENT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined DepthComponent
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_DEPTH_STENCIL
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined DepthStencil
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_STENCIL_INDEX
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined StencilIndex
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined GL_RED
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Red
@@ -78,7 +78,7 @@
 # endif
 #endif
 #if defined GL_GREEN
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Green
@@ -94,7 +94,7 @@
 # endif
 #endif
 #if defined GL_BLUE
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Blue
@@ -158,7 +158,7 @@
 # endif
 #endif
 #if defined GL_RG
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RG
@@ -174,7 +174,7 @@
 # endif
 #endif
 #if defined GL_RGB
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RGB
@@ -190,7 +190,7 @@
 # endif
 #endif
 #if defined GL_RGBA
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RGBA
@@ -206,7 +206,7 @@
 # endif
 #endif
 #if defined GL_BGR
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BGR
@@ -222,7 +222,7 @@
 # endif
 #endif
 #if defined GL_BGRA
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BGRA
@@ -238,7 +238,7 @@
 # endif
 #endif
 #if defined GL_RED_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RedInteger
@@ -254,7 +254,7 @@
 # endif
 #endif
 #if defined GL_GREEN_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined GreenInteger
@@ -270,7 +270,7 @@
 # endif
 #endif
 #if defined GL_BLUE_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BlueInteger
@@ -286,7 +286,7 @@
 # endif
 #endif
 #if defined GL_RG_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RGInteger
@@ -302,7 +302,7 @@
 # endif
 #endif
 #if defined GL_RGB_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RGBInteger
@@ -318,7 +318,7 @@
 # endif
 #endif
 #if defined GL_RGBA_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined RGBAInteger
@@ -334,7 +334,7 @@
 # endif
 #endif
 #if defined GL_BGR_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BGRInteger
@@ -350,7 +350,7 @@
 # endif
 #endif
 #if defined GL_BGRA_INTEGER
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BGRAInteger

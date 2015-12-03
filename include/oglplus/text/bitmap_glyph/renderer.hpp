@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -46,7 +46,7 @@ private:
 	template <typename BitmapFontEssence>
 	void _use_font(const BitmapFontEssence& essence)
 	{
-		if(_prev_font_essence != (const void*)&essence)
+		if(_prev_font_essence != static_cast<const void*>(&essence))
 		{
 			essence.Use();
 			_bitmap_sampler.Set(GLint(essence.BitmapTexUnit()));
@@ -81,6 +81,12 @@ public:
 		BitmapGlyphRenderingBase& parent,
 		const Sequence<ShaderName>& shaders
 	);
+
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	BitmapGlyphRenderer(BitmapGlyphRenderer&&) = default;
+#else
+	BitmapGlyphRenderer(BitmapGlyphRenderer&& tmp);
+#endif
 
 	void Use(void)
 	{
@@ -131,6 +137,12 @@ public:
 		BitmapGlyphRenderingBase& parent,
 		const FragmentShader& pixel_color_shader
 	);
+
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	BitmapGlyphDefaultRenderer(BitmapGlyphDefaultRenderer&&) = default;
+#else
+	BitmapGlyphDefaultRenderer(BitmapGlyphDefaultRenderer&& tmp);
+#endif
 };
 
 } // namespace text

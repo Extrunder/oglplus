@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{019_tessellation}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -69,7 +69,7 @@ public:
 	 , viewport_dimensions(prog, "ViewportDimensions")
 	{
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform vec3 ViewPosition;"
 
@@ -87,7 +87,7 @@ public:
 		vs.Compile();
 
 		cs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader : enable\n"
 
 			"layout(vertices = 3) out;"
@@ -132,7 +132,7 @@ public:
 		cs.Compile();
 
 		es.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader : enable\n"
 
 			"layout(triangles, equal_spacing, ccw) in;"
@@ -166,7 +166,7 @@ public:
 		es.Compile();
 
 		gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout (triangles) in;"
 			"layout (triangle_strip, max_vertices = 3) out;"
 
@@ -235,7 +235,7 @@ public:
 		gs.Compile();
 
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"noperspective in vec3 geomDist;"
 			"flat in vec3 geomNormal;"
@@ -302,7 +302,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				width, height,
 				1, 40
 			)
 		);
@@ -314,7 +314,7 @@ public:
 		//
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(),
-			14.0 - SineWave(time / 13)*8.0,
+			GLfloat(14.0 - SineWave(time / 13)*8.0),
 			Degrees(time * 33),
 			Degrees(SineWave(time / 21.0) * 31)
 		);

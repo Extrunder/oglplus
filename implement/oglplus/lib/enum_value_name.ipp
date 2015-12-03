@@ -1,17 +1,21 @@
-/*
- *  .file oglplus/lib/enum_value_name.ipp
- *
- *  Automatically generated header file. DO NOT modify manually,
- *  edit 'source/enums/oglplus/.*.txt' instead.
- *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
- *  Software License, Version 1.0. (See accompanying file
- *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
- */
-
+//  File implement/oglplus/lib/enum_value_name.ipp
+//
+//  Automatically generated file, DO NOT modify manually.
+//  Edit the enumeration source files in 'source/enums/oglplus'
+//  or the 'source/enums/make_enum.py' script instead.
+//
+//  Copyright 2010-2015 Matus Chochlik.
+//  Distributed under the Boost Software License, Version 1.0.
+//  See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt
+//
 #if !OGLPLUS_NO_ENUM_VALUE_NAMES
+
 OGLPLUS_ENUM_CLASS_FWD(AccessSpecifier, GLenum)
 #include <oglplus/enums/access_specifier_names.ipp>
+
+OGLPLUS_ENUM_CLASS_FWD(BlendEquationAdvanced, GLenum)
+#include <oglplus/enums/blend_equation_advanced_names.ipp>
 
 OGLPLUS_ENUM_CLASS_FWD(BlendEquation, GLenum)
 #include <oglplus/enums/blend_equation_names.ipp>
@@ -43,6 +47,12 @@ OGLPLUS_ENUM_CLASS_FWD(BufferUsage, GLenum)
 OGLPLUS_ENUM_CLASS_FWD(Capability, GLenum)
 #include <oglplus/enums/capability_names.ipp>
 
+OGLPLUS_ENUM_CLASS_FWD(ClipDepthMode, GLenum)
+#include <oglplus/enums/clip_depth_mode_names.ipp>
+
+OGLPLUS_ENUM_CLASS_FWD(ClipOrigin, GLenum)
+#include <oglplus/enums/clip_origin_names.ipp>
+
 OGLPLUS_ENUM_CLASS_FWD(ColorBuffer, GLenum)
 #include <oglplus/enums/color_buffer_names.ipp>
 
@@ -55,10 +65,10 @@ OGLPLUS_ENUM_CLASS_FWD(CompareFunction, GLenum)
 OGLPLUS_ENUM_CLASS_FWD(ConditionalRenderMode, GLenum)
 #include <oglplus/enums/conditional_render_mode_names.ipp>
 
-OGLPLUS_ENUM_CLASS_FWD(ContextFlagBit, GLenum)
+OGLPLUS_ENUM_CLASS_FWD(ContextFlagBit, GLbitfield)
 #include <oglplus/enums/context_flag_bit_names.ipp>
 
-OGLPLUS_ENUM_CLASS_FWD(ContextProfileBit, GLenum)
+OGLPLUS_ENUM_CLASS_FWD(ContextProfileBit, GLbitfield)
 #include <oglplus/enums/context_profile_bit_names.ipp>
 
 OGLPLUS_ENUM_CLASS_FWD(ContextReleaseBehavior, GLenum)
@@ -139,8 +149,8 @@ OGLPLUS_ENUM_CLASS_FWD(PixelDataInternalFormat, GLenum)
 OGLPLUS_ENUM_CLASS_FWD(PixelDataType, GLenum)
 #include <oglplus/enums/pixel_data_type_names.ipp>
 
-OGLPLUS_ENUM_CLASS_FWD(PixelStorageMode, GLenum)
-#include <oglplus/enums/pixel_storage_mode_names.ipp>
+OGLPLUS_ENUM_CLASS_FWD(PixelParameter, GLenum)
+#include <oglplus/enums/pixel_parameter_names.ipp>
 
 OGLPLUS_ENUM_CLASS_FWD(PolygonMode, GLenum)
 #include <oglplus/enums/polygon_mode_names.ipp>
@@ -174,6 +184,9 @@ OGLPLUS_ENUM_CLASS_FWD(ResetNotificationStrategy, GLenum)
 
 OGLPLUS_ENUM_CLASS_FWD(ShaderType, GLenum)
 #include <oglplus/enums/shader_type_names.ipp>
+
+OGLPLUS_ENUM_CLASS_FWD(SingleFace, GLenum)
+#include <oglplus/enums/single_face_names.ipp>
 
 OGLPLUS_ENUM_CLASS_FWD(SLDataType, GLenum)
 #include <oglplus/enums/sl_data_type_names.ipp>
@@ -283,7 +296,7 @@ OGLPLUS_ENUM_CLASS_FWD(PathNVColorFormat, GLenum)
 OGLPLUS_ENUM_CLASS_FWD(PathNVColor, GLenum)
 #include <oglplus/enums/ext/nv_path_color_names.ipp>
 
-OGLPLUS_ENUM_CLASS_FWD(PathNVCommand, GLenum)
+OGLPLUS_ENUM_CLASS_FWD(PathNVCommand, GLubyte)
 #include <oglplus/enums/ext/nv_path_command_names.ipp>
 
 OGLPLUS_ENUM_CLASS_FWD(PathNVDashOffsetReset, GLenum)
@@ -332,3 +345,4 @@ OGLPLUS_ENUM_CLASS_FWD(ResetNotificationStrategyARB, GLenum)
 #include <oglplus/enums/ext/reset_notif_strategy_names.ipp>
 
 #endif
+

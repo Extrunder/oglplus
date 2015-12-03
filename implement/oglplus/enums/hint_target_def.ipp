@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/hint_target.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_LINE_SMOOTH_HINT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined LineSmooth
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_POLYGON_SMOOTH_HINT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined PolygonSmooth
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_TEXTURE_COMPRESSION_HINT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined TextureCompression
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined GL_FRAGMENT_SHADER_DERIVATIVE_HINT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined FragmentShaderDerivative

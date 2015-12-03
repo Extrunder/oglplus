@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -60,10 +60,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteTransformFeedbacks);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsTransformFeedback)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsTransformFeedback)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsTransformFeedback);
 		return result;
 	}
@@ -270,8 +272,58 @@ class ObjCommonOps<tag::TransformFeedback>
 #endif
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(TransformFeedbackName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : TransformFeedbackName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef TransformFeedbackName _base1;
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
+	typedef ObjBindingOps<tag::TransformFeedback> _base2;
+#endif
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
+	 , _base2(static_cast<_base2&&>(temp))
+#endif
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
+	 , _base2(static_cast<const _base2&>(that))
+#endif
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
+		_base2::operator = (static_cast<_base2&&>(temp));
+#endif
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
+		_base2::operator = (static_cast<const _base2&>(that));
+#endif
+		return *this;
+	}
+#endif
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
 	using ObjBindingOps<tag::TransformFeedback>::Bind;
 
@@ -387,17 +439,6 @@ typedef ObjectZero<ObjZeroOps<tag::ImplicitSel, tag::TransformFeedback>>
 #endif // GL_VERSION_3_0
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_0 || GL_ARB_transform_feedback2
-
-/// Class wrapping transform feedback functions
-/** @note Do not use this class directly, use TransformFeedback instead.
- */
-template <typename OpsTag>
-class ObjectOps<OpsTag, tag::TransformFeedback>
- : public ObjZeroOps<OpsTag, tag::TransformFeedback>
-{
-protected:
-	ObjectOps(void){ }
-};
 
 /// TransformFeedback operations with explicit selector
 typedef ObjectOps<tag::ImplicitSel, tag::TransformFeedback>

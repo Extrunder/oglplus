@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -17,9 +17,12 @@
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/object/array.hpp>
 #include <oglplus/error/program.hpp>
+#include <oglplus/error/outcome.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/precision_type.hpp>
 #include <oglplus/shader_type.hpp>
 #include <oglplus/glsl_source.hpp>
+#include <oglplus/size_type.hpp>
 
 #include <array>
 #include <vector>
@@ -66,10 +69,12 @@ protected:
 		}
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsShader)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsShader)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsShader);
 		return result;
 	}
@@ -89,8 +94,44 @@ class ObjCommonOps<tag::Shader>
  : public ShaderName
 {
 protected:
-	ObjCommonOps(void) { }
+	ObjCommonOps(ShaderName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ShaderName(name)
+	{ }
 
+public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef ShaderName _base;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 #if OGLPLUS_DOCUMENTATION_ONLY || \
 	GL_ES_VERSION_3_0 || \
 	GL_VERSION_4_1 || \
@@ -124,11 +165,47 @@ protected:
  */
 template <>
 class ObjectOps<tag::DirectState, tag::Shader>
- : public ObjCommonOps<tag::Shader>
+ : public ObjZeroOps<tag::DirectState, tag::Shader>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(ShaderName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::Shader>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::Shader> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
+
 	/// Types related to Shader
 	struct Property
 	{
@@ -146,7 +223,7 @@ public:
 	{
 		GLint result = 0;
 		OGLPLUS_GLFUNC(GetShaderiv)(
-			_name,
+			_obj_name(),
 			GL_SHADER_TYPE,
 			&result
 		);
@@ -164,14 +241,13 @@ public:
 	 *  @glfunref{ShaderSource}
 	 */
 	ObjectOps& Source(
-		const GLsizei count,
+		const SizeType count,
 		const GLchar* const * srcs,
 		const GLint* lens
 	)
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(ShaderSource)(
-			_name,
+			_obj_name(),
 			count,
 			const_cast<const GLchar**>(srcs),
 			lens
@@ -228,18 +304,21 @@ public:
 	 *  @glfunref{GetShader}
 	 *  @gldefref{COMPILE_STATUS}
 	 */
-	bool IsCompiled(void) const
+	Boolean IsCompiled(void) const
 	{
-		assert(_name != 0);
-		int status;
-		OGLPLUS_GLFUNC(GetShaderiv)(_name, GL_COMPILE_STATUS, &status);
+		Boolean status;
+		OGLPLUS_GLFUNC(GetShaderiv)(
+			_obj_name(),
+			GL_COMPILE_STATUS,
+			status._ptr()
+		);
 		OGLPLUS_VERIFY(
 			GetShaderiv,
 			ObjectError,
 			Object(*this).
 			EnumParam(Type())
 		);
-		return status == GL_TRUE;
+		return status;
 	}
 
 	/// Returns the compiler output if the program is compiled
@@ -264,6 +343,7 @@ public:
 	 */
 	ObjectOps& Compile(void);
 
+	Outcome<ObjectOps&> Compile(std::nothrow_t);
 
 #if OGLPLUS_DOCUMENTATION_ONLY || \
 	GL_ARB_shading_language_include
@@ -279,9 +359,16 @@ public:
 	 *  @glfunref{CompileShaderIncludeARB}
 	 */
 	ObjectOps& CompileInclude(
-		GLsizei count,
+		const SizeType count,
 		const GLchar* const* paths,
 		const GLint* lengths
+	);
+
+	Outcome<ObjectOps&> CompileInclude(
+		const SizeType count,
+		const GLchar* const* paths,
+		const GLint* lengths,
+		std::nothrow_t
 	);
 
 	/// Compiles the shader using the specified include paths
@@ -303,6 +390,16 @@ public:
 		);
 	}
 
+	Outcome<ObjectOps&> CompileInclude(GLSLString&& incl, std::nothrow_t)
+	{
+		return CompileInclude(
+			incl.Count(),
+			incl.Parts(),
+			incl.Lengths(),
+			std::nothrow
+		);
+	}
+
 	ObjectOps& CompileInclude(GLSLStrings&& incl)
 	{
 		return CompileInclude(
@@ -312,12 +409,32 @@ public:
 		);
 	}
 
+	Outcome<ObjectOps&> CompileInclude(GLSLStrings&& incl, std::nothrow_t)
+	{
+		return CompileInclude(
+			incl.Count(),
+			incl.Parts(),
+			incl.Lengths(),
+			std::nothrow
+		);
+	}
+
 	ObjectOps& CompileInclude(const GLSLSource& incl)
 	{
 		return CompileInclude(
 			incl.Count(),
 			incl.Parts(),
 			incl.Lengths()
+		);
+	}
+
+	Outcome<ObjectOps&> CompileInclude(const GLSLSource& incl, std::nothrow_t)
+	{
+		return CompileInclude(
+			incl.Count(),
+			incl.Parts(),
+			incl.Lengths(),
+			std::nothrow
 		);
 	}
 #endif
@@ -453,7 +570,9 @@ public:
 
 	Shader& operator = (Shader&& temp)
 	{
-		Object<ShaderOps>::operator = (std::move(temp));
+		Object<ShaderOps>::operator = (
+			static_cast<Object<ShaderOps>&&>(temp)
+		);
 		return *this;
 	}
 };
@@ -468,7 +587,7 @@ class Array<Shader>
  : public Array<ObjectOps<tag::DirectState, tag::Shader>>
 {
 public:
-	Array(GLsizei n, ShaderType type)
+	Array(BigSizeType n, ShaderType type)
 	 : Array<ObjectOps<tag::DirectState, tag::Shader>>(n, type)
 	{ }
 };
@@ -530,6 +649,12 @@ public:
 	SpecShader(SpecShader&& temp)
 	 : Shader(static_cast<Shader&&>(temp))
 	{ }
+
+	SpecShader& operator = (SpecShader&& temp)
+	{
+		Shader::operator = (static_cast<Shader&&>(temp));
+		return *this;
+	}
 };
 
 /// Vertex shader wrapper

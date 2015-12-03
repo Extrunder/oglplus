@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -18,13 +18,14 @@
 #include <oglplus/error/object.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/object/sequence.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/data_type.hpp>
 #include <oglplus/compare_function.hpp>
 #include <oglplus/texture_wrap.hpp>
 #include <oglplus/texture_compare.hpp>
 #include <oglplus/texture_filter.hpp>
 #include <oglplus/texture_unit.hpp>
-#include <cassert>
+#include <oglplus/assert.hpp>
 
 namespace oglplus {
 
@@ -66,10 +67,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteSamplers);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsSampler)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsSampler)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsSampler);
 		return result;
 	}
@@ -79,8 +82,6 @@ protected:
 template <>
 class ObjBindingOps<tag::Sampler>
 {
-private:
-	static GLenum _binding_query(TextureUnitSelector target);
 protected:
 	static GLuint _binding(TextureUnitSelector target);
 public:
@@ -162,8 +163,48 @@ class ObjCommonOps<tag::Sampler>
  , public ObjBindingOps<tag::Sampler>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(SamplerName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : SamplerName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef SamplerName _base1;
+	typedef ObjBindingOps<tag::Sampler> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	using ObjBindingOps<tag::Sampler>::Bind;
 
 	/// Binds this sampler to the specified @p target (texture unit)
@@ -185,13 +226,48 @@ class ObjectOps<tag::DirectState, tag::Sampler>
  : public ObjZeroOps<tag::DirectState, tag::Sampler>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(SamplerName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::Sampler>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::Sampler> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	GLint GetIntParam(GLenum query) const
 	{
 		GLint result = 0;
 		OGLPLUS_GLFUNC(GetSamplerParameteriv)(
-			_name,
+			_obj_name(),
 			query,
 			&result
 		);
@@ -208,7 +284,7 @@ public:
 	{
 		GLfloat result = 0;
 		OGLPLUS_GLFUNC(GetSamplerParameterfv)(
-			_name,
+			_obj_name(),
 			query,
 			&result
 		);
@@ -231,7 +307,7 @@ public:
 	{
 		GLfloat result[4];
 		OGLPLUS_GLFUNC(GetSamplerParameterfv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			result
 		);
@@ -252,7 +328,7 @@ public:
 	void BorderColor(Vector<GLfloat, 4> color)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterfv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			Data(color)
 		);
@@ -273,7 +349,7 @@ public:
 	{
 		GLint result[4];
 		OGLPLUS_GLFUNC(GetSamplerParameterIiv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			result
 		);
@@ -294,7 +370,7 @@ public:
 	void BorderColor(Vector<GLint, 4> color)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterIiv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			Data(color)
 		);
@@ -315,7 +391,7 @@ public:
 	{
 		GLuint result[4];
 		OGLPLUS_GLFUNC(GetSamplerParameterIuiv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			result
 		);
@@ -336,7 +412,7 @@ public:
 	void BorderColor(Vector<GLuint, 4> color)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterIuiv)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_BORDER_COLOR,
 			Data(color)
 		);
@@ -369,9 +445,9 @@ public:
 	void CompareMode(TextureCompareMode mode)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_COMPARE_MODE,
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -403,9 +479,9 @@ public:
 	void CompareFunc(CompareFunction func)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_COMPARE_FUNC,
-			GLenum(func)
+			GLint(func)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -435,7 +511,7 @@ public:
 	void LODBias(GLfloat value)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterf)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_LOD_BIAS,
 			value
 		);
@@ -456,9 +532,9 @@ public:
 	void Filter(TextureFilter filter) const
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MIN_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -467,9 +543,9 @@ public:
 			EnumParam(filter)
 		);
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MAG_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -501,9 +577,9 @@ public:
 	void MagFilter(TextureMagFilter filter)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MAG_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -535,9 +611,9 @@ public:
 	void MinFilter(TextureMinFilter filter)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MIN_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -567,7 +643,7 @@ public:
 	void MinLOD(GLfloat value)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterf)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MIN_LOD,
 			value
 		);
@@ -598,7 +674,7 @@ public:
 	void MaxLOD(GLfloat value)
 	{
 		OGLPLUS_GLFUNC(SamplerParameterf)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_MAX_LOD,
 			value
 		);
@@ -627,9 +703,9 @@ public:
 	void Wrap(TextureWrapCoord coord, TextureWrap mode)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GLenum(coord),
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -712,9 +788,12 @@ public:
 	 *  @glfunref{GetSamplerParameter}
 	 *  @gldefref{TEXTURE_CUBE_MAP_SEAMLESS}
 	 */
-	bool Seamless(void) const
+	Boolean Seamless(void) const
 	{
-		return GetIntParam(GL_TEXTURE_CUBE_MAP_SEAMLESS) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_TEXTURE_CUBE_MAP_SEAMLESS),
+			std::nothrow
+		);
 	}
 
 	/// Sets the seamless cubemap setting
@@ -723,12 +802,12 @@ public:
 	 *  @glfunref{SamplerParameter}
 	 *  @gldefref{TEXTURE_CUBE_MAP_SEAMLESS}
 	 */
-	void Seamless(bool enable)
+	void Seamless(Boolean enable)
 	{
 		OGLPLUS_GLFUNC(SamplerParameteri)(
-			_name,
+			_obj_name(),
 			GL_TEXTURE_CUBE_MAP_SEAMLESS,
-			enable?GL_TRUE:GL_FALSE
+			enable._get()
 		);
 		OGLPLUS_CHECK(
 			SamplerParameteri,
@@ -758,7 +837,7 @@ struct SamplerOpsAndSlot
 // syntax sugar operators
 inline SamplerOpsAndSlot operator | (
 	SamplerOps& sam,
-	GLuint slot
+	GLint slot
 )
 {
 	return SamplerOpsAndSlot(sam, slot);
@@ -847,7 +926,7 @@ inline SamplerOps& operator << (
 		case 0: sas.sam.WrapS(wrap); break;
 		case 1: sas.sam.WrapT(wrap); break;
 		case 2: sas.sam.WrapR(wrap); break;
-		default: assert(!"Invalid texture wrap slot");
+		default: OGLPLUS_ABORT("Invalid texture wrap slot");
 	}
 	return sas.sam;
 }
@@ -879,5 +958,9 @@ typedef Object<SamplerOps> Sampler;
 #endif // sampler object
 
 } // namespace oglplus
+
+#if !OGLPLUS_LINK_LIBRARY || defined(OGLPLUS_IMPLEMENTING_LIBRARY)
+#include <oglplus/sampler.ipp>
+#endif // OGLPLUS_LINK_LIBRARY
 
 #endif // include guard

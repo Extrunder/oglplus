@@ -4,15 +4,14 @@
 //  Edit the source 'source/enums/oglplus/ext/nv_path_metric_query.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 //[oglplus_enums_ext_nv_path_metric_query
-namespace oglplus {
 
-enum class PathNVMetricQuery : GLenum
+enum class PathNVMetricQuery : GLbitfield
 {
 	GlyphWidth                    = GL_GLYPH_WIDTH_BIT_NV,
 	GlyphHeight                   = GL_GLYPH_HEIGHT_BIT_NV,
@@ -43,5 +42,6 @@ __Range<PathNVMetricQuery> __EnumValueRange<PathNVMetricQuery>(void);
 
 __StrCRef __EnumValueName(PathNVMetricQuery);
 
-} // namespace oglplus
+__Bitfield<PathNVMetricQuery> operator | (PathNVMetricQuery b1, PathNVMetricQuery b2);
+
 //]

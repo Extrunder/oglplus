@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -14,10 +14,12 @@
 #define OGLPLUS_ERROR_BASIC_1107121317_HPP
 
 #include <oglplus/config/error.hpp>
+#include <oglplus/config/compiler.hpp>
 #include <oglplus/error/code.hpp>
 #include <oglplus/string/def.hpp>
 #include <oglplus/string/ref.hpp>
 #include <oglplus/string/empty.hpp>
+#include <oglplus/size_type.hpp>
 #include <stdexcept>
 #include <cassert>
 
@@ -74,7 +76,44 @@ public:
 
 	Error(const char* message);
 
-	~Error(void) throw() { }
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	Error(const Error& that)
+	 : std::runtime_error(that)
+	 , _code(that._code)
+#if !OGLPLUS_ERROR_NO_FILE
+	 , _file(that._file)
+#endif
+#if !OGLPLUS_ERROR_NO_FUNC
+	 , _func(that._func)
+#endif
+#if !OGLPLUS_ERROR_NO_LINE
+	 , _line(that._line)
+#endif
+
+#if !OGLPLUS_ERROR_NO_GL_LIB
+	 , _gllib_name(that._gllib_name)
+#endif
+
+#if !OGLPLUS_ERROR_NO_GL_FUNC
+	 , _glfunc_name(that._glfunc_name)
+#endif
+
+#if !OGLPLUS_ERROR_NO_GL_SYMBOL
+	 , _enumpar_name(that._enumpar_name)
+	 , _enumpar(that._enumpar)
+	 , _index(that._index)
+#endif
+	{ }
+#else
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	Error(const Error&) = default;
+	Error& operator = (const Error&) = default;
+#endif
+#endif
+
+	~Error(void)
+	OGLPLUS_NOTHROW
+	{ }
 
 	Error& NoInfo(void) { return *this; }
 
@@ -216,7 +255,7 @@ public:
 	 */
 	const char* EnumParamName(void) const;
 
-	Error& Index(GLuint index)
+	Error& Index(SizeType index)
 	{
 #if !OGLPLUS_ERROR_NO_GL_SYMBOL
 		_index = GLint(index);
@@ -354,36 +393,121 @@ inline void HandleError(ErrorType& error)
 	using SOURCE::_errinf_glfn; \
 	using SOURCE::_errinf_cls;
 
+
 // Macro for generic error handling
-#define OGLPLUS_HANDLE_ERROR_IF(\
-	CONDITION,\
+#define OGLPLUS_HANDLE_ERROR(\
 	ERROR_CODE,\
 	MESSAGE,\
 	ERROR,\
 	ERROR_INFO\
 )\
 {\
-	GLenum error_code = ERROR_CODE;\
-	if(CONDITION)\
-	{\
-		ERROR error(MESSAGE);\
-		(void)error\
-			.ERROR_INFO\
-			.SourceFile(__FILE__)\
-			.SourceFunc(__FUNCTION__)\
-			.SourceLine(__LINE__)\
-			.Code(error_code);\
-		HandleError(error);\
-	}\
+	ERROR error(MESSAGE);\
+	(void)error\
+		.ERROR_INFO\
+		.SourceFile(__FILE__)\
+		.SourceFunc(__FUNCTION__)\
+		.SourceLine(__LINE__)\
+		.Code(error_code);\
+	HandleError(error);\
 }
 
-#define OGLPLUS_GLFUNC_CHECK(FUNC_NAME, ERROR, ERROR_INFO)\
-	OGLPLUS_HANDLE_ERROR_IF(\
+#define OGLPLUS_RETURN_HANDLER(\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO\
+)\
+{\
+	return DeferredHandler([=](void) -> void\
+	{\
+		OGLPLUS_HANDLE_ERROR(\
+			ERROR_CODE,\
+			MESSAGE,\
+			ERROR,\
+			ERROR_INFO\
+		);\
+	});\
+}
+
+// Macro for optional generic error handling
+#define OGLPLUS_HANDLE_ERROR_WITH_HANDLER_IF(\
+	CONDITION,\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO,\
+	HANDLER_MACRO\
+)\
+{\
+	GLenum error_code = ERROR_CODE;\
+	if(CONDITION)\
+		HANDLER_MACRO(\
+			error_code,\
+			MESSAGE,\
+			ERROR,\
+			ERROR_INFO\
+		)\
+}
+
+#define OGLPLUS_HANDLE_ERROR_IF(\
+	CONDITION,\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO\
+) OGLPLUS_HANDLE_ERROR_WITH_HANDLER_IF(\
+	CONDITION,\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO,\
+	OGLPLUS_HANDLE_ERROR\
+)
+
+#define OGLPLUS_RETURN_HANDLER_IF(\
+	CONDITION,\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO\
+) OGLPLUS_HANDLE_ERROR_WITH_HANDLER_IF(\
+	CONDITION,\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO,\
+	OGLPLUS_RETURN_HANDLER\
+)
+
+#define OGLPLUS_GLFUNC_CHECK_WITH_HANDLER(\
+	FUNC_NAME,\
+	ERROR,\
+	ERROR_INFO,\
+	HANDLER_MACRO\
+) OGLPLUS_HANDLE_ERROR_WITH_HANDLER_IF(\
 		error_code != GL_NO_ERROR,\
 		glGetError(),\
 		ERROR::Message(error_code),\
 		ERROR,\
-		ERROR_INFO.GLFunc(FUNC_NAME)\
+		ERROR_INFO.GLFunc(FUNC_NAME),\
+		HANDLER_MACRO\
+	)
+
+#define OGLPLUS_GLFUNC_CHECK(FUNC_NAME, ERROR, ERROR_INFO)\
+	OGLPLUS_GLFUNC_CHECK_WITH_HANDLER(\
+		FUNC_NAME,\
+		ERROR,\
+		ERROR_INFO,\
+		OGLPLUS_HANDLE_ERROR\
+	)
+
+#define OGLPLUS_RETURN_GLFUNC_CHECK_HANDLER(FUNC_NAME, ERROR, ERROR_INFO)\
+	OGLPLUS_GLFUNC_CHECK_WITH_HANDLER(\
+		FUNC_NAME,\
+		ERROR,\
+		ERROR_INFO,\
+		OGLPLUS_RETURN_HANDLER\
 	)
 
 #define OGLPLUS_CHECK(GLFUNC, ERROR, ERROR_INFO) \
@@ -396,16 +520,19 @@ inline void HandleError(ErrorType& error)
 	OGLPLUS_CHECK(GLFUNC, Error, NoInfo())
 
 #if !OGLPLUS_LOW_PROFILE
-#define OGLPLUS_VERIFY(GLFUNC, ERROR, ERROR_INFO) \
+# define OGLPLUS_VERIFY(GLFUNC, ERROR, ERROR_INFO) \
 	OGLPLUS_CHECK(GLFUNC, ERROR, ERROR_INFO)
 #else
-#define OGLPLUS_VERIFY(GLFUNC, ERROR, ERROR_INFO)
+# define OGLPLUS_VERIFY(GLFUNC, ERROR, ERROR_INFO)
 #endif
 
 #define OGLPLUS_VERIFY_SIMPLE(GLFUNC) \
 	OGLPLUS_CHECK(GLFUNC, Error, NoInfo())
 
 #define OGLPLUS_IGNORE(PARAM) ::glGetError();
+
+#define OGLPLUS_DEFERRED_CHECK(GLFUNC, ERROR, ERROR_INFO) \
+	OGLPLUS_GLFUNC_CHECK(#GLFUNC, ERROR, ERROR_INFO)
 
 } // namespace oglplus
 

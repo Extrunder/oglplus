@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{028_volume}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -37,7 +37,7 @@ public:
 	VolumeVertShader(void)
 	 : VertexShader(
 		ObjectDesc("Volume vertex shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform sampler3D VolumeTex;"
 		"uniform float Threshold;"
 		"uniform float GridStep;"
@@ -74,7 +74,7 @@ public:
 	VolumeGeomShader(void)
 	 : GeometryShader(
 		ObjectDesc("Volume geometry shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"layout(triangles_adjacency) in;"
 		"layout(triangle_strip, max_vertices = 4) out;"
 
@@ -86,7 +86,7 @@ public:
 
 		"out vec3 geomNormal, geomLightDir, geomViewDir;"
 
-		"void do_nothing(void){ };"
+		"void do_nothing(void){ }"
 
 		"float find_t(int i1, int i2)"
 		"{"
@@ -215,7 +215,7 @@ public:
 	VolumeFragShader(void)
 	 : FragmentShader(
 		ObjectDesc("Volume fragment shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 
 		"in vec3 geomNormal, geomLightDir, geomViewDir;"
 
@@ -320,9 +320,9 @@ public:
 		grid_indices.clear();
 	}
 
-	double Step(void) const
+	float Step(void) const
 	{
-		return 1.0 / grid_div;
+		return 1.0f / grid_div;
 	}
 
 	void Use(void)
@@ -362,12 +362,9 @@ public:
 		Texture::Active(0);
 		volume_prog.volume_tex = 0;
 		gl.Bound(Texture::Target::_3D, volume_tex)
-			.MinFilter(TextureMinFilter::Linear)
-			.MagFilter(TextureMagFilter::Linear)
+			.Filter(TextureFilter::Linear)
 			.BorderColor(Vec4f(0.0f, 0.0f, 0.0f, 0.0f))
-			.WrapS(TextureWrap::ClampToBorder)
-			.WrapT(TextureWrap::ClampToBorder)
-			.WrapR(TextureWrap::ClampToBorder)
+			.Wrap(TextureWrap::ClampToBorder)
 			.Image3D(
 				images::Cloud(
 					128, 128, 128,
@@ -400,13 +397,13 @@ public:
 
 		Mat4f perspective = CamMatrixf::PerspectiveX(
 			Degrees(65),
-			double(width)/height,
+			width, height,
 			1, 30
 		);
 
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(0, 0, 0),
-			2.0 - SineWave(time / 14.0) * 0.2,
+			GLfloat(2.0 - SineWave(time / 14.0) * 0.2),
 			FullCircles(time / 19.0),
 			Degrees(45 + SineWave(time / 17.0) * 40)
 		);
@@ -416,7 +413,7 @@ public:
 
 		volume_prog.camera_position = camera_position;
 		volume_prog.transform_matrix = perspective*camera*model;
-		volume_prog.threshold = 0.5 + SineWave(time / 7.0) * 0.4;
+		volume_prog.threshold = GLfloat(0.5 + SineWave(time / 7.0) * 0.4);
 
 		grid.Draw();
 	}

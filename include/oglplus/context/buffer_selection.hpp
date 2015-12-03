@@ -3,7 +3,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -15,6 +15,7 @@
 #include <oglplus/glfunc.hpp>
 #include <oglplus/color_buffer.hpp>
 #include <oglplus/framebuffer_attachment.hpp>
+#include <oglplus/size_type.hpp>
 #include <oglplus/one_of.hpp>
 
 namespace oglplus {
@@ -56,13 +57,13 @@ public:
 	static void DrawBuffers(const EnumArray<ColorBuffer>& buffers)
 	{
 		OGLPLUS_GLFUNC(DrawBuffers)(
-			buffers.Count(),
+			GLsizei(buffers.Count()),
 			buffers.Values()
 		);
 		OGLPLUS_VERIFY_SIMPLE(DrawBuffers);
 	}
 
-	static void DrawBuffers(GLsizei count, const ColorBuffer* buffers)
+	static void DrawBuffers(SizeType count, const ColorBuffer* buffers)
 	{
 		DrawBuffers(oglplus::EnumArray<ColorBuffer>(count, buffers));
 	}

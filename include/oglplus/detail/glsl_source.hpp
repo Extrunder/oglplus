@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -52,16 +52,19 @@ public:
 	}
 
 	GLsizei Count(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return GLsizei(1);
 	}
 
 	const GLchar* const* Parts(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return &_ptr;
 	}
 
 	const GLint* Lengths(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return &_size;
 	}
@@ -80,16 +83,19 @@ public:
 	);
 
 	GLsizei Count(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return GLsizei(_ptrs.size());
 	}
 
 	const GLchar* const* Parts(void) const
+	OGLPLUS_OVERRIDE
 	{
         return &_ptrs.front();
 	}
 
 	const GLint* Lengths(void) const
+	OGLPLUS_OVERRIDE
 	{
         return &_sizes.front();
 	}
@@ -120,16 +126,19 @@ public:
 	}
 
 	GLsizei Count(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return GLsizei(1);
 	}
 
 	const GLchar* const* Parts(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return &_ptr;
 	}
 
 	const GLint* Lengths(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return &_size;
 	}
@@ -153,16 +162,19 @@ public:
 	StrsGLSLSrcWrap(std::vector<String>&& storage);
 
 	GLsizei Count(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return GLsizei(_storage.size());
 	}
 
 	const GLchar* const* Parts(void) const
+	OGLPLUS_OVERRIDE
 	{
         return &_ptrs.front();
 	}
 
 	const GLint* Lengths(void) const
+	OGLPLUS_OVERRIDE
 	{
         return &_sizes.front();
 	}
@@ -176,22 +188,25 @@ private:
 	GLchar* _pdata;
 	GLint _size;
 
-	static GLint _check_and_get_size(std::istream& in);
+	static std::size_t _check_and_get_size(std::istream& in);
 	static std::vector<GLchar> _read_data(std::istream&, std::size_t);
 public:
 	InputStreamGLSLSrcWrap(std::istream& input);
 
 	GLsizei Count(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return GLsizei(1);
 	}
 
 	const GLchar* const* Parts(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return const_cast<const GLchar**>(&_pdata);
 	}
 
 	const GLint* Lengths(void) const
+	OGLPLUS_OVERRIDE
 	{
 		return &_size;
 	}

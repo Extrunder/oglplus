@@ -2,7 +2,7 @@
  *  @example standalone/004_any_text_rendering.cpp
  *  @brief Shows the usage of OGLplus' text rendering utilities
  *
- *  Copyright 2008-2013 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -46,13 +46,17 @@ public:
 	 , tr(oglplus::text::STBTrueTypeRendering(0, 1, 2))
 	 , font(tr.LoadFont((argc>1)?argv[1]:"FreeSans"))
 	 , oglp_layout(tr.MakeLayout(font, "OGLplus"))
+#if !OGLPLUS_NO_UNICODE_LITERALS
 	 , desc_layout(tr.MakeLayout(font, u8"a C++ wrapper for OpenGL©"))
+#else
+	 , desc_layout(tr.MakeLayout(font, "a C++ wrapper for OpenGL(c)"))
+#endif
 	 , time_layout(tr.MakeLayout(font, 25))
 	 , rndr(tr.GetRenderer(
 			oglplus::FragmentShader(
 				oglplus::ObjectDesc("Pixel color"),
 				oglplus::StrCRef(
-				"#version 330\n"
+				"#version 140\n"
 				"vec4 PixelColor("
 				"	vec4 TexelColor,"
 				"	vec3 GlyphPosition,"
@@ -128,7 +132,7 @@ public:
 		rndr.SetCamera(
 			CamMatrixf::Orbiting(
 				Vec3f(),
-				9.0 + SineWave(t / 7.0)*3.0,
+				GLfloat(9.0 + SineWave(t / 7.0)*3.0),
 				-FullCircles(t / 17.0),
 				Degrees(SineWave(t / 21.0) * 35)
 			)

@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{018_stained_glass_cube}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -65,14 +65,14 @@ public:
 	{
 		// Set the vertex shader source
 		vs.Source(
-			"#version 330\n"
+			"#version 120\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix, ModelMatrix;"
-			"in vec4 Position;"
-			"in vec3 Normal;"
-			"in vec2 TexCoord;"
-			"out vec3 vertNormal;"
-			"out vec3 vertLight;"
-			"out vec2 vertTexCoord;"
+			"attribute vec4 Position;"
+			"attribute vec3 Normal;"
+			"attribute vec2 TexCoord;"
+			"varying vec3 vertNormal;"
+			"varying vec3 vertLight;"
+			"varying vec2 vertTexCoord;"
 			"uniform vec3 LightPos;"
 			"void main(void)"
 			"{"
@@ -88,20 +88,19 @@ public:
 
 		// set the fragment shader source
 		fs.Source(
-			"#version 330\n"
+			"#version 120\n"
 			"uniform sampler2D TexUnit;"
-			"in vec3 vertNormal;"
-			"in vec3 vertLight;"
-			"in vec2 vertTexCoord;"
-			"out vec4 fragColor;"
+			"varying vec3 vertNormal;"
+			"varying vec3 vertLight;"
+			"varying vec2 vertTexCoord;"
 			"void main(void)"
 			"{"
 			"	float l = length(vertLight);"
 			"	float d = l != 0.0 ? dot(vertNormal, normalize(vertLight))/l : 0.0;"
 			"	float e = (d < 0? -0.7*d: d) * 3.0;"
 			"	float i = 0.1 + e;"
-			"	vec4 t  = texture(TexUnit, vertTexCoord);"
-			"	fragColor = vec4(t.rgb*i, t.a);"
+			"	vec4 t  = texture2D(TexUnit, vertTexCoord);"
+			"	gl_FragColor = vec4(t.rgb*i, t.a);"
 			"}"
 		);
 		// compile it
@@ -179,7 +178,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				float(width)/height,
 				1, 20
 			)
 		);
@@ -193,7 +192,7 @@ public:
 		camera_matrix.Set(
 			CamMatrixf::Orbiting(
 				Vec3f(),
-				6.0 - SineWave(time / 6.0) * 3.0,
+				GLfloat(6.0 - SineWave(time / 6.0) * 3.0),
 				FullCircles(time * 0.7),
 				Degrees(SineWave(time / 30.0) * 90)
 			)

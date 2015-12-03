@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -55,7 +55,7 @@ public:
 			_index
 		);
 		OGLPLUS_VERIFY_SIMPLE(GetStringi);
-		return StrCRef((const GLchar*)result);
+		return StrCRef(reinterpret_cast<const char*>(result));
 	}
 
 	void Next(void)
@@ -160,7 +160,9 @@ public:
 	 */
 	static const char* Vendor(void)
 	{
-		return (const char*)GetString(StringQuery::Vendor);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Vendor)
+		);
 	}
 
 	/// Returns the version string
@@ -171,7 +173,9 @@ public:
 	 */
 	static const char* Version(void)
 	{
-		return (const char*)GetString(StringQuery::Version);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Version)
+		);
 	}
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3
@@ -246,7 +250,9 @@ public:
 	 */
 	static const char* ShadingLanguageVersion(void)
 	{
-		return (const char*)GetString(StringQuery::ShadingLanguageVersion);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::ShadingLanguageVersion)
+		);
 	}
 
 	/// Returns the renderer name
@@ -257,7 +263,9 @@ public:
 	 */
 	static const char* Renderer(void)
 	{
-		return (const char*)GetString(StringQuery::Renderer);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Renderer)
+		);
 	}
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_0 || GL_ES_VERSION_3_0

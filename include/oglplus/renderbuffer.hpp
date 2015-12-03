@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -17,6 +17,7 @@
 #include <oglplus/error/object.hpp>
 #include <oglplus/renderbuffer_target.hpp>
 #include <oglplus/pixel_data.hpp>
+#include <oglplus/size_type.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/images/fwd.hpp>
 #include <cassert>
@@ -57,10 +58,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteRenderbuffers);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsRenderbuffer)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsRenderbuffer)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsRenderbuffer);
 		return result;
 	}
@@ -121,8 +124,48 @@ class ObjCommonOps<tag::Renderbuffer>
  , public ObjBindingOps<tag::Renderbuffer>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(RenderbufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : RenderbufferName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef RenderbufferName _base1;
+	typedef ObjBindingOps<tag::Renderbuffer> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	using ObjBindingOps<tag::Renderbuffer>::Bind;
 
 	/// Binds this renderbuffer to the specified @p target
@@ -144,8 +187,43 @@ class ObjectOps<tag::ExplicitSel, tag::Renderbuffer>
  : public ObjZeroOps<tag::ExplicitSel, tag::Renderbuffer>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(RenderbufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::ExplicitSel, tag::Renderbuffer>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::ExplicitSel, tag::Renderbuffer> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	static GLint GetIntParam(Target target, GLenum query);
 
 	/// Set the renderbuffer storage parameters for the rbo bound to target
@@ -156,8 +234,8 @@ public:
 	static void Storage(
 		Target target,
 		PixelDataInternalFormat internalformat,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(RenderbufferStorage)(
@@ -189,10 +267,10 @@ public:
 	 */
 	static void StorageMultisample(
 		Target target,
-		GLsizei samples,
+		SizeType samples,
 		PixelDataInternalFormat internalformat,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(RenderbufferStorageMultisample)(
@@ -220,9 +298,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_WIDTH}
 	 */
-	static GLsizei Width(Target target)
+	static SizeType Width(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_WIDTH));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_WIDTH),
+			std::nothrow
+		);
 	}
 
 	/// Returns the height of the renderbuffer as it was specified by Storage*
@@ -233,9 +314,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_HEIGHT}
 	 */
-	static GLsizei Height(Target target)
+	static SizeType Height(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_HEIGHT));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_HEIGHT),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's red component
@@ -248,9 +332,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_RED_SIZE}
 	 */
-	static GLsizei RedSize(Target target)
+	static SizeType RedSize(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_RED_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_RED_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's green component
@@ -265,9 +352,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_GREEN_SIZE}
 	 */
-	static GLsizei GreenSize(Target target)
+	static SizeType GreenSize(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_GREEN_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_GREEN_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's blue component
@@ -282,9 +372,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_BLUE_SIZE}
 	 */
-	static GLsizei BlueSize(Target target)
+	static SizeType BlueSize(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_BLUE_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_BLUE_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's alpha component
@@ -299,9 +392,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_ALPHA_SIZE}
 	 */
-	static GLsizei AlphaSize(Target target)
+	static SizeType AlphaSize(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_ALPHA_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_ALPHA_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's depth component
@@ -316,9 +412,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_DEPTH_SIZE}
 	 */
-	static GLsizei DepthSize(Target target)
+	static SizeType DepthSize(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_RENDERBUFFER_DEPTH_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_RENDERBUFFER_DEPTH_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's stencil component
@@ -333,9 +432,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_STENCIL_SIZE}
 	 */
-	static GLsizei StencilSize(Target target)
+	static SizeType StencilSize(Target target)
 	{
-		return GLsizei(GetIntParam(target,GL_RENDERBUFFER_STENCIL_SIZE));
+		return MakeSizeType(
+			GetIntParam(target,GL_RENDERBUFFER_STENCIL_SIZE),
+			std::nothrow
+		);
 	}
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
@@ -345,9 +447,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_SAMPLES}
 	 */
-	static GLsizei Samples(Target target)
+	static SizeType Samples(Target target)
 	{
-		return GLsizei(GetIntParam(target,GL_RENDERBUFFER_SAMPLES));
+		return MakeSizeType(
+			GetIntParam(target,GL_RENDERBUFFER_SAMPLES),
+			std::nothrow
+		);
 	}
 #endif
 

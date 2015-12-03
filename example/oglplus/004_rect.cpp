@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{004_rect}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -32,14 +32,16 @@ private:
 	// A vertex array object for the rendered rectangle
 	VertexArray rectangle;
 
-	// VBO for the rectangle's vertices
-	Buffer verts;
+	// VBO for the rectangle's vertex positions
+	Buffer positions, indices;
 public:
 	RectangleExample(void)
 	 : vs(ShaderType::Vertex)
 	 , fs(ShaderType::Fragment)
 	{
-		// Set the vertex shader source
+		// Try to set and compile the vertex shader source
+		// if that succeeded continue, otherwise compile
+		// the other shader source and require success
 		vs.Source(" \
 			#version 330\n \
 			in vec2 Position; \
@@ -49,11 +51,17 @@ public:
 				vertCoord = Position; \
 				gl_Position = vec4(Position, 0.0, 1.0); \
 			} \
-		");
-		// compile it
-		vs.Compile();
+		").Compile(std::nothrow).DoneWithoutError() || vs.Source(" \
+			#version 120\n \
+			attribute vec2 Position; \
+			varying vec2 vertCoord; \
+			void main(void) \
+			{ \
+				vertCoord = Position; \
+				gl_Position = vec4(Position, 0.0, 1.0); \
+			} \
+		").Compile(std::nothrow).Done();
 
-		// set the fragment shader source
 		fs.Source(" \
 			#version 330\n \
 			const float radius = 0.4; \
@@ -74,13 +82,29 @@ public:
 					1.0 \
 				); \
 			} \
-		");
-		// compile it
-		fs.Compile();
+		").Compile(std::nothrow).DoneWithoutError() || fs.Source("\
+			#version 120\n \
+			const float radius = 0.4; \
+			varying vec2 vertCoord; \
+			uniform vec2 RedCenter, GreenCenter, BlueCenter; \
+			void main(void) \
+			{ \
+				vec3 dist = vec3( \
+					distance(vertCoord, RedCenter), \
+					distance(vertCoord, GreenCenter), \
+					distance(vertCoord, BlueCenter) \
+				); \
+				gl_FragColor = vec4( \
+					dist.g < radius ? 1.0 : (2*radius - dist.g) / radius, \
+					dist.b < radius ? 1.0 : (2*radius - dist.b) / radius, \
+					dist.r < radius ? 1.0 : (2*radius - dist.r) / radius, \
+					1.0 \
+				); \
+			} \
+		").Compile(std::nothrow).Done();
 
 		// attach the shaders to the program
-		prog.AttachShader(vs);
-		prog.AttachShader(fs);
+		prog.AttachShaders(MakeGroup(vs, fs));
 		// link and use it
 		prog.Link();
 		prog.Use();
@@ -88,20 +112,27 @@ public:
 		// bind the VAO for the rectangle
 		rectangle.Bind();
 
-		GLfloat rectangle_verts[8] = {
+		GLfloat rectangle_positions[8] = {
 			-1.0f, -1.0f,
 			-1.0f,  1.0f,
 			 1.0f, -1.0f,
 			 1.0f,  1.0f
 		};
 		// bind the VBO for the rectangle vertices
-		verts.Bind(Buffer::Target::Array);
+		positions.Bind(Buffer::Target::Array);
 		// upload the data
-		Buffer::Data(Buffer::Target::Array, 8, rectangle_verts);
+		Buffer::Data(Buffer::Target::Array, 8, rectangle_positions);
 		// setup the vertex attribs array for the vertices
 		VertexArrayAttrib vert_attr(prog, "Position");
 		vert_attr.Setup<GLfloat>(2);
 		vert_attr.Enable();
+
+		GLuint rectangle_indices[4] = {
+			0, 1, 2, 3
+		};
+		indices.Bind(Buffer::Target::ElementArray);
+		Buffer::Data(Buffer::Target::ElementArray, 4, rectangle_indices);
+
 		//
 		// Variables referencing the program's uniforms
 		Uniform<Vec2f>(prog,   "RedCenter").Set(Vec2f(-0.141f, 0.141f));
@@ -120,7 +151,11 @@ public:
 	{
 		gl.Clear().ColorBuffer();
 
-		gl.DrawArrays(PrimitiveType::TriangleStrip, 0, 4);
+		gl.DrawElements(
+			PrimitiveType::TriangleStrip,
+			4,
+			DataType::UnsignedInt
+		);
 	}
 };
 

@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -56,18 +56,20 @@ private:
 		{ }
 
 		_intf* _clone(void) const
+		OGLPLUS_OVERRIDE
 		{
 			return new _impl(_font);
 		}
 
 		const void* _addr(void)
+		OGLPLUS_OVERRIDE
 		{
 			return static_cast<void*>(&_font);
 		}
 
 		Rectangle GlyphLogicalMetrics(
 			CodePoint code_point
-		)
+		) OGLPLUS_OVERRIDE
 		{
 			return _font.GlyphLogicalMetrics(code_point);
 		}
@@ -76,7 +78,7 @@ private:
 			const CodePoint* cps,
 			GLsizei size,
 			std::vector<GLfloat>& x_offsets
-		)
+		) OGLPLUS_OVERRIDE
 		{
 			return _font.QueryXOffsets(cps, size, x_offsets);
 		}
@@ -114,17 +116,23 @@ public:
 
 	AnyFont& operator = (const AnyFont& that)
 	{
-		_intf* tmp = that._clone();
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp;
+		if(this != &that)
+		{
+			_intf* tmp = that._clone();
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp;
+		}
 		return *this;
 	}
 
 	AnyFont& operator = (AnyFont&& tmp)
 	{
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp._pimpl;
-		tmp._pimpl = nullptr;
+		if(this != &tmp)
+		{
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp._pimpl;
+			tmp._pimpl = nullptr;
+		}
 		return *this;
 	}
 
@@ -140,17 +148,17 @@ public:
 	Rectangle GlyphLogicalMetrics(CodePoint code_point)
 	{
 		assert(_pimpl);
-		_pimpl->GlyphLogicalMetrics(code_point);
+		return _pimpl->GlyphLogicalMetrics(code_point);
 	}
 
 	GLfloat QueryXOffsets(
 		const CodePoint* cps,
-		GLsizei size,
+		SizeType size,
 		std::vector<GLfloat>& x_offsets
 	)
 	{
 		assert(_pimpl);
-		_pimpl->QueryXOffsets(cps, size, x_offsets);
+		return _pimpl->QueryXOffsets(cps, size, x_offsets);
 	}
 };
 
@@ -185,16 +193,19 @@ private:
 		{ }
 
 		const void* _addr(void)
+		OGLPLUS_OVERRIDE
 		{
 			return static_cast<void*>(&_layout);
 		}
 
 		GLsizei Capacity(void) const
+		OGLPLUS_OVERRIDE
 		{
 			return _layout.Capacity();
 		}
 
 		GLfloat Width(void) const
+		OGLPLUS_OVERRIDE
 		{
 			return _layout.Width();
 		}
@@ -202,12 +213,13 @@ private:
 		void Set(
 			const CodePoint* code_points,
 			const GLsizei length
-		)
+		) OGLPLUS_OVERRIDE
 		{
 			_layout.Set(code_points, length);
 		}
 
 		void Set(StrCRef str)
+		OGLPLUS_OVERRIDE
 		{
 			_layout.Set(str);
 		}
@@ -239,9 +251,12 @@ public:
 
 	AnyLayout& operator = (AnyLayout&& tmp)
 	{
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp._pimpl;
-		tmp._pimpl = nullptr;
+		if(this != &tmp)
+		{
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp._pimpl;
+			tmp._pimpl = nullptr;
+		}
 		return *this;
 	}
 
@@ -254,10 +269,10 @@ public:
 		return *static_cast<const Layout*>(ptr);
 	}
 
-	GLsizei Capacity(void) const
+	SizeType Capacity(void) const
 	{
 		assert(_pimpl);
-		return _pimpl->Capacity();
+		return MakeSizeType(_pimpl->Capacity(), std::nothrow);
 	}
 
 	GLfloat Width(void) const
@@ -307,36 +322,43 @@ private:
 		{ }
 
 		void SetProjection(const Mat4f& projection_matrix)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.SetProjection(projection_matrix);
 		}
 
 		void SetCamera(const Mat4f& camera_matrix)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.SetCamera(camera_matrix);
 		}
 
 		void SetLayoutTransform(const Mat4f& layout_matrix)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.SetLayoutTransform(layout_matrix);
 		}
 
 		void SetAlignment(Alignment alignment)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.SetAlignment(alignment);
 		}
 
 		void SetDirection(Direction direction)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.SetDirection(direction);
 		}
 
 		void Use(void)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.Use();
 		}
 
 		void Render(const AnyLayout& layout)
+		OGLPLUS_OVERRIDE
 		{
 			_renderer.Render(layout.As<Layout>());
 		}
@@ -364,9 +386,12 @@ public:
 
 	AnyRenderer& operator = (AnyRenderer&& tmp)
 	{
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp._pimpl;
-		tmp._pimpl = nullptr;
+		if(this != &tmp)
+		{
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp._pimpl;
+			tmp._pimpl = nullptr;
+		}
 		return *this;
 	}
 
@@ -453,6 +478,7 @@ private:
 		{ }
 
 		AnyFont LoadFont(const char* font_name)
+		OGLPLUS_OVERRIDE
 		{
 			return AnyFont(_ru.LoadFont(font_name));
 		}
@@ -460,7 +486,7 @@ private:
 		AnyLayout MakeLayout(
 			const AnyFont& font,
 			GLsizei capacity
-		)
+		) OGLPLUS_OVERRIDE
 		{
 			return AnyLayout(
 				_ru.MakeLayout(
@@ -473,7 +499,7 @@ private:
 		AnyLayout MakeLayout(
 			const AnyFont& font,
 			StrCRef str
-		)
+		) OGLPLUS_OVERRIDE
 		{
 			return AnyLayout(
 				_ru.MakeLayout(
@@ -484,6 +510,7 @@ private:
 		}
 
 		AnyRenderer GetRenderer(const FragmentShader& shader)
+		OGLPLUS_OVERRIDE
 		{
 			return AnyRenderer(
 				_ru.GetRenderer(shader),

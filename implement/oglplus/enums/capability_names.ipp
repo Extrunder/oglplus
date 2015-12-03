@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/capability.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -97,6 +97,9 @@ switch(value)
 #endif
 #if defined GL_BLEND_ADVANCED_COHERENT_KHR
 	case GL_BLEND_ADVANCED_COHERENT_KHR: return StrCRef("BLEND_ADVANCED_COHERENT_KHR");
+#endif
+#if defined GL_FRAGMENT_COVERAGE_TO_COLOR_NV
+	case GL_FRAGMENT_COVERAGE_TO_COLOR_NV: return StrCRef("FRAGMENT_COVERAGE_TO_COLOR_NV");
 #endif
 	default:;
 }

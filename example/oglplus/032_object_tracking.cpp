@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{032_object_tracking}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -99,8 +99,6 @@ private:
 		return nml_data;
 	}
 	CubicBezierLoop<Vec3f, double> path_nml;
-
-	GLuint count;
 public:
 	Path(void)
 	 : path_pos(make_positions(), 0.25)
@@ -127,7 +125,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Track"));
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"layout (std140) uniform ModelBlock {"
 			"	mat4 ModelMatrices[64];"
@@ -149,7 +147,7 @@ private:
 
 		GeometryShader gs(ObjectDesc("Track"));
 		gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout(points) in;"
 			"layout(points, max_vertices = 1) out;"
 
@@ -208,7 +206,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Draw"));
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"layout (std140) uniform ModelBlock {"
 			"	mat4 ModelMatrices[64];"
@@ -236,7 +234,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Draw"));
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"in vec3 vertLightDir;"
 			"in vec3 vertNormal;"
@@ -278,7 +276,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Overlay"));
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform vec2 ScreenSize;"
 
@@ -296,7 +294,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Overlay"));
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform sampler2DRect Overlay;"
 
@@ -414,13 +412,13 @@ public:
 		std::string s = u8"⊗";
 
 		auto lt = font.MakeLayout(text::UTF8ToCodePoints(s.c_str(), s.size()));
-		int px = 30*pow(ndc_z, 8.0f);
+		int px = int(30*pow(ndc_z, 8.0f));
 
 		RenderText(
 			font,
 			lt,
-			sc_x-font.Width(px, lt)/2,
-			sc_y-font.Height(px, lt)/2,
+			GLint(sc_x-font.Width(px, lt)/2),
+			GLint(sc_y-font.Height(px, lt)/2),
 			px
 		);
 
@@ -432,9 +430,9 @@ public:
 		RenderText(
 			font,
 			font.MakeLayout(text::UTF8ToCodePoints(s.c_str(), s.size())),
-			sc_x+30-ndc_z*20,
-			sc_y-40+ndc_z*20,
-			40-20*ndc_z
+			GLint(sc_x+30-ndc_z*20),
+			GLint(sc_y-40+ndc_z*20),
+			GLuint(40-20*ndc_z)
 		);
 
 		ss.str(std::string());
@@ -446,8 +444,8 @@ public:
 		RenderText(
 			font,
 			font.MakeLayout(text::UTF8ToCodePoints(s.c_str(), s.size())),
-			sc_x+30-ndc_z*20,
-			sc_y+10-ndc_z*5,
+			GLint(sc_x+30-ndc_z*20),
+			GLint(sc_y+10-ndc_z*5),
 			12
 		);
 	}
@@ -714,7 +712,7 @@ public:
 		auto projection =
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				float(width)/height,
 				1, 1000
 			);
 

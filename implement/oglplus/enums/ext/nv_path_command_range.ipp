@@ -4,21 +4,21 @@
 //  Edit the source 'source/enums/oglplus/ext/nv_path_command.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 namespace enums {
 OGLPLUS_LIB_FUNC aux::CastIterRange<
-	const GLenum*,
+	const GLubyte*,
 	PathNVCommand
 > ValueRange_(PathNVCommand*)
 #if (!OGLPLUS_LINK_LIBRARY || defined(OGLPLUS_IMPLEMENTING_LIBRARY)) && \
 	!defined(OGLPLUS_IMPL_EVR_PATHNVCOMMAND)
 #define OGLPLUS_IMPL_EVR_PATHNVCOMMAND
 {
-static const GLenum _values[] = {
+static const GLubyte _values[] = {
 #if defined GL_CLOSE_PATH_NV
 GL_CLOSE_PATH_NV,
 #endif
@@ -124,7 +124,7 @@ GL_RELATIVE_ARC_TO_NV,
 0
 };
 return aux::CastIterRange<
-	const GLenum*,
+	const GLubyte*,
 	PathNVCommand
 >(_values, _values+sizeof(_values)/sizeof(_values[0])-1);
 }

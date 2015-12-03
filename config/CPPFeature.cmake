@@ -1,4 +1,4 @@
-#  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+#  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
 #  Software License, Version 1.0. (See accompanying file
 #  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
@@ -56,6 +56,7 @@ endfunction()
 
 require_cpp_feature(SCOPED_ENUMS)
 
+cpp_feature_detection(SCOPED_ENUM_TEMPLATE_PARAMS)
 cpp_feature_detection(VARIADIC_MACROS)
 cpp_feature_detection(VARIADIC_TEMPLATES)
 cpp_feature_detection(UNIFIED_INITIALIZATION_SYNTAX)
@@ -67,9 +68,11 @@ cpp_feature_detection(FUNCTION_TEMPLATE_DEFAULT_ARGS)
 cpp_feature_detection(UNICODE_LITERALS)
 cpp_feature_detection(USER_DEFINED_LITERALS)
 cpp_feature_detection(INHERITED_CONSTRUCTORS)
+cpp_feature_detection(GENERALIZED_ATTRIBUTES)
 cpp_feature_detection(TEMPLATE_ALIASES)
 cpp_feature_detection(CONSTEXPR)
 cpp_feature_detection(NOEXCEPT)
+cpp_feature_detection(OVERRIDE)
 cpp_feature_detection(LAMBDAS)
 cpp_feature_detection(CHRONO)
 cpp_feature_detection(THREADS)

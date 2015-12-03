@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -17,6 +17,7 @@
 #include <oglplus/error/object.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/object/sequence.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/buffer_binding.hpp>
 #include <oglplus/buffer_usage.hpp>
 #include <oglplus/buffer_storage_bit.hpp>
@@ -67,10 +68,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteBuffers);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsBuffer)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsBuffer)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsBuffer);
 		return result;
 	}
@@ -191,7 +194,7 @@ public:
 	static void BindBase(
 		BufferIndexedTarget target,
 		GLuint first,
-		GLsizei count,
+		SizeType count,
 		const GLuint* names
 	)
 	{
@@ -282,8 +285,48 @@ class ObjCommonOps<tag::Buffer>
  , public ObjBindingOps<tag::Buffer>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(BufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : BufferName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef BufferName _base1;
+	typedef ObjBindingOps<tag::Buffer> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	using ObjBindingOps<tag::Buffer>::Bind;
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0 || GL_ES_VERSION_3_0
 	using ObjBindingOps<tag::Buffer>::BindBase;
@@ -400,7 +443,7 @@ public:
 	 */
 	void InvalidateData(void)
 	{
-		OGLPLUS_GLFUNC(InvalidateBufferData)(_name);
+		OGLPLUS_GLFUNC(InvalidateBufferData)(_obj_name());
 		OGLPLUS_CHECK(
 			InvalidateBufferData,
 			ObjectError,
@@ -421,7 +464,7 @@ public:
 	void InvalidateSubData(BufferSize offset, BufferSize size)
 	{
 		OGLPLUS_GLFUNC(InvalidateBufferSubData)(
-			_name,
+			_obj_name(),
 			GLintptr(offset.Get()),
 			GLsizeiptr(size.Get())
 		);
@@ -442,8 +485,43 @@ class ObjectOps<tag::ExplicitSel, tag::Buffer>
  : public ObjZeroOps<tag::ExplicitSel, tag::Buffer>
 {
 protected:
-	ObjectOps(void) { }
+	ObjectOps(BufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::ExplicitSel, tag::Buffer>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::ExplicitSel, tag::Buffer> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	static GLint GetIntParam(Target target, GLenum query);
 
 	/// Types related to Buffer
@@ -468,9 +546,12 @@ public:
 	 *
 	 *  @throws Error
 	 */
-	static bool Mapped(Target target)
+	static Boolean Mapped(Target target)
 	{
-		return GetIntParam(target, GL_BUFFER_MAPPED) == GL_TRUE;
+		return Boolean(
+			GetIntParam(target, GL_BUFFER_MAPPED),
+			std::nothrow
+		);
 	}
 #endif // GL_VERSION_3_0
 
@@ -505,7 +586,7 @@ public:
 	}
 
 	/// Uploads (sets) the buffer data
-	/** This member function uploads the specified @data to the buffer bound
+	/** This member function uploads the specified data to the buffer bound
 	 *  to the specified @p target using the @p usage as hint.
 	 *
 	 *  @see SubData
@@ -563,7 +644,7 @@ public:
 	template <typename GLtype>
 	static void Data(
 		Target target,
-		GLsizei count,
+		SizeType count,
 		const GLtype* data,
 		BufferUsage usage = BufferUsage::StaticDraw
 	)
@@ -600,7 +681,7 @@ public:
 	static void SubData(
 		Target target,
 		BufferSize offset,
-		GLsizei count,
+		SizeType count,
 		const GLtype* data
 	)
 	{
@@ -714,6 +795,12 @@ public:
 #endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_4 || GL_ARB_buffer_storage
+	/// Sets-up the buffer storage
+	/**
+	 *  @throws Error
+	 *
+	 *  @glvoereq{4,4,ARB,buffer_storage}
+	 */
 	static void Storage(
 		Target target,
 		const BufferData& data,
@@ -764,12 +851,14 @@ public:
 	 *  @glfunref{GetBufferParameter}
 	 *  @gldefref{BUFFER_IMMUTABLE_STORAGE}
 	 */
-	static bool ImmutableStorage(Target target)
+	static Boolean ImmutableStorage(Target target)
 	{
-		return GetIntParam(
-			target,
-			GL_BUFFER_IMMUTABLE_STORAGE
-		) == GL_TRUE;
+		return Boolean(
+			GetIntParam(
+				target,
+				GL_BUFFER_IMMUTABLE_STORAGE
+			), std::nothrow
+		);
 	}
 
 	/// Returns the buffer storage flags
@@ -790,18 +879,26 @@ public:
 #endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_ARB_sparse_buffer
+	/// Commits/uncommits a buffer region
+	/**
+	 *  @throws Error
+	 *
+	 *  @glextreq{ARB,sparse_buffer}
+	 *  @glsymbols
+	 *  @glfunref{BufferPageCommitmentARB}
+	 */
 	static void PageCommitment(
 		Target target,
 		BufferSize offset,
 		BufferSize size,
-		bool commit
+		Boolean commit
 	)
 	{
 		OGLPLUS_GLFUNC(BufferPageCommitmentARB)(
 			GLenum(target),
 			GLintptr(offset.Get()),
 			GLsizeiptr(size.Get()),
-			commit?GL_TRUE:GL_FALSE
+			commit._get()
 		);
 		OGLPLUS_VERIFY(
 			BufferPageCommitmentARB,
@@ -810,7 +907,16 @@ public:
 		);
 	}
 
-	static GLsizei PageSize(void)
+	/// Returns the buffer page size
+	/**
+	 *  @throws Error
+	 *
+	 *  @glextreq{ARB,sparse_buffer}
+	 *  @glsymbols
+	 *  @glfunref{Get}
+	 *  @gldefref{SPARSE_BUFFER_PAGE_SIZE_ARB}
+	 */
+	static SizeType PageSize(void)
 	{
 		GLint value = 0;
 		OGLPLUS_GLFUNC(GetIntegerv)(
@@ -818,7 +924,7 @@ public:
 			&value
 		);
 		OGLPLUS_VERIFY_SIMPLE(GetIntegerv);
-		return GLsizei(value);
+		return MakeSizeType(value, std::nothrow);
 	}
 #endif
 
@@ -830,9 +936,12 @@ public:
 	 *
 	 *  @throws Error
 	 */
-	static GLsizei Size(Target target)
+	static SizeType Size(Target target)
 	{
-		return GLsizei(GetIntParam(target, GL_BUFFER_SIZE));
+		return MakeSizeType(
+			GetIntParam(target, GL_BUFFER_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the buffer usage

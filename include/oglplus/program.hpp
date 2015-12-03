@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -18,6 +18,8 @@
 #include <oglplus/object/sequence.hpp>
 #include <oglplus/error/program.hpp>
 #include <oglplus/error/prog_var.hpp>
+#include <oglplus/error/outcome.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/data_type.hpp>
 #include <oglplus/transform_feedback_mode.hpp>
 #include <oglplus/program_resource.hpp>
@@ -67,10 +69,12 @@ protected:
 		}
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsProgram)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsProgram)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsProgram);
 		return result;
 	}
@@ -96,7 +100,8 @@ protected:
 			Error,
 			EnumParam(GLenum(GL_CURRENT_PROGRAM))
 		);
-		return name;
+		assert(!(name < 0));
+		return GLuint(name);
 	}
 public:
 	/// Returns the currently bound (active) Program
@@ -135,8 +140,48 @@ class ObjCommonOps<tag::Program>
  , public ObjBindingOps<tag::Program>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(ProgramName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ProgramName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef ProgramName _base1;
+	typedef ObjBindingOps<tag::Program> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	using ObjBindingOps<tag::Program>::Bind;
 
 	/// Binds (uses) this program object
@@ -177,12 +222,47 @@ class ObjectOps<tag::DirectState, tag::Program>
  : public ObjZeroOps<tag::DirectState, tag::Program>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(ProgramName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::Program>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::Program> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	GLint GetIntParam(GLenum query) const
 	{
-		GLint result;
-		OGLPLUS_GLFUNC(GetProgramiv)(_name, query, &result);
+		GLint result = 0;
+		OGLPLUS_GLFUNC(GetProgramiv)(_obj_name(), query, &result);
 		OGLPLUS_VERIFY(
 			GetProgramiv,
 			ObjectError,
@@ -192,11 +272,18 @@ public:
 		return result;
 	}
 
+	GLuint GetUIntParam(GLenum query) const
+	{
+		GLint res = GetIntParam(query);
+		assert(!(res < 0));
+		return GLuint(res);
+	}
+
 #if GL_VERSION_4_0 || GL_ARB_shader_subroutine
 	GLint GetStageIntParam(GLenum stage, GLenum query) const
 	{
 		GLint result;
-		OGLPLUS_GLFUNC(GetProgramStageiv)(_name, stage, query, &result);
+		OGLPLUS_GLFUNC(GetProgramStageiv)(_obj_name(), stage, query, &result);
 		OGLPLUS_VERIFY(
 			GetProgramStageiv,
 			ObjectError,
@@ -204,6 +291,13 @@ public:
 			EnumParam(query)
 		);
 		return result;
+	}
+
+	GLuint GetStageUIntParam(GLenum stage, GLenum query) const
+	{
+		GLint res = GetStageIntParam(stage, query);
+		assert(!(res < 0));
+		return GLuint(res);
 	}
 #endif
 
@@ -233,9 +327,12 @@ public:
 	 *  @glfunref{GetProgram}
 	 *  @gldefref{LINK_STATUS}
 	 */
-	bool IsLinked(void) const
+	Boolean IsLinked(void) const
 	{
-		return GetIntParam(GL_LINK_STATUS) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_LINK_STATUS),
+			std::nothrow
+		);
 	}
 
 	/// Returns the linker output if the program is linked
@@ -262,6 +359,8 @@ public:
 	 */
 	ObjectOps& Link(void);
 
+	Outcome<ObjectOps&> Link(std::nothrow_t);
+
 	/// builds this shading language program
 	/** This function checks if all attached shaders are compiled
 	 *  and if they are not the it compiles them and then links
@@ -277,7 +376,7 @@ public:
 	 *  @glfunref{GetProgram}
 	 *  @glfunref{GetProgramInfoLog}
 	 */
-	ObjectOps& Build(void);
+	Outcome<ObjectOps&> Build(void);
 
 #if OGLPLUS_DOCUMENTATION_ONLY ||\
 	GL_ARB_shading_language_include
@@ -297,13 +396,13 @@ public:
 	 *  @glfunref{GetProgram}
 	 *  @glfunref{GetProgramInfoLog}
 	 */
-	ObjectOps& BuildInclude(
-		GLsizei count,
+	Outcome<ObjectOps&> BuildInclude(
+		SizeType count,
 		const GLchar* const* paths,
 		const GLint* lengths
 	);
 
-	ObjectOps& BuildInclude(GLSLString&& incl)
+	Outcome<ObjectOps&> BuildInclude(GLSLString&& incl)
 	{
 		return BuildInclude(
 			incl.Count(),
@@ -312,7 +411,7 @@ public:
 		);
 	}
 
-	ObjectOps& BuildInclude(GLSLStrings&& incl)
+	Outcome<ObjectOps&> BuildInclude(GLSLStrings&& incl)
 	{
 		return BuildInclude(
 			incl.Count(),
@@ -321,7 +420,7 @@ public:
 		);
 	}
 
-	ObjectOps& BuildInclude(const GLSLSource&& incl)
+	Outcome<ObjectOps&> BuildInclude(const GLSLSource&& incl)
 	{
 		return BuildInclude(
 			incl.Count(),
@@ -339,9 +438,12 @@ public:
 	 *  @glfunref{GetProgram}
 	 *  @gldefref{VALIDATE_STATUS}
 	 */
-	bool IsValid(void) const
+	Boolean IsValid(void) const
 	{
-		return GetIntParam(GL_VALIDATE_STATUS) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_VALIDATE_STATUS),
+			std::nothrow
+		);
 	}
 
 	/// Validates this shading language program
@@ -357,6 +459,8 @@ public:
 	 */
 	ObjectOps& Validate(void);
 
+	Outcome<ObjectOps&> Validate(std::nothrow_t);
+
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_3 || GL_ES_VERSION_3_0
 	/// Sets the variables that will be captured during transform feedback
 	/**
@@ -366,7 +470,7 @@ public:
 	 *  @glfunref{TransformFeedbackVaryings}
 	 */
 	void TransformFeedbackVaryings(
-		GLsizei count,
+		SizeType count,
 		const GLchar** varyings,
 		TransformFeedbackMode mode
 	);
@@ -672,7 +776,7 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{ProgramParameter}
 	 */
-	ObjectOps& MakeSeparable(bool para = true);
+	ObjectOps& MakeSeparable(Boolean para = true);
 #endif // separate shader objects
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_1 || GL_ARB_get_program_binary
@@ -684,7 +788,7 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{ProgramParameter}
 	 */
-	ObjectOps& MakeRetrievable(bool para = true);
+	ObjectOps& MakeRetrievable(Boolean para = true);
 
 	/// Returns this programs binary representation
 	/**
@@ -826,9 +930,12 @@ public:
 	 *  @glfunref{GetProgram}
 	 *  @gldefref{TESS_GEN_POINT_MODE}
 	 */
-	bool TessGenPointMode(void) const
+	Boolean TessGenPointMode(void) const
 	{
-		return GetIntParam(GL_TESS_GEN_POINT_MODE) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_TESS_GEN_POINT_MODE),
+			std::nothrow
+		);
 	}
 #endif // tessellation shader
 
@@ -843,7 +950,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(BindAttribLocation)(
-			_name,
+			_obj_name(),
 			GLuint(vertex_attrib_slot),
 			identifier.c_str()
 		);

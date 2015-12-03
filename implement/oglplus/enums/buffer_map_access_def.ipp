@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/buffer_map_access.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_MAP_READ_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Read
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_MAP_WRITE_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Write
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_MAP_PERSISTENT_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Persistent
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined GL_MAP_COHERENT_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Coherent
@@ -78,7 +78,7 @@
 # endif
 #endif
 #if defined GL_MAP_INVALIDATE_RANGE_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined InvalidateRange
@@ -94,7 +94,7 @@
 # endif
 #endif
 #if defined GL_MAP_INVALIDATE_BUFFER_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined InvalidateBuffer
@@ -110,7 +110,7 @@
 # endif
 #endif
 #if defined GL_MAP_FLUSH_EXPLICIT_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined FlushExplicit
@@ -126,7 +126,7 @@
 # endif
 #endif
 #if defined GL_MAP_UNSYNCHRONIZED_BIT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Unsynchronized

@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{019_bpatch_tess}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -38,7 +38,7 @@ public:
 	{
 		VertexShader vert(ObjectDesc("Vertex"));
 		vert.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4 CameraMatrix;"
 
 			"in vec4 Position;"
@@ -54,7 +54,7 @@ public:
 
 		TessControlShader teco(ObjectDesc("TessControl"));
 		teco.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader: enable\n"
 			"layout(vertices = 16) out;"
 
@@ -82,7 +82,7 @@ public:
 
 		TessEvaluationShader teev(ObjectDesc("TessEvaluation"));
 		teev.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader: enable\n"
 			"layout(quads, equal_spacing, ccw) in;"
 			"uniform mat4 ProjectionMatrix;"
@@ -127,7 +127,7 @@ public:
 
 		FragmentShader frag(ObjectDesc("Fragment"));
 		frag.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"out vec3 fragColor;"
 			"void main(void)"
 			"{"
@@ -178,7 +178,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(70),
-				double(width)/height,
+				width, height,
 				1, 100
 			)
 		);
@@ -191,7 +191,7 @@ public:
 		camera_matrix.Set(
 			CamMatrixf::Orbiting(
 				Vec3f(),
-				30.0 - SineWave(time / 17.0)*25.0,
+				GLfloat(30.0 - SineWave(time / 17.0)*25.0),
 				Degrees(time * 47),
 				Degrees(SineWave(time / 31.0) * 90)
 			)

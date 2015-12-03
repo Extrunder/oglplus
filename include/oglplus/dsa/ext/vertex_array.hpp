@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -29,7 +29,44 @@ template <>
 class ObjectOps<tag::DirectStateEXT, tag::VertexArray>
  : public ObjZeroOps<tag::DirectStateEXT, tag::VertexArray>
 {
+protected:
+	ObjectOps(VertexArrayName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectStateEXT, tag::VertexArray>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectStateEXT, tag::VertexArray> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	/// Setup the properties of the specified vertex attribute array
 	/**
 	 *  @glsymbols
@@ -40,18 +77,18 @@ public:
 		VertexAttribSlot location,
 		GLint values_per_vertex,
 		DataType data_type,
-		bool normalized,
-		GLsizei stride,
+		Boolean normalized,
+		SizeType stride,
 		GLintptr offset
 	) const
 	{
 		OGLPLUS_GLFUNC(VertexArrayVertexAttribOffsetEXT)(
-			_name,
+			_obj_name(),
 			GetGLName(buffer),
 			GLuint(location),
 			values_per_vertex,
 			GLenum(data_type),
-			normalized ? GL_TRUE : GL_FALSE,
+			normalized._get(),
 			stride,
 			offset
 		);
@@ -74,12 +111,12 @@ public:
 		VertexAttribSlot location,
 		GLint values_per_vertex,
 		DataType data_type,
-		GLsizei stride,
+		SizeType stride,
 		GLintptr offset
 	) const
 	{
 		OGLPLUS_GLFUNC(VertexArrayVertexAttribIOffsetEXT)(
-			_name,
+			_obj_name(),
 			GetGLName(buffer),
 			GLuint(location),
 			values_per_vertex,
@@ -104,7 +141,7 @@ public:
 	const ObjectOps& EnableVertexAttrib(VertexAttribSlot location)
 	{
 		OGLPLUS_GLFUNC(EnableVertexArrayAttribEXT)(
-			_name,
+			_obj_name(),
 			GLuint(location)
 		);
 		OGLPLUS_CHECK(
@@ -124,7 +161,7 @@ public:
 	const ObjectOps& DisableVertexAttrib(VertexAttribSlot location)
 	{
 		OGLPLUS_GLFUNC(DisableVertexArrayAttribEXT)(
-			_name,
+			_obj_name(),
 			GLuint(location)
 		);
 		OGLPLUS_CHECK(

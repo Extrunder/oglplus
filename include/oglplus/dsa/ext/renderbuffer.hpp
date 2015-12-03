@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -28,8 +28,43 @@ class ObjectOps<tag::DirectStateEXT, tag::Renderbuffer>
  : public ObjZeroOps<tag::DirectStateEXT, tag::Renderbuffer>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(RenderbufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectStateEXT, tag::Renderbuffer>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectStateEXT, tag::Renderbuffer> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	GLint GetIntParam(GLenum query) const;
 
 	/// Set the renderbuffer storage parameters
@@ -39,12 +74,12 @@ public:
 	 */
 	void Storage(
 		PixelDataInternalFormat internalformat,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(NamedRenderbufferStorageEXT)(
-			_name,
+			_obj_name(),
 			GLenum(internalformat),
 			width,
 			height
@@ -70,14 +105,14 @@ public:
 	 *  @glfunref{RenderbufferStorageMultisample}
 	 */
 	void StorageMultisample(
-		GLsizei samples,
+		SizeType samples,
 		PixelDataInternalFormat internalformat,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(NamedRenderbufferStorageMultisampleEXT)(
-			_name,
+			_obj_name(),
 			samples,
 			GLenum(internalformat),
 			width,
@@ -100,9 +135,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_WIDTH}
 	 */
-	GLsizei Width(void) const
+	SizeType Width(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_WIDTH));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_WIDTH),
+			std::nothrow
+		);
 	}
 
 	/// Returns the height of the renderbuffer as it was specified by Storage*
@@ -113,9 +151,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_HEIGHT}
 	 */
-	GLsizei Height(void) const
+	SizeType Height(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_HEIGHT));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_HEIGHT),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's red component
@@ -128,9 +169,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_RED_SIZE}
 	 */
-	GLsizei RedSize(void) const
+	SizeType RedSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_RED_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_RED_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's green component
@@ -145,9 +189,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_GREEN_SIZE}
 	 */
-	GLsizei GreenSize(void) const
+	SizeType GreenSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_GREEN_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_GREEN_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's blue component
@@ -162,9 +209,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_BLUE_SIZE}
 	 */
-	GLsizei BlueSize(void) const
+	SizeType BlueSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_BLUE_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_BLUE_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's alpha component
@@ -179,9 +229,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_ALPHA_SIZE}
 	 */
-	GLsizei AlphaSize(void) const
+	SizeType AlphaSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_ALPHA_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_ALPHA_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's depth component
@@ -196,9 +249,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_DEPTH_SIZE}
 	 */
-	GLsizei DepthSize(void) const
+	SizeType DepthSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_DEPTH_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_DEPTH_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size in bits of the renderbuffer's stencil component
@@ -213,9 +269,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_STENCIL_SIZE}
 	 */
-	GLsizei StencilSize(void) const
+	SizeType StencilSize(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_STENCIL_SIZE));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_STENCIL_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the number of samples of the renderbuffer
@@ -224,9 +283,12 @@ public:
 	 *  @glfunref{GetRenderbufferParameter}
 	 *  @gldefref{RENDERBUFFER_SAMPLES}
 	 */
-	GLsizei Samples(void) const
+	SizeType Samples(void) const
 	{
-		return GLsizei(GetIntParam(GL_RENDERBUFFER_SAMPLES));
+		return MakeSizeType(
+			GetIntParam(GL_RENDERBUFFER_SAMPLES),
+			std::nothrow
+		);
 	}
 
 	/// Returns the internal format of the renderbuffer

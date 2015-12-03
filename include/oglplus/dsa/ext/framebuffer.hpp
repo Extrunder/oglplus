@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -29,26 +29,52 @@ class ObjectOps<tag::DirectStateEXT, tag::Framebuffer>
  : public ObjZeroOps<tag::DirectStateEXT, tag::Framebuffer>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(FramebufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectStateEXT, tag::Framebuffer>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectStateEXT, tag::Framebuffer> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	 , target(temp.target)
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	 , target(that.target)
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		target = temp.target;
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		target = that.target;
+		return *this;
+	}
+#endif
 	/// Used as the default value for functions taking Target arguments
 	Target target;
 
 	/// Types related to Framebuffer
-	struct Property
-	{
-		/// Attachment of a Framebuffer
-		typedef OneOf<
-			GLenum,
-			std::tuple<
-				FramebufferAttachment,
-				FramebufferColorAttachment
-			>
-		> Attachment;
-
-		/// Status of a Framebuffer
-		typedef FramebufferStatus Status;
-	};
+	typedef FramebufferOps::Property Property;
 
 	using ObjZeroOps<tag::DirectStateEXT, tag::Framebuffer>::Bind;
 	void Bind(void)
@@ -70,7 +96,7 @@ public:
 	FramebufferStatus Status(Target fbo_target) const
 	{
 		GLenum result = OGLPLUS_GLFUNC(CheckNamedFramebufferStatusEXT)(
-			_name,
+			_obj_name(),
 			GLenum(fbo_target)
 		);
 		if(result == 0) OGLPLUS_CHECK(
@@ -141,7 +167,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferRenderbufferEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GL_RENDERBUFFER,
 			GetGLName(renderbuffer)
@@ -173,7 +199,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferRenderbufferEXT)(
-			_name,
+			_obj_name(),
 			GL_COLOR_ATTACHMENT0 + GLuint(attachment_no),
 			GL_RENDERBUFFER,
 			GetGLName(renderbuffer)
@@ -207,7 +233,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTextureEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GetGLName(texture),
 			level
@@ -241,7 +267,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTextureEXT)(
-			_name,
+			_obj_name(),
 			GL_COLOR_ATTACHMENT0 + GLenum(attachment_no),
 			GetGLName(texture),
 			level
@@ -277,7 +303,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTexture1DEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GLenum(textarget),
 			GetGLName(texture),
@@ -313,7 +339,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTexture2DEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GLenum(textarget),
 			GetGLName(texture),
@@ -350,7 +376,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTexture3DEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GLenum(textarget),
 			GetGLName(texture),
@@ -387,7 +413,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedFramebufferTextureLayerEXT)(
-			_name,
+			_obj_name(),
 			GLenum(attachment),
 			GetGLName(texture),
 			level,
@@ -419,7 +445,7 @@ public:
 	void DrawBuffer(ColorBuffer buffer)
 	{
 		OGLPLUS_GLFUNC(FramebufferDrawBufferEXT)(
-			_name,
+			_obj_name(),
 			GLenum(buffer)
 		);
 		OGLPLUS_VERIFY(
@@ -438,8 +464,8 @@ public:
 	void DrawBuffers(const EnumArray<ColorBuffer>& buffers)
 	{
 		OGLPLUS_GLFUNC(FramebufferDrawBuffersEXT)(
-			_name,
-			buffers.Count(),
+			_obj_name(),
+			GLint(buffers.Count()),
 			buffers.Values()
 		);
 		OGLPLUS_VERIFY(
@@ -456,7 +482,10 @@ public:
 	 */
 	void ReadBuffer(ColorBuffer buffer)
 	{
-		OGLPLUS_GLFUNC(FramebufferReadBufferEXT)(_name, GLenum(buffer));
+		OGLPLUS_GLFUNC(FramebufferReadBufferEXT)(
+			_obj_name(),
+			GLenum(buffer)
+		);
 		OGLPLUS_VERIFY(
 			FramebufferReadBufferEXT,
 			ObjectError,

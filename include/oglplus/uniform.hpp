@@ -181,7 +181,7 @@ public:
 
 	void SetValues(std::size_t n, const Vector<T, N>* values, std::true_type)
 	{
-		const T* temp = (const T*)(values);
+		const T* temp = reinterpret_cast<const T*>(values);
 		SetValues(n*N, temp);
 	}
 
@@ -257,7 +257,7 @@ public:
 		std::true_type
 	)
 	{
-		const T* temp = (const T*)(values);
+		const T* temp = reinterpret_cast<const T*>(values);
 		SetValues(n*R*C, true, temp);
 	}
 
@@ -307,7 +307,7 @@ private:
 	typedef ProgVarCommonOps<tag::Uniform> Base;
 public:
 	ProgVar(ProgramName program, GLuint location)
-	 : Base(UniformLoc(program, location))
+	 : Base(UniformLoc(program, GLint(location)))
 	{ }
 
 	ProgVar(ProgramName program, StrCRef identifier)
@@ -317,7 +317,22 @@ public:
 	template <typename T>
 	void Set(T value)
 	{
-		ProgVar<OpsTag, tag::Uniform, tag::NoTypecheck, T>(*this).Set(value);
+		ProgVar<OpsTag, tag::Uniform, tag::NoTypecheck, T>(*this)
+			.Set(value);
+	}
+
+	template <typename T>
+	void SetValue(T value)
+	{
+		ProgVar<OpsTag, tag::Uniform, tag::NoTypecheck, T>(*this)
+			.SetValue(value);
+	}
+
+	template <typename T>
+	void SetValues(std::size_t n, T values)
+	{
+		ProgVar<OpsTag, tag::Uniform, tag::NoTypecheck, T>(*this)
+			.SetValues(n, values);
 	}
 
 	template <typename T>

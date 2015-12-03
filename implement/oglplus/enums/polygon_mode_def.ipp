@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/polygon_mode.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_POINT
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Point
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_LINE
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Line
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_FILL
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined Fill
@@ -56,6 +56,22 @@
 #  pragma pop_macro("Fill")
 # else
    OGLPLUS_ENUM_CLASS_VALUE(Fill, GL_FILL)
+# endif
+# ifndef OGLPLUS_LIST_NEEDS_COMMA
+#  define OGLPLUS_LIST_NEEDS_COMMA 1
+# endif
+#endif
+#if defined GL_FILL_RECTANGLE_NV
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
+   OGLPLUS_ENUM_CLASS_COMMA
+# endif
+# if defined FillRectangle
+#  pragma push_macro("FillRectangle")
+#  undef FillRectangle
+   OGLPLUS_ENUM_CLASS_VALUE(FillRectangle, GL_FILL_RECTANGLE_NV)
+#  pragma pop_macro("FillRectangle")
+# else
+   OGLPLUS_ENUM_CLASS_VALUE(FillRectangle, GL_FILL_RECTANGLE_NV)
 # endif
 # ifndef OGLPLUS_LIST_NEEDS_COMMA
 #  define OGLPLUS_LIST_NEEDS_COMMA 1

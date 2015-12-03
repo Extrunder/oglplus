@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{026_stencil_shadow}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -76,7 +76,7 @@ public:
 	 , object_light_mult(object_prog)
 	{
 		vs_object.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"in vec4 Position;"
 			"in vec3 Normal;"
 			"uniform mat4 ProjectionMatrix, CameraMatrix, ModelMatrix;"
@@ -94,7 +94,7 @@ public:
 		vs_object.Compile();
 
 		fs_object.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"in vec3 vertNormal;"
 			"in vec3 vertLight;"
 			"uniform vec3 Color;"
@@ -125,7 +125,7 @@ public:
 		object_light_mult.BindTo("LightMult");
 
 		vs_shadow.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec4 Position;"
 			"in vec3 Normal;"
 			"uniform mat4 ModelMatrix;"
@@ -142,7 +142,7 @@ public:
 		vs_shadow.Compile();
 
 		gs_shadow.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout(triangles) in;"
 			"layout(triangle_strip, max_vertices = 12) out;"
 
@@ -206,7 +206,7 @@ public:
 		gs_shadow.Compile();
 
 		fs_shadow.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"out vec4 fragColor;"
 			"void main(void)"
 			"{"
@@ -310,7 +310,7 @@ public:
 		gl.Viewport(width, height);
 		Mat4f projection = CamMatrixf::PerspectiveX(
 			Degrees(70),
-			double(width)/height,
+			float(width)/height,
 			1, 30
 		);
 		object_prog.Use();

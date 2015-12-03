@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -64,21 +64,25 @@ private:
 		{ }
 
 		_intf* _clone(void) const
+		OGLPLUS_OVERRIDE
 		{
 			return new _impl(_iter);
 		}
 
 		const T& _deref(void) const
+		OGLPLUS_OVERRIDE
 		{
 			return _conv(*_iter);
 		}
 
 		void _incr(void)
+		OGLPLUS_OVERRIDE
 		{
 			++_iter;
 		}
 
 		bool _equal(const _intf* that) const
+		OGLPLUS_OVERRIDE
 		{
 			const _impl* i = dynamic_cast<const _impl*>(that);
 			assert(i != nullptr);
@@ -86,6 +90,7 @@ private:
 		}
 
 		std::ptrdiff_t _dist(const _intf* that) const
+		OGLPLUS_OVERRIDE
 		{
 			const _impl* i = dynamic_cast<const _impl*>(that);
 			assert(i != nullptr);
@@ -136,17 +141,23 @@ public:
 
 	AnyInputIter& operator = (const AnyInputIter& that)
 	{
-		_intf* tmp = that._clone();
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp;
+		if(this != &that)
+		{
+			_intf* tmp = that._clone();
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp;
+		}
 		return *this;
 	}
 
 	AnyInputIter& operator = (AnyInputIter&& tmp)
 	{
-		if(_pimpl) delete _pimpl;
-		_pimpl = tmp._pimpl;
-		tmp._pimpl = nullptr;
+		if(this != &tmp)
+		{
+			if(_pimpl) delete _pimpl;
+			_pimpl = tmp._pimpl;
+			tmp._pimpl = nullptr;
+		}
 		return *this;
 	}
 

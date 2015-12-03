@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -20,6 +20,7 @@
 #include <oglplus/prog_var/varpara_fns.hpp>
 #include <oglplus/prog_var/set_ops.hpp>
 #include <oglplus/prog_var/wrapper.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/shader_type.hpp>
 #include <oglplus/buffer_binding.hpp>
 
@@ -43,7 +44,7 @@ public:
 	 *  throws if no such uniform block exists or if it is not active.
 	 *
 	 *  @glsymbols
-	 *  @glfunref{GetUniformLocation}
+	 *  @glfunref{GetUniformBlockIndex}
 	 */
 	static GLint GetLocation(
 		ProgramName program,
@@ -51,7 +52,7 @@ public:
 		bool active_only
 	)
 	{
-		GLint result = OGLPLUS_GLFUNC(GetUniformBlockIndex)(
+		GLuint result = OGLPLUS_GLFUNC(GetUniformBlockIndex)(
 			GetGLName(program),
 			identifier.c_str()
 		);
@@ -62,14 +63,19 @@ public:
 			Identifier(identifier)
 		);
 		OGLPLUS_HANDLE_ERROR_IF(
-			active_only && (result < 0),
+			active_only && (result == GL_INVALID_INDEX),
 			GL_INVALID_OPERATION,
 			MsgGettingInactive(),
 			ProgVarError,
 			Program(program).
 			Identifier(identifier)
 		);
-		return result;
+
+		if(result == GL_INVALID_INDEX)
+		{
+			return -1;
+		}
+		return GLint(result);
 	}
 };
 
@@ -84,6 +90,15 @@ protected:
 	ProgVarCommonOps(UniformBlockLoc ubloc)
 	 : ProgVarLoc<tag::UniformBlock>(ubloc)
 	{ }
+
+	GLuint _block_index(void) const
+	{
+		if(this->_location < 0)
+		{
+			return GL_INVALID_INDEX;
+		}
+		return GLuint(this->_location);
+	}
 public:
 	/// Return the maximum number of uniform blocks for a @p shader_type
 	static GLuint MaxIn(ShaderType shader_type)
@@ -107,21 +122,21 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{GetActiveUniformBlock}
 	 */
-	bool ReferencedBy(ShaderType shader_type) const
+	Boolean ReferencedBy(ShaderType shader_type) const
 	{
-		GLint result;
+		Boolean result;
 		OGLPLUS_GLFUNC(GetActiveUniformBlockiv)(
 			this->_program,
-			this->_location,
+			_block_index(),
 			_translate_ref(shader_type),
-			&result
+			result._ptr()
 		);
 		OGLPLUS_VERIFY(
 			GetActiveUniformBlockiv,
 			Error,
 			EnumParam(_translate_ref(shader_type))
 		);
-		return result == GL_TRUE;
+		return result;
 	}
 
 	/// Returns the size of the uniform block
@@ -134,7 +149,7 @@ public:
 		GLint result;
 		OGLPLUS_GLFUNC(GetActiveUniformBlockiv)(
 			this->_program,
-			this->_location,
+			_block_index(),
 			GL_UNIFORM_BLOCK_DATA_SIZE,
 			&result
 		);
@@ -156,7 +171,7 @@ public:
 	{
 		OGLPLUS_GLFUNC(UniformBlockBinding)(
 			this->_program,
-			this->_location,
+			_block_index(),
 			GLuint(binding)
 		);
 		OGLPLUS_VERIFY(

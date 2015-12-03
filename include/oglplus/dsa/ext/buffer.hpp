@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -29,19 +29,47 @@ class ObjectOps<tag::DirectStateEXT, tag::Buffer>
  : public ObjZeroOps<tag::DirectStateEXT, tag::Buffer>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(BufferName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectStateEXT, tag::Buffer>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectStateEXT, tag::Buffer> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	GLint GetIntParam(GLenum query) const;
 
 	/// Types related to Buffer
-	struct Property
-	{
-		/// The Buffer usage mode
-		typedef BufferUsage Usage;
-
-		/// The buffer map access mode
-		typedef BufferMapAccess MapAccess;
-	};
+	typedef BufferOps::Property Property;
 
 	/// Mapping of the buffer to the client address space
 	typedef DSABufferTypedMapEXT<GLubyte> Map;
@@ -54,9 +82,12 @@ public:
 	 *
 	 *  @throws Error
 	 */
-	bool Mapped(void) const
+	Boolean Mapped(void) const
 	{
-		return GetIntParam(GL_BUFFER_MAPPED) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_BUFFER_MAPPED),
+			std::nothrow
+		);
 	}
 
 	/// Allocates buffer storage to the specified size without any data
@@ -75,7 +106,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(NamedBufferDataEXT)(
-			_name,
+			_obj_name(),
 			size.Get(),
 			nullptr,
 			GLenum(usage)
@@ -89,7 +120,7 @@ public:
 	}
 
 	/// Uploads (sets) the buffer data
-	/** This member function uploads the specified @data to this buffer
+	/** This member function uploads the specified data to this buffer
 	 *  using the @p usage as hint.
 	 *
 	 *  @see SubData
@@ -102,7 +133,7 @@ public:
 	) const
 	{
 		OGLPLUS_GLFUNC(NamedBufferDataEXT)(
-			_name,
+			_obj_name(),
 			GLsizei(data.Size()),
 			data.Data(),
 			GLenum(usage)
@@ -164,7 +195,7 @@ public:
 	) const
 	{
 		OGLPLUS_GLFUNC(NamedBufferSubDataEXT)(
-			_name,
+			_obj_name(),
 			GLintptr(offset.Get()),
 			GLsizei(data.Size()),
 			data.Data()
@@ -245,7 +276,7 @@ public:
 	) const
 	{
 		OGLPLUS_GLFUNC(ClearNamedBufferDataEXT)(
-			_name,
+			_obj_name(),
 			GLenum(internal_format),
 			GLenum(format),
 			GLenum(GetDataType<GLtype>()),
@@ -280,7 +311,7 @@ public:
 	) const
 	{
 		OGLPLUS_GLFUNC(ClearNamedBufferSubDataEXT)(
-			_name,
+			_obj_name(),
 			GLenum(internal_format),
 			GLintptr(offset.Get()),
 			GLsizeiptr(size.Get()),
@@ -354,7 +385,7 @@ public:
 	void MakeResident(AccessSpecifier access) const
 	{
 		OGLPLUS_GLFUNC(MakeNamedBufferResidentNV)(
-			_name,
+			_obj_name(),
 			GLenum(access)
 		);
 		OGLPLUS_CHECK(
@@ -375,7 +406,7 @@ public:
 	 */
 	void MakeNonResident(void) const
 	{
-		OGLPLUS_GLFUNC(MakeNamedBufferNonResidentNV)(_name);
+		OGLPLUS_GLFUNC(MakeNamedBufferNonResidentNV)(_obj_name());
 		OGLPLUS_CHECK(
 			MakeNamedBufferNonResidentNV,
 			ObjectError,
@@ -396,7 +427,7 @@ public:
 	{
 		GLuint64EXT value = 0;
 		OGLPLUS_GLFUNC(GetNamedBufferParameterui64vNV)(
-			_name,
+			_obj_name(),
 			GL_BUFFER_GPU_ADDRESS_NV,
 			&value
 		);

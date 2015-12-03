@@ -4,14 +4,18 @@
  *
  *  @oglplus_screenshot{002_rect}
  *
- *  Copyright 2008-2013 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
  *  @oglplus_example_uses_gl{GL_VERSION_3_0}
+ *  @oglplus_example_uses_gl{GL_ARB_separate_shader_objects}
+ *  @oglplus_example_uses_cpp_feat{SCOPED_ENUM_TEMPLATE_PARAMS}
  */
 #include <oglplus/gl.hpp>
+#include <oglplus/config/fix_gl_version.hpp>
 #include <oglplus/all.hpp>
+#include <oglplus/client_context.hpp>
 
 #include "example.hpp"
 
@@ -22,8 +26,8 @@ namespace oglplus {
 class RectangleExample : public Example
 {
 private:
-	// wrapper around the current OpenGL context
-	Context gl;
+	// Stateful wrapper around the current OpenGL context
+	ClientContext gl;
 
 	// Vertex and fragment shader
 	Shader vs, fs;
@@ -44,10 +48,10 @@ public:
 	{
 		// this could be any istream
 		std::stringstream vs_source(
-			"#version 330\n"
-			"in vec2 Position;"
-			"in vec3 Color;"
-			"out vec3 vertColor;"
+			"#version 120\n"
+			"attribute vec2 Position;"
+			"attribute vec3 Color;"
+			"varying vec3 vertColor;"
 			"void main(void)"
 			"{"
 			"	vertColor = Color;"
@@ -60,12 +64,11 @@ public:
 		vs.Compile();
 
 		std::stringstream fs_source(
-			"#version 330\n"
-			"in vec3 vertColor;"
-			"out vec4 fragColor;"
+			"#version 120\n"
+			"varying vec3 vertColor;"
 			"void main(void)"
 			"{"
-			"	fragColor = vec4(vertColor, 1.0);"
+			"	gl_FragColor = vec4(vertColor, 1.0);"
 			"}"
 		);
 		// set the fragment shader source
@@ -76,47 +79,50 @@ public:
 		// attach the shaders to the program
 		prog.AttachShader(vs);
 		prog.AttachShader(fs);
-		// link and use it
+		// link it
 		prog.Link();
-		prog.Use();
 
+		// and use it
+		gl.Program.Bind(prog);
 		// bind the VAO for the rectangle
-		rectangle.Bind();
+		gl.VertexArray.Bind(rectangle);
 
-		GLfloat rectangle_verts[8] = {
-			-1.0f, -1.0f,
-			-1.0f,  1.0f,
-			 1.0f, -1.0f,
-			 1.0f,  1.0f
-		};
 		// bind the VBO for the rectangle vertices
-		verts.Bind(Buffer::Target::Array);
-		// upload the data
-		Buffer::Data(Buffer::Target::Array, 8, rectangle_verts);
-		// setup the vertex attribs array for the vertices
-		VertexArrayAttrib vert_attr(prog, "Position");
-		vert_attr.Setup<Vec2f>().Enable();
-
-		GLfloat rectangle_colors[12] = {
-			1.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
-		};
+		if(auto x = gl.Buffer.Array.Push(verts))
+		{
+			GLfloat rectangle_verts[8] = {
+				-1.0f, -1.0f,
+				-1.0f,  1.0f,
+				 1.0f, -1.0f,
+				 1.0f,  1.0f
+			};
+			// upload the data
+			gl.Buffer.Array.Data(8, rectangle_verts);
+			// setup the vertex attribs array for the vertices
+			VertexArrayAttrib vert_attr(prog, "Position");
+			vert_attr.Setup<Vec2f>().Enable();
+		}
 		// bind the VBO for the rectangle colors
-		colors.Bind(Buffer::Target::Array);
-		// upload the data
-		Buffer::Data(Buffer::Target::Array, 12, rectangle_colors);
-		// setup the vertex attribs array for the vertices
-		VertexArrayAttrib color_attr(prog, "Color");
-		color_attr.Setup<Vec3f>().Enable();
-		//
-		gl.Disable(Capability::DepthTest);
+		if(auto x = gl.Buffer.Array.Push(colors))
+		{
+			GLfloat rectangle_colors[12] = {
+				1.0f, 1.0f, 1.0f,
+				1.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 1.0f,
+			};
+			// upload the data
+			gl.Buffer.Array.Data(12, rectangle_colors);
+			// setup the vertex attribs array for the vertices
+			VertexArrayAttrib color_attr(prog, "Color");
+			color_attr.Setup<Vec3f>().Enable();
+		}
+		gl.Caps.DepthTest.Disable();
 	}
 
 	void Reshape(GLuint width, GLuint height)
 	{
-		gl.Viewport(width, height);
+		gl.Viewport.Set(0, 0, width, height);
 	}
 
 	void Render(double)

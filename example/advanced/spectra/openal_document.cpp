@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2012-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2012-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -31,13 +31,13 @@ class SpectraOpenALDocument
 private:
 	const wxString file_path;
 	oalplus::DataFormat format;
-	::ALfloat frequency;
+	ALfloat frequency;
 
 	std::vector<ALubyte> raw_data;
 	std::vector<ALfloat> samples;
 
 	oalplus::Device device;
-	oalplus::CurrentContext context;
+	oalplus::ContextMadeCurrent context;
 	oalplus::Listener listener;
 	oalplus::Buffer sound_buf;
 	oalplus::Source sound_src;
@@ -171,15 +171,18 @@ void SpectraOpenALDocument::Play(float from, float to)
 		std::size_t end = std::size_t(frequency*to)*mult;
 
 		if(end > raw_data.size())
+		{
 			end = raw_data.size();
+		}
+
 		if(begin < end)
 		{
 			sound_src.DetachBuffers();
 			sound_buf.Data(
 				format,
 				raw_data.data()+begin,
-				end-begin,
-				frequency
+				ALsizei(end-begin),
+				ALsizei(frequency)
 			);
 			sound_src.Buffer(sound_buf);
 			sound_src.Play();

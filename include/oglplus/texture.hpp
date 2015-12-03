@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -15,6 +15,8 @@
 
 #include <oglplus/fwd.hpp>
 #include <oglplus/glfunc.hpp>
+#include <oglplus/size_type.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/error/object.hpp>
 #include <oglplus/math/vector.hpp>
 #include <oglplus/object/sequence.hpp>
@@ -32,7 +34,7 @@
 #include <oglplus/one_of.hpp>
 #include <oglplus/output_data.hpp>
 #include <oglplus/images/fwd.hpp>
-#include <cassert>
+#include <oglplus/assert.hpp>
 
 namespace oglplus {
 
@@ -85,10 +87,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteTextures);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsTexture)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsTexture)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsTexture);
 		return result;
 	}
@@ -155,7 +159,7 @@ public:
 		ImageUnitSelector unit,
 		TextureName texture,
 		GLint level,
-		bool layered,
+		Boolean layered,
 		GLint layer,
 		AccessSpecifier access,
 		ImageUnitFormat format
@@ -165,7 +169,7 @@ public:
 			GLuint(unit),
 			GetGLName(texture),
 			level,
-			layered? GL_TRUE : GL_FALSE,
+			layered._get(),
 			layer,
 			GLenum(access),
 			GLenum(format)
@@ -183,7 +187,7 @@ public:
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_4 || GL_ARB_multi_bind
 	static void Bind(
 		GLuint first,
-		GLsizei count,
+		SizeType count,
 		const GLuint* names
 	)
 	{
@@ -197,7 +201,7 @@ public:
 
 	static void BindImage(
 		GLuint first,
-		GLsizei count,
+		SizeType count,
 		const GLuint* names
 	)
 	{
@@ -222,7 +226,11 @@ public:
 		const Sequence<TextureName>& textures
 	)
 	{
-		Bind(first, GLsizei(textures.size()), GetGLNames(textures));
+		Bind(
+			first,
+			SizeType(textures.size()),
+			GetGLNames(textures)
+		);
 	}
 
 	/// Sequentially bind @p textures to image units starting with @p first
@@ -240,7 +248,7 @@ public:
 	{
 		BindImage(
 			first,
-			GLsizei(textures.size()),
+			SizeType(textures.size()),
 			GetGLNames(textures)
 		);
 	}
@@ -257,8 +265,48 @@ class ObjCommonOps<tag::Texture>
  , public ObjBindingOps<tag::Texture>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(TextureName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : TextureName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef TextureName _base1;
+	typedef ObjBindingOps<tag::Texture> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	/// Specify active texture unit for subsequent commands
 	/**
 	 *  @throws Error
@@ -297,7 +345,7 @@ public:
 			Error,
 			EnumParam(GLenum(GL_ACTIVE_TEXTURE))
 		);
-        return result - GL_TEXTURE0;
+		return result - GL_TEXTURE0;
 	}
 
 	/// Returns the target for the i-th cube map @p face (0-5)
@@ -359,9 +407,9 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{InvalidateTexImage}
 	 */
-	void InvalidateImage(GLsizei level)
+	void InvalidateImage(GLint level)
 	{
-		OGLPLUS_GLFUNC(InvalidateTexImage)(_name, level);
+		OGLPLUS_GLFUNC(InvalidateTexImage)(_obj_name(), level);
 		OGLPLUS_CHECK(
 			InvalidateTexImage,
 			ObjectError,
@@ -377,17 +425,17 @@ public:
 	 *  @glfunref{InvalidateTexSubImage}
 	 */
 	void InvalidateSubImage(
-		GLsizei level,
+		GLint level,
 		GLint xoffs,
 		GLint yoffs,
 		GLint zoffs,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth
+		SizeType width,
+		SizeType height,
+		SizeType depth
 	)
 	{
 		OGLPLUS_GLFUNC(InvalidateTexSubImage)(
-			_name,
+			_obj_name(),
 			level,
 			xoffs,
 			yoffs,
@@ -414,13 +462,13 @@ public:
 	 */
 	template <typename GLtype>
 	void ClearImage(
-		GLsizei level,
+		GLint level,
 		PixelDataFormat format,
 		const GLtype* data
 	)
 	{
 		OGLPLUS_GLFUNC(ClearTexImage)(
-			_name,
+			_obj_name(),
 			level,
 			GLenum(format),
 			GLenum(GetDataType<GLtype>()),
@@ -442,19 +490,19 @@ public:
 	 */
 	template <typename GLtype>
 	void ClearSubImage(
-		GLsizei level,
+		GLint level,
 		GLint xoffs,
 		GLint yoffs,
 		GLint zoffs,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
 		PixelDataFormat format,
 		const GLtype* data
 	)
 	{
 		OGLPLUS_GLFUNC(ClearTexImage)(
-			_name,
+			_obj_name(),
 			level,
 			xoffs,
 			yoffs,
@@ -493,7 +541,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(TextureView)(
-			_name,
+			_obj_name(),
 			GLenum(target),
 			GetGLName(orig_texture),
 			GLenum(internal_format),
@@ -521,8 +569,44 @@ class ObjZeroOps<tag::ExplicitSel, tag::Texture>
  : public ObjCommonOps<tag::Texture>
 {
 protected:
-	ObjZeroOps(void) { }
+	ObjZeroOps(TextureName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjCommonOps<tag::Texture>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjZeroOps(ObjZeroOps&&) = default;
+	ObjZeroOps(const ObjZeroOps&) = default;
+	ObjZeroOps& operator = (ObjZeroOps&&) = default;
+	ObjZeroOps& operator = (const ObjZeroOps&) = default;
+#else
+	typedef ObjCommonOps<tag::Texture> _base;
+
+	ObjZeroOps(ObjZeroOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjZeroOps(const ObjZeroOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjZeroOps& operator = (ObjZeroOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjZeroOps& operator = (const ObjZeroOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
+
 	/// Types related to Texture
 	struct Property
 	{
@@ -581,9 +665,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_WIDTH}
 	 */
-	static GLsizei Width(Target target, GLint level = 0)
+	static SizeType Width(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(target, level, GL_TEXTURE_WIDTH));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_WIDTH),
+			std::nothrow
+		);
 	}
 
 	/// Returns the height of the texture as it was specified by *Image*D
@@ -595,9 +682,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_HEIGHT}
 	 */
-	static GLsizei Height(Target target, GLint level = 0)
+	static SizeType Height(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(target, level, GL_TEXTURE_HEIGHT));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_HEIGHT),
+			std::nothrow
+		);
 	}
 
 	/// Returns the depth of the texture as it was specified by *Image*D
@@ -609,9 +699,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_DEPTH}
 	 */
-	static GLsizei Depth(Target target, GLint level = 0)
+	static SizeType Depth(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(target, level, GL_TEXTURE_DEPTH));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_DEPTH),
+			std::nothrow
+		);
 	}
 
 	/// Returns the data type used to store the RED component
@@ -726,13 +819,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_RED_SIZE}
 	 */
-	static GLsizei RedSize(Target target, GLint level = 0)
+	static SizeType RedSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_RED_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_RED_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the actual resolution of the GREEN component
@@ -747,13 +839,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_GREEN_SIZE}
 	 */
-	static GLsizei GreenSize(Target target, GLint level = 0)
+	static SizeType GreenSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_GREEN_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_GREEN_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the actual resolution of the BLUE component
@@ -768,13 +859,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_BLUE_SIZE}
 	 */
-	static GLsizei BlueSize(Target target, GLint level = 0)
+	static SizeType BlueSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_BLUE_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_BLUE_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the actual resolution of the ALPHA component
@@ -789,13 +879,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_ALPHA_SIZE}
 	 */
-	static GLsizei AlphaSize(Target target, GLint level = 0)
+	static SizeType AlphaSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_ALPHA_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_ALPHA_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the actual resolution of the DEPTH component
@@ -810,13 +899,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_DEPTH_SIZE}
 	 */
-	static GLsizei DepthSize(Target target, GLint level = 0)
+	static SizeType DepthSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_DEPTH_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_DEPTH_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the actual resolution of the STENCIL component
@@ -831,13 +919,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_STENCIL_SIZE}
 	 */
-	static GLsizei StencilSize(Target target, GLint level = 0)
+	static SizeType StencilSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_STENCIL_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_STENCIL_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size of all texture components
@@ -853,13 +940,12 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_SHARED_SIZE}
 	 */
-	static GLsizei SharedSize(Target target, GLint level = 0)
+	static SizeType SharedSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_SHARED_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(target, level, GL_TEXTURE_SHARED_SIZE),
+			std::nothrow
+		);
 	}
 
 	/// Returns the size (in bytes) of the image array if it is compressed
@@ -868,13 +954,15 @@ public:
 	 *  @glfunref{GetTexLevelParameter}
 	 *  @gldefref{TEXTURE_COMPRESSED_IMAGE_SIZE}
 	 */
-	static GLsizei CompressedImageSize(Target target, GLint level = 0)
+	static SizeType CompressedImageSize(Target target, GLint level = 0)
 	{
-		return GLsizei(GetIntParam(
-			target,
-			level,
-			GL_TEXTURE_COMPRESSED_IMAGE_SIZE
-		));
+		return MakeSizeType(
+			GetIntParam(
+				target,
+				level,
+				GL_TEXTURE_COMPRESSED_IMAGE_SIZE
+			), std::nothrow
+		);
 	}
 
 	/// Returns the internal data format of the image array
@@ -937,7 +1025,7 @@ public:
 		GLint level,
 		PixelDataFormat format,
 		Property::PixDataType type,
-		GLsizei size,
+		SizeType size,
 		GLvoid* buffer
 	)
 	{
@@ -973,7 +1061,7 @@ public:
 	static void GetCompressedImage(
 		Target target,
 		GLint level,
-		GLsizei size,
+		SizeType size,
 		GLubyte* buffer
 	)
 	{
@@ -1007,9 +1095,9 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
 		GLint border,
 		PixelDataFormat format,
 		Property::PixDataType type,
@@ -1060,9 +1148,9 @@ public:
 		GLint xoffs,
 		GLint yoffs,
 		GLint zoffs,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
 		PixelDataFormat format,
 		Property::PixDataType type,
 		const void* data
@@ -1114,8 +1202,8 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		GLint border,
 		PixelDataFormat format,
 		Property::PixDataType type,
@@ -1171,8 +1259,8 @@ public:
 		GLuint face,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		GLint border,
 		PixelDataFormat format,
 		Property::PixDataType type,
@@ -1231,8 +1319,8 @@ public:
 		GLint level,
 		GLint xoffs,
 		GLint yoffs,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		PixelDataFormat format,
 		Property::PixDataType type,
 		const void* data
@@ -1281,7 +1369,7 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
+		SizeType width,
 		GLint border,
 		PixelDataFormat format,
 		Property::PixDataType type,
@@ -1328,7 +1416,7 @@ public:
 		Target target,
 		GLint level,
 		GLint xoffs,
-		GLsizei width,
+		SizeType width,
 		PixelDataFormat format,
 		Property::PixDataType type,
 		const void* data
@@ -1404,15 +1492,15 @@ public:
 		PixelDataInternalFormat internal_format,
 		GLint x,
 		GLint y,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		GLint border
 	)
 	{
 		OGLPLUS_GLFUNC(CopyTexImage2D)(
 			GLenum(target),
 			level,
-			GLint(internal_format),
+			GLenum(internal_format),
 			x,
 			y,
 			width,
@@ -1440,14 +1528,14 @@ public:
 		PixelDataInternalFormat internal_format,
 		GLint x,
 		GLint y,
-		GLsizei width,
+		SizeType width,
 		GLint border
 	)
 	{
 		OGLPLUS_GLFUNC(CopyTexImage1D)(
 			GLenum(target),
 			level,
-			GLint(internal_format),
+			GLenum(internal_format),
 			x,
 			y,
 			width,
@@ -1477,8 +1565,8 @@ public:
 		GLint zoffs,
 		GLint x,
 		GLint y,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(CopyTexSubImage3D)(
@@ -1513,8 +1601,8 @@ public:
 		GLint yoffs,
 		GLint x,
 		GLint y,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(CopyTexSubImage2D)(
@@ -1547,7 +1635,7 @@ public:
 		GLint xoffs,
 		GLint x,
 		GLint y,
-		GLsizei width
+		SizeType width
 	)
 	{
 		OGLPLUS_GLFUNC(CopyTexSubImage1D)(
@@ -1577,18 +1665,18 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
 		GLint border,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
 		OGLPLUS_GLFUNC(CompressedTexImage3D)(
 			GLenum(target),
 			level,
-			GLint(internal_format),
+			GLenum(internal_format),
 			width,
 			height,
 			depth,
@@ -1615,17 +1703,17 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		GLint border,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
 		OGLPLUS_GLFUNC(CompressedTexImage2D)(
 			GLenum(target),
 			level,
-			GLint(internal_format),
+			GLenum(internal_format),
 			width,
 			height,
 			border,
@@ -1651,16 +1739,16 @@ public:
 		Target target,
 		GLint level,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
+		SizeType width,
 		GLint border,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
 		OGLPLUS_GLFUNC(CompressedTexImage1D)(
 			GLenum(target),
 			level,
-			GLint(internal_format),
+			GLenum(internal_format),
 			width,
 			border,
 			image_size,
@@ -1688,11 +1776,11 @@ public:
 		GLint xoffs,
 		GLint yoffs,
 		GLint zoffs,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
 		PixelDataFormat format,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
@@ -1705,7 +1793,7 @@ public:
 			width,
 			height,
 			depth,
-			GLint(format),
+			GLenum(format),
 			image_size,
 			data
 		);
@@ -1729,10 +1817,10 @@ public:
 		GLint level,
 		GLint xoffs,
 		GLint yoffs,
-		GLsizei width,
-		GLsizei height,
+		SizeType width,
+		SizeType height,
 		PixelDataFormat format,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
@@ -1743,7 +1831,7 @@ public:
 			yoffs,
 			width,
 			height,
-			GLint(format),
+			GLenum(format),
 			image_size,
 			data
 		);
@@ -1766,9 +1854,9 @@ public:
 		Target target,
 		GLint level,
 		GLint xoffs,
-		GLsizei width,
+		SizeType width,
 		PixelDataFormat format,
-		GLsizei image_size,
+		SizeType image_size,
 		const void* data
 	)
 	{
@@ -1777,7 +1865,7 @@ public:
 			level,
 			xoffs,
 			width,
-			GLint(format),
+			GLenum(format),
 			image_size,
 			data
 		);
@@ -1800,22 +1888,22 @@ public:
 	 */
 	static void Image3DMultisample(
 		Target target,
-		GLsizei samples,
+		SizeType samples,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		bool fixed_sample_locations
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		Boolean fixed_sample_locations
 	)
 	{
 		OGLPLUS_GLFUNC(TexImage3DMultisample)(
 			GLenum(target),
 			samples,
-			GLint(internal_format),
+			GLenum(internal_format),
 			width,
 			height,
 			depth,
-			fixed_sample_locations ? GL_TRUE : GL_FALSE
+			fixed_sample_locations._get()
 		);
 		OGLPLUS_CHECK(
 			TexImage3DMultisample,
@@ -1833,20 +1921,20 @@ public:
 	 */
 	static void Image2DMultisample(
 		Target target,
-		GLsizei samples,
+		SizeType samples,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
-		bool fixed_sample_locations
+		SizeType width,
+		SizeType height,
+		Boolean fixed_sample_locations
 	)
 	{
 		OGLPLUS_GLFUNC(TexImage2DMultisample)(
 			GLenum(target),
 			samples,
-			GLint(internal_format),
+			GLenum(internal_format),
 			width,
 			height,
-			fixed_sample_locations ? GL_TRUE : GL_FALSE
+			fixed_sample_locations._get()
 		);
 		OGLPLUS_CHECK(
 			TexImage2DMultisample,
@@ -1897,7 +1985,7 @@ public:
 		PixelDataInternalFormat internal_format,
 		BufferName buffer,
 		GLintptr offset,
-		GLsizeiptr size
+		BigSizeType size
 	)
 	{
 		OGLPLUS_GLFUNC(TexBufferRange)(
@@ -1926,9 +2014,9 @@ public:
 	 */
 	static void Storage1D(
 		Target target,
-		GLsizei levels,
+		SizeType levels,
 		PixelDataInternalFormat internal_format,
-		GLsizei width
+		SizeType width
 	)
 	{
 		OGLPLUS_GLFUNC(TexStorage1D)(
@@ -1953,10 +2041,10 @@ public:
 	 */
 	static void Storage2D(
 		Target target,
-		GLsizei levels,
+		SizeType levels,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(TexStorage2D)(
@@ -1982,11 +2070,11 @@ public:
 	 */
 	static void Storage3D(
 		Target target,
-		GLsizei levels,
+		SizeType levels,
 		PixelDataInternalFormat internal_format,
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth
+		SizeType width,
+		SizeType height,
+		SizeType depth
 	)
 	{
 		OGLPLUS_GLFUNC(TexStorage3D)(
@@ -2015,7 +2103,7 @@ public:
 	 */
 	static GLuint BaseLevel(Target target)
 	{
-		return GetIntParam(target, GL_TEXTURE_BASE_LEVEL);
+		return GLuint(GetIntParam(target, GL_TEXTURE_BASE_LEVEL));
 	}
 
 	/// Sets the texture base level (TEXTURE_BASE_LEVEL)
@@ -2024,7 +2112,7 @@ public:
 	 *  @glfunref{TexParameter}
 	 *  @gldefref{TEXTURE_BASE_LEVEL}
 	 */
-	static void BaseLevel(Target target, GLuint level)
+	static void BaseLevel(Target target, GLint level)
 	{
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
@@ -2194,7 +2282,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_COMPARE_MODE,
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2229,7 +2317,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_COMPARE_FUNC,
-			GLenum(func)
+			GLint(func)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2285,7 +2373,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_MIN_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2296,7 +2384,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_MAG_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2331,7 +2419,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_MAG_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2366,7 +2454,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_MIN_FILTER,
-			GLenum(filter)
+			GLint(filter)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2564,7 +2652,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GLenum(coord),
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2801,7 +2889,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GLenum(coord),
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2879,6 +2967,31 @@ public:
 	}
 #endif
 
+	/// Sets the wrap parameter (TEXTURE_WRAP_*)
+	/**
+	 *  @glsymbols
+	 *  @glfunref{TexParameter}
+	 *  @gldefref{TEXTURE_WRAP_R}
+	 *  @gldefref{TEXTURE_WRAP_T}
+	 *  @gldefref{TEXTURE_WRAP_S}
+	 */
+	static void Wrap(Target target, TextureWrap mode)
+	{
+		switch(TextureTargetDimensions(target))
+		{
+#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
+			case 3: WrapR(target, mode);
+				OGLPLUS_FALLTHROUGH
+#endif
+			case 2: WrapT(target, mode);
+				OGLPLUS_FALLTHROUGH
+			case 1: WrapS(target, mode);
+				OGLPLUS_FALLTHROUGH
+			case 0: break;
+			default: OGLPLUS_ABORT("Invalid texture wrap dimension");
+		}
+	}
+
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_3
 	/// Gets the depth stencil mode parameter (DEPTH_STENCIL_TEXTURE_MODE)
 	/**
@@ -2910,7 +3023,7 @@ public:
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_DEPTH_STENCIL_TEXTURE_MODE,
-			GLenum(mode)
+			GLint(mode)
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -2929,12 +3042,14 @@ public:
 	 *  @glfunref{GetTexParameter}
 	 *  @gldefref{TEXTURE_CUBE_MAP_SEAMLESS}
 	 */
-	static bool Seamless(Target target)
+	static Boolean Seamless(Target target)
 	{
-		return GetIntParam(
-			target,
-			GL_TEXTURE_CUBE_MAP_SEAMLESS
-		) == GL_TRUE;
+		return Boolean(
+			GetIntParam(
+				target,
+				GL_TEXTURE_CUBE_MAP_SEAMLESS
+			), std::nothrow
+		);
 	}
 
 	/// Sets the seamless cubemap setting
@@ -2944,12 +3059,12 @@ public:
 	 *  @glfunref{TexParameter}
 	 *  @gldefref{TEXTURE_CUBE_MAP_SEAMLESS}
 	 */
-	static void Seamless(Target target, bool enable)
+	static void Seamless(Target target, Boolean enable)
 	{
 		OGLPLUS_GLFUNC(TexParameteri)(
 			GLenum(target),
 			GL_TEXTURE_CUBE_MAP_SEAMLESS,
-			enable?GL_TRUE:GL_FALSE
+			enable._get()
 		);
 		OGLPLUS_CHECK(
 			TexParameteri,
@@ -3001,14 +3116,6 @@ public:
 typedef ObjZeroOps<tag::ExplicitSel, tag::Texture>
 	DefaultTextureOps;
 
-template <>
-class ObjectOps<tag::ExplicitSel, tag::Texture>
- : public ObjZeroOps<tag::ExplicitSel, tag::Texture>
-{
-protected:
-	ObjectOps(void){ }
-};
-
 /// Texture operations with explicit selector
 typedef ObjectOps<tag::ExplicitSel, tag::Texture>
 	TextureOps;
@@ -3030,7 +3137,7 @@ struct TextureTargetAndSlot
 };
 
 // syntax sugar operators
-inline TextureTargetAndSlot operator | (TextureTarget target, GLuint slot)
+inline TextureTargetAndSlot operator | (TextureTarget target, GLint slot)
 {
 	return TextureTargetAndSlot(target, slot);
 }
@@ -3104,18 +3211,9 @@ inline TextureTarget operator << (TextureTarget target, CompareFunction func)
 #endif
 
 // Wrap
-inline TextureTarget operator << (TextureTarget target, TextureWrap wrap)
+inline TextureTarget operator << (TextureTarget target, TextureWrap mode)
 {
-	switch(TextureTargetDimensions(target))
-	{
-#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
-		case 3: DefaultTextureOps::WrapR(target, wrap);
-#endif
-		case 2: DefaultTextureOps::WrapT(target, wrap);
-		case 1: DefaultTextureOps::WrapS(target, wrap);
-		case 0: break;
-		default: assert(!"Invalid texture wrap dimension");
-	}
+	DefaultTextureOps::Wrap(target, mode);
 	return target;
 }
 
@@ -3132,7 +3230,7 @@ inline TextureTargetAndSlot operator << (
 #if GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case 2: DefaultTextureOps::WrapR(tas.target, wrap); break;
 #endif
-		default: assert(!"Invalid texture wrap slot");
+		default: OGLPLUS_ABORT("Invalid texture wrap slot");
 	}
 	return tas;
 }
@@ -3157,7 +3255,7 @@ inline TextureTargetAndSlot operator << (
 		case 1: DefaultTextureOps::SwizzleG(tas.target, swizzle); break;
 		case 2: DefaultTextureOps::SwizzleB(tas.target, swizzle); break;
 		case 3: DefaultTextureOps::SwizzleA(tas.target, swizzle); break;
-		default: assert(!"Invalid texture swizzle slot");
+		default: OGLPLUS_ABORT("Invalid texture swizzle slot");
 	}
 	return tas;
 }
