@@ -551,54 +551,6 @@ public:
 		OGLPLUS_CHECK_SIMPLE(ClearBufferfi);
 	}
 #endif
-
-	/// Returns the color value used for clearing of the color buffer
-	/**
-	 *  @throws Error
-	 *
-	 *  @glsymbols
-	 *  @glfunref{Get}
-	 *  @gldefref{COLOR_CLEAR_VALUE}
-	 */
-	static oglplus::context::RGBAValue ColorClearValue(void)
-	{
-		oglplus::context::RGBAValue result;
-		OGLPLUS_GLFUNC(GetFloatv)(GL_COLOR_CLEAR_VALUE, result._v);
-		OGLPLUS_VERIFY_SIMPLE(GetFloatv);
-		return result;
-	}
-
-	/// Returns the depth value used for clearing of the depth buffer
-	/**
-	 *  @throws Error
-	 *
-	 *  @glsymbols
-	 *  @glfunref{Get}
-	 *  @gldefref{DEPTH_CLEAR_VALUE}
-	 */
-	static GLfloat DepthClearValue(void)
-	{
-		GLfloat result;
-		OGLPLUS_GLFUNC(GetFloatv)(GL_DEPTH_CLEAR_VALUE, &result);
-		OGLPLUS_VERIFY_SIMPLE(GetFloatv);
-		return result;
-	}
-
-	/// Returns the value used for clearing of the stencil buffer
-	/**
-	 *  @throws Error
-	 *
-	 *  @glsymbols
-	 *  @glfunref{Get}
-	 *  @gldefref{STENCIL_CLEAR_VALUE}
-	 */
-	static GLint ClearStencilValue(void)
-	{
-		GLint result;
-		OGLPLUS_GLFUNC(GetIntegerv)(GL_STENCIL_CLEAR_VALUE, &result);
-		OGLPLUS_VERIFY_SIMPLE(GetIntegerv);
-		return result;
-	}
 };
 
 } // namespace context

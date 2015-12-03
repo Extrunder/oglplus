@@ -231,6 +231,7 @@ public:
 	}
 #endif
 
+#if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_2_1
 	/// Returns true if the query result is available
 	/**
 	 *  @glsymbols
@@ -252,6 +253,7 @@ public:
 		);
 		return result;
 	}
+#endif
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
 	/// Get the query result

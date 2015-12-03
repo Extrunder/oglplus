@@ -13,7 +13,9 @@
 #ifndef OGLPLUS_LIMIT_QUERY_1202091518_HPP
 #define OGLPLUS_LIMIT_QUERY_1202091518_HPP
 
+#ifndef __S3E__
 #include <cstdint>
+#endif // __S3E__
 #include <oglplus/enums/limit_query.hpp>
 
 namespace oglplus {

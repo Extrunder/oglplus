@@ -17,6 +17,8 @@
 
 namespace oglplus {
 
+#if GL_VERSION_4_1 || GL_ARB_viewport_array
+
 #if OGLPLUS_DOCUMENTATION_ONLY
 /// Type for the viewport index (implementation-dependent limited) number
 class ViewportIndex
@@ -31,6 +33,8 @@ OGLPLUS_DECLARE_LIMITED_COUNT_TYPE(
 	MAX_VIEWPORTS
 )
 #endif
+
+#endif // GL_VERSION_4_1 || GL_ARB_viewport_array
 
 } // namespace oglplus
 

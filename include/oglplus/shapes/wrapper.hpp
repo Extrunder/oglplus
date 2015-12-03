@@ -50,8 +50,10 @@ protected:
 
 	Context _gl;
 
+#ifndef __S3E__
 	// A vertex array object for the rendered shape
 	Optional<VertexArray> _vao;
+#endif
 
 	// VBOs for the shape's vertex attributes
 	Array<Buffer> _vbos;
@@ -139,7 +141,9 @@ public:
 	 , _shape_instr(std::move(temp._shape_instr))
 	 , _index_info(temp._index_info)
 	 , _gl(std::move(temp._gl))
+#ifndef __S3E__
 	 , _vao(std::move(temp._vao))
+#endif
 	 , _vbos(std::move(temp._vbos))
 	 , _npvs(std::move(temp._npvs))
 	 , _names(std::move(temp._names))
@@ -158,18 +162,22 @@ public:
 
 	void UseInProgram(const ProgramOps& prog)
 	{
+#ifndef __S3E__
 		_vao = VAOForProgram(prog);
 		assert(GetGLName(_vao) != 0u);
+#endif
 	}
 
 	void Use(void)
 	{
-		if (GetGLName(_vao) == 0u) {
-			// WARNING: here should be valid shader (same as in UseInProgram call)!
-			SetupForProgram(Program::Binding());
-		} else {
+#ifndef __S3E__
+		if (GetGLName(_vao) != 0u) {
 			_vao.Bind();
+			return;
 		}
+#endif
+		// WARNING: here should be valid shader (same as in UseInProgram call)!
+		SetupForProgram(Program::Binding());
 	}
 
 	FaceOrientation FaceWinding(void) const

@@ -260,6 +260,8 @@ ActiveUniformBlockInfo::ActiveUniformBlockInfo(
 	_var_name = String(&context.Buffer().front(), std::size_t(strlen));
 }
 
+#endif // GL_VERSION_3_3 || GL_ES_VERSION_3_0
+
 OGLPLUS_LIB_FUNC
 SLDataType ActiveUniformBlockInfo::Type(void) const
 {

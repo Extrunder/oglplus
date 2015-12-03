@@ -407,7 +407,7 @@ inline void HandleError(ErrorType& error)
 		.ERROR_INFO\
 		.SourceFile(__FILE__)\
 		.SourceFunc(__FUNCTION__)\
-		.SourceLine(__LINE__)\
+/*		.SourceLine(__LINE__)*/\
 		.Code(error_code);\
 	HandleError(error);\
 }
