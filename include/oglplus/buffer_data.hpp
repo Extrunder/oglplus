@@ -60,6 +60,13 @@ public:
 	 , _data(&v.front())
 	{ }
 
+	/// Construction from a std::vector
+	template <typename T, typename A>
+	BufferData(const std::vector<T, A>& v)
+	 : _size(v)
+	 , _data(&v.front())
+	{ }
+
 	GLsizeiptr Size(void) const
 	{
 		return _size.Get();

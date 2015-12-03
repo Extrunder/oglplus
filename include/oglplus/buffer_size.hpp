@@ -54,6 +54,11 @@ public:
 	 : _size(sizeof(T)*v.size())
 	{ }
 
+	template <typename T, typename A>
+	BufferSize(const std::vector<T, A>& v)
+	 : _size(sizeof(T)*v.size())
+	{ }
+
 	/// Gets the size in bytes
 	GLsizeiptr Get(void) const
 	{
