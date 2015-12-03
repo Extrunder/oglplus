@@ -244,11 +244,16 @@ int PNGLoader::_read_user_chunk(::png_unknown_chunkp /*chunk*/)
 }
 
 OGLPLUS_LIB_FUNC
-GLenum PNGLoader::_translate_format(GLuint color_type, bool /*has_alpha*/)
+GLenum PNGLoader::_translate_format(GLuint color_type, bool has_alpha)
 {
 	switch(color_type)
 	{
-#if GL_VERSION_2_0 || GL_ES_VERSION_3_0
+#if GL_ES_VERSION_2_0
+        case PNG_COLOR_TYPE_GRAY:
+			return GL_LUMINANCE;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+			return GL_LUMINANCE_ALPHA;
+#elif GL_VERSION_2_0 || GL_ES_VERSION_3_0
 		case PNG_COLOR_TYPE_GRAY:
 			return GL_RED;
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
@@ -264,6 +269,8 @@ GLenum PNGLoader::_translate_format(GLuint color_type, bool /*has_alpha*/)
 		case PNG_COLOR_TYPE_RGB_ALPHA:
 			return GL_RGBA;
 		// TODO other color types
+		case PNG_COLOR_TYPE_PALETTE:
+			return (has_alpha ? GL_RGBA : GL_RGB);
 		default:;
 	}
 	assert(!"Unknown color type!");
