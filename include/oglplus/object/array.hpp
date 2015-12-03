@@ -65,7 +65,14 @@ public:
 	/// Array is moveable
 	Array(Array&& temp)
 	 : _names(std::move(temp._names))
+#if defined(__S3E__) && defined(STLPORT)
+// STLPORT vector doesn't support move-operations
+	{
+		temp._names.clear();
+	}
+#else
 	{ }
+#endif // __S3E__ && STLPORT
 
 	/// Constructs an an array of @p count instances of Object
 	Array(std::size_t count)
