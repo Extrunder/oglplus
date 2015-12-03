@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -59,12 +59,12 @@ GetType(ProgramName program, GLint /*location*/, StrCRef identifier)
 		Identifier(identifier)
 	);
 
-	for(GLint index=0; index!=active_uniforms; ++index)
+	for(GLint index=0; index<active_uniforms; ++index)
 	{
 		OGLPLUS_GLFUNC(GetActiveUniform)(
 			GetGLName(program),
-			index,
-			buffer.size(),
+			GLuint(index),
+			GLsizei(buffer.size()),
 			&length,
 			&size,
 			&type,
@@ -76,12 +76,15 @@ GetType(ProgramName program, GLint /*location*/, StrCRef identifier)
 			Program(program).
 			Identifier(identifier)
 		);
+
+		assert(!(length < 0));
+
 		if(GLsizei(identifier.size()) == length)
 		{
 			if(std::strncmp(
 				identifier.c_str(),
 				buffer.data(),
-				length
+				std::size_t(length)
 			) == 0)
 			{
 				result = type;

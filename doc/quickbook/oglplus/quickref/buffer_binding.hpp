@@ -1,15 +1,14 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_buffer_binding
-namespace oglplus {
 
 #if GL_VERSION_4_0 || GL_ARB_transform_feedback3
 class UniformBufferBindingPoint
- : public __LimitedCount
+ : public __LimitedCount<GL_MAX_UNIFORM_BUFFER_BINDINGS>
 {
 public:
 	UniformBufferBindingPoint(GLuint number); /*<
@@ -23,7 +22,7 @@ public:
 
 #if GL_VERSION_4_0 || GL_ARB_transform_feedback3
 class TransformFeedbackBufferBindingPoint
- : public __LimitedCount
+ : public __LimitedCount<GL_MAX_TRANSFORM_FEEDBACK_BUFFERS>
 {
 public:
 	TransformFeedbackBufferBindingPoint(GLuint number); /*<
@@ -37,7 +36,7 @@ public:
 
 #if GL_VERSION_4_2 || GL_ARB_shader_atomic_counters
 class AtomicCounterBufferBindingPoint
- : public __LimitedCount
+ : public __LimitedCount<GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS>
 {
 public:
 	AtomicCounterBufferBindingPoint(GLuint number); /*<
@@ -51,7 +50,7 @@ public:
 
 #if GL_VERSION_4_3 || GL_ARB_shader_storage_buffer_object
 class ShaderStorageBufferBindingPoint
- : public __LimitedCount
+ : public __LimitedCount<GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS>
 {
 public:
 	ShaderStorageBufferBindingPoint(GLuint number); /*<
@@ -63,6 +62,5 @@ public:
 };
 #endif
 
-} // namespace oglplus
 //]
 

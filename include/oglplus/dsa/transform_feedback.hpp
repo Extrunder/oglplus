@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -14,6 +14,7 @@
 #define OGLPLUS_DSA_TRANSFORM_FEEDBACK_1107121519_HPP
 
 #include <oglplus/transform_feedback.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/object/name.hpp>
 
 namespace oglplus {
@@ -35,26 +36,67 @@ class ObjectOps<tag::DirectState, tag::TransformFeedback>
  : public ObjZeroOps<tag::DirectState, tag::TransformFeedback>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(TransformFeedbackName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::TransformFeedback>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::TransformFeedback> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	GLint GetIntParam(GLenum query) const;
 	GLint GetIntParam(GLenum query, GLuint index) const;
 	GLint64 GetInt64Param(GLenum query, GLuint index) const;
 
-	bool Active(void) const
+	Boolean Active(void) const
 	{
-		return GetIntParam(GL_TRANSFORM_FEEDBACK_ACTIVE) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_TRANSFORM_FEEDBACK_ACTIVE),
+			std::nothrow
+		);
 	}
 
-	bool Paused(void) const
+	Boolean Paused(void) const
 	{
-		return GetIntParam(GL_TRANSFORM_FEEDBACK_PAUSED) == GL_TRUE;
+		return Boolean(
+			GetIntParam(GL_TRANSFORM_FEEDBACK_PAUSED),
+			std::nothrow
+		);
 	}
 
 	ObjectOps& BufferBase(GLuint index, BufferName buffer)
 	{
 		OGLPLUS_GLFUNC(TransformFeedbackBufferBase)(
-			_name,
+			_obj_name(),
 			index,
 			GetGLName(buffer)
 		);
@@ -76,7 +118,7 @@ public:
 	)
 	{
 		OGLPLUS_GLFUNC(TransformFeedbackBufferRange)(
-			_name,
+			_obj_name(),
 			index,
 			GetGLName(buffer),
 			GLintptr(offset.Get()),

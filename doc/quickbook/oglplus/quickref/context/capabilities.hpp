@@ -1,11 +1,10 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_context_Capabilities
-namespace oglplus {
 namespace context {
 
 class Capabilities
@@ -29,11 +28,11 @@ public:
 	See [glfunc Disable].
 	>*/
 
-	static bool IsEnabled(__Capability capability); /*<
+	static __Boolean IsEnabled(__Capability capability); /*<
 	Checks is the specified [^capability] is enabled.
 	See [glfunc IsEnabled].
 	>*/
-	static bool IsEnabled(__Functionality functionality, GLuint number); /*<
+	static __Boolean IsEnabled(__Functionality functionality, GLuint number); /*<
 	Checks is the specified [^functionality] is enabled.
 	See [glfunc IsEnabled].
 	>*/
@@ -47,7 +46,7 @@ public:
 	Disables the specified [^capability] on an [^index]ed target.
 	See [glfunc Disablei].
 	>*/
-	static bool IsEnabled(Capability capability, GLuint index); /*<
+	static __Boolean IsEnabled(Capability capability, GLuint index); /*<
 	Checks if the specified [^capability] is enabled on an [^index]ed target.
 	See [glfunc IsEnabledi].
 	>*/
@@ -55,6 +54,5 @@ public:
 };
 
 } // namespace context
-} // namespace oglplus
 //]
 

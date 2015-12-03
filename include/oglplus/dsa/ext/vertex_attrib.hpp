@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -60,8 +60,8 @@ public:
 		BufferName buffer,
 		GLint values_per_vertex,
 		DataType data_type,
-		bool normalized,
-		GLsizei stride,
+		Boolean normalized,
+		SizeType stride,
 		GLintptr offset
 	) const
 	{
@@ -71,7 +71,7 @@ public:
 			GLuint(_location),
 			values_per_vertex,
 			GLenum(data_type),
-			normalized ? GL_TRUE : GL_FALSE,
+			normalized._get(),
 			stride,
 			offset
 		);
@@ -94,7 +94,7 @@ public:
 		BufferName buffer,
 		GLint values_per_vertex,
 		DataType data_type,
-		GLsizei stride,
+		SizeType stride,
 		GLintptr offset
 	) const
 	{
@@ -164,11 +164,11 @@ public:
 		GLuint n = 1
 	) const
 	{
-		typedef decltype(_get_et((T*)nullptr)) elem_type;
+		typedef decltype(_get_et(TypeTag<T>())) elem_type;
 
 		return Setup(
 			buffer,
-			_get_vpv((T*)nullptr)*n,
+			_get_vpv(TypeTag<T>())*n,
 			typename DataTypeCT<elem_type>::type()
 		);
 	}

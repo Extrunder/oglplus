@@ -1,11 +1,10 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_program_pipeline_common
-namespace oglplus {
 
 template <>
 class __ObjCommonOps<__tag_ProgramPipeline>
@@ -28,22 +27,12 @@ public:
 	>*/
 };
 //]
-//[oglplus_program_pipeline_zero
-template <>
-class __ObjZeroOps<__tag_DirectState, __tag_ProgramPipeline>
- : public __ObjCommonOps<__tag_ProgramPipeline>
-{
-public: /*<
-There are no operations that can work explicitly on program pipeline
-object zero besides binding, so this class just inherits from
-the common program pipeline operations wrapper.
->*/
-};
-//]
 //[oglplus_program_pipeline_1
 template <>
 class __ObjectOps<__tag_DirectState, __tag_ProgramPipeline>
- : public __ObjZeroOps<__tag_DirectState, __tag_ProgramPipeline>
+ : public __ObjZeroOps<__tag_DirectState, __tag_ProgramPipeline> /*<
+Indirectly inherits from __ObjCommonOps_ProgramPipeline<__tag_ProgramPipeline>.
+>*/
 {
 public:
 	struct Properties
@@ -92,16 +81,18 @@ public:
 	See [glfunc GetProgramPipeline], [glfunc GetProgramPipelineInfoLog].
 	>*/
 
-	bool IsValid(void) const; /*<
+	__Boolean IsValid(void) const; /*<
 	Returns true if the pipeline is validated, false otherwise.
 	See [glfunc GetProgramPipeline], [glconst VALIDATE_STATUS].
 	>*/
 
-	void Validate(void) const; /*<
+	ObjectOps& Validate(void); /*<
 	Validates this program pipeline.
 	Throws __ValidationError on failure.
 	See [glfunc ValidateProgramPipeline].
 	>*/
+
+	__Outcome<ObjectOps&> Validate(std::nothrow_t);
 
 	void ActiveShaderProgram(__ProgramName program) const; /*<
 	Make the [^program] active for this program pipeline.
@@ -112,7 +103,7 @@ public:
 	See [glfunc GetProgramPipeline], [glconst ACTIVE_PROGRAM].
 	>*/
 
-	bool HasShader(__ShaderType shader_type) const; /*<
+	__Boolean HasShader(__ShaderType shader_type) const; /*<
 	Returns true if this pipeline contains a shader of the specified type.
 	See [glfunc GetProgramPipeline].
 	>*/
@@ -122,15 +113,18 @@ public:
 	See [glfunc GetProgramPipeline].
 	>*/
 };
+//]
+//[oglplus_program_pipeline_def
 
 typedef ObjectOps<__tag_DirectState, __tag_ProgramPipeline>
 	ProgramPipelineOps;
 
 typedef __Object<ProgramPipelineOps> ProgramPipeline;
 
-typedef __ObjectZero<__ObjZeroOps<__tag_DirectState, __tag_ProgramPipeline>>
+typedef __ObjectZero<__ObjZeroOps<__tag_DirectState, __tag_ProgramPipeline>> /*<
+Indirectly inherits from __ObjCommonOps_ProgramPipeline<__tag_ProgramPipeline>.
+>*/
 	NoProgramPipeline;
 
-} // namespace oglplus
 //]
 

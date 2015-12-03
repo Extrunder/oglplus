@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2012-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2012-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -16,12 +16,15 @@
 #include <oalplus/config.hpp>
 #include <oalplus/fwd.hpp>
 #include <oalplus/alfunc.hpp>
+#include <oalplus/boolean.hpp>
 #include <oalplus/string.hpp>
 #include <oalplus/error/alut.hpp>
 
 #include <oalplus/data_format.hpp>
 
 #include <oalplus/buffer.hpp>
+
+#include <oalplus/utils/type_tag.hpp>
 
 #include <vector>
 
@@ -36,9 +39,12 @@ private:
 
 	static bool _initialize(bool with_context, int argc, char** argv)
 	{
-		bool result = with_context
-		?(OALPLUS_ALUTFUNC(Init)(&argc, argv) == AL_TRUE)
-		:(OALPLUS_ALUTFUNC(InitWithoutContext)(&argc, argv)==AL_TRUE);
+		Boolean result(
+			with_context
+			?(OALPLUS_ALUTFUNC(Init)(&argc, argv))
+			:(OALPLUS_ALUTFUNC(InitWithoutContext)(&argc, argv)),
+			std::nothrow
+		);
 		OALPLUS_CHECK_SIMPLE_ALUT(Init);
 		return result;
 
@@ -105,7 +111,7 @@ private:
 	template <typename T>
 	void _do_load_mem_norm(
 		std::vector<ALfloat>& result,
-		T*,
+		TypeTag<T>,
 		::ALvoid* raw_data,
 		::ALsizei size
 	) const
@@ -141,7 +147,7 @@ private:
 		{
 			_do_load_mem_norm(
 				result,
-				(::ALubyte*)nullptr,
+				TypeTag<ALubyte>(),
 				raw_data,
 				size
 			);
@@ -150,7 +156,7 @@ private:
 		{
 			_do_load_mem_norm(
 				result,
-				(::ALshort*)nullptr,
+				TypeTag<ALshort>(),
 				raw_data,
 				size
 			);
@@ -159,7 +165,7 @@ private:
 		{
 			_do_load_mem_norm(
 				result,
-				(::ALubyte*)nullptr,
+				TypeTag<ALubyte>(),
 				raw_data,
 				size
 			);
@@ -168,21 +174,21 @@ private:
 		{
 			_do_load_mem_norm(
 				result,
-				(::ALshort*)nullptr,
+				TypeTag<ALshort>(),
 				raw_data,
 				size
 			);
 		}
 
 		return std::move(result);
-	};
+	}
 
 	std::vector<ALubyte> _load_memory(
 		::ALvoid* raw_data,
 		::ALsizei size
 	) const
 	{
-		::ALubyte* data = (::ALubyte*)raw_data;
+		::ALubyte* data = reinterpret_cast<ALubyte*>(raw_data);
 		return std::vector<ALubyte>(data, data+size);
 	}
 public:
@@ -208,10 +214,14 @@ public:
 	 *  @alsymbols
 	 *  @alutfunref{CreateBufferFromFile}
 	 */
-	Buffer CreateBufferFromFile(const ALchar* file_path) const
+	Buffer CreateBufferFromFile(const StrCRef& file_path) const
 	{
 		assert(_initialized);
-		ALuint name = OALPLUS_ALUTFUNC(CreateBufferFromFile)(file_path);
+		ALuint name = OALPLUS_ALUTFUNC(CreateBufferFromFile)(
+			file_path.is_nts()?
+			file_path.c_str():
+			file_path.str().c_str()
+		);
 		OALPLUS_VERIFY_SIMPLE_ALUT(CreateBufferFromFile);
 		return Buffer::FromRawName(BufferName(name));
 	}
@@ -256,7 +266,7 @@ public:
 	 *  @alutfunref{LoadMemoryFromFile}
 	 */
 	std::vector<ALfloat> LoadMemoryFromFileNormalized(
-		const ALchar* file_path,
+		const StrCRef& file_path,
 		DataFormat* data_format,
 		ALfloat* frequency
 	) const
@@ -264,7 +274,9 @@ public:
 		::ALenum format = 0;
 		::ALsizei size = 0;
 		::ALvoid* ptr = OALPLUS_ALUTFUNC(LoadMemoryFromFile)(
-			file_path,
+			file_path.is_nts()?
+			file_path.c_str():
+			file_path.str().c_str(),
 			&format,
 			&size,
 			frequency
@@ -288,7 +300,7 @@ public:
 	 *  @alutfunref{LoadMemoryFromFile}
 	 */
 	std::vector<ALubyte> LoadMemoryFromFile(
-		const ALchar* file_path,
+		const StrCRef& file_path,
 		DataFormat* data_format,
 		ALfloat* frequency
 	) const
@@ -296,7 +308,9 @@ public:
 		::ALenum format = 0;
 		::ALsizei size = 0;
 		::ALvoid* ptr = OALPLUS_ALUTFUNC(LoadMemoryFromFile)(
-			file_path,
+			file_path.is_nts()?
+			file_path.c_str():
+			file_path.str().c_str(),
 			&format,
 			&size,
 			frequency
@@ -325,7 +339,7 @@ public:
 	void LoadMemoryFromFile(
 		std::vector<ALubyte>& raw,
 		std::vector<ALfloat>& norm,
-		const ALchar* file_path,
+		const StrCRef& file_path,
 		DataFormat* data_format,
 		ALfloat* frequency
 	) const
@@ -333,7 +347,9 @@ public:
 		::ALenum format = 0;
 		::ALsizei size = 0;
 		::ALvoid* ptr = OALPLUS_ALUTFUNC(LoadMemoryFromFile)(
-			file_path,
+			file_path.is_nts()?
+			file_path.c_str():
+			file_path.str().c_str(),
 			&format,
 			&size,
 			frequency

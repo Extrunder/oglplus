@@ -1,25 +1,14 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_context_BufferClearing_helpers
-namespace oglplus {
 
 typedef __BufferSelectBit ClearBit;
 
 namespace context {
-
-struct RGBAValue /*<
-Helper structure storing the clear color components.
->*/
-{
-	GLfloat Red(void) const;
-	GLfloat Green(void) const;
-	GLfloat Blue(void) const;
-	GLfloat Alpha(void) const;
-};
 
 class ClrBits /*<
 Helper class used by [^__context_BufferClearing::Clear()].
@@ -52,37 +41,44 @@ public:
 	>*/
 };
 //]
-
-//[oglplus_context_BufferClearing
-class BufferClearing
+//[oglplus_context_BufferClearingState
+class BufferClearingState
 {
 public:
 	static void ClearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a); /*<
 	Sets the clear color components.
 	See [glfunc ClearColor].
 	>*/
+	static void ClearColor(const __context_RGBAValue&);
+	static __context_RGBAValue ColorClearValue(void); /*<
+	Returns the value used for clearing of the color buffer.
+	See [glfunc Gen], [glconst COLOR_CLEAR_VALUE].
+	>*/
+
 	static void ClearDepth(GLclampd d); /*<
 	Sets the clear depth value.
 	See [glfunc ClearDepth].
-	>*/
-	static void ClearStencil(GLint s); /*<
-	Sets the clear stencil buffer value.
-	See [glfunc ClearStencil].
-	>*/
-
-	static RGBAValue ColorClearValue(void); /*<
-	Returns the value used for clearing of the color buffer.
-	See [glfunc Gen], [glconst COLOR_CLEAR_VALUE].
 	>*/
 	static GLfloat DepthClearValue(void); /*<
 	Returns the value used for clearing of the depth buffer.
 	See [glfunc Gen], [glconst DEPTH_CLEAR_VALUE].
 	>*/
+
+	static void ClearStencil(GLint s); /*<
+	Sets the clear stencil buffer value.
+	See [glfunc ClearStencil].
+	>*/
 	static GLint ClearStencilValue(void);  /*<
 	Returns the value used for clearing of the depth buffer.
 	See [glfunc Gen], [glconst STENCIL_CLEAR_VALUE].
 	>*/
+};
+//]
+//[oglplus_context_BufferClearingOps
 
+class BufferClearingOps
+{
+public:
 	static void Clear(__Bitfield<__ClearBit> bits); /*<
 	Clears buffers specified by the bits parameter.
 	>*/
@@ -126,6 +122,5 @@ public:
 };
 
 } // namespace context
-} // namespace oglplus
 //]
 

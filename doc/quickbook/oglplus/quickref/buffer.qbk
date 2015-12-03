@@ -1,4 +1,4 @@
-[/ Copyright 2014 Matus Chochlik. Distributed under the Boost       ]
+[/ Copyright 2014-2015 Matus Chochlik. Distributed under the Boost  ]
 [/ Software License, Version 1.0. (See accompanying file            ]
 [/ LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) ]
 
@@ -10,24 +10,20 @@
 
 [import buffer.hpp]
 
-[heading Common buffer operations]
+[heading:common Common buffer operations]
 
 [oglplus_buffer_common_1]
 [oglplus_buffer_common_2]
 [oglplus_buffer_common_3]
 
-[heading Buffer zero operations]
-
-[oglplus_buffer_zero]
-
-[heading Operations with explicit selector]
+[heading:ops Operations with explicit selector]
 
 [oglplus_buffer_1]
 [oglplus_buffer_2]
 
-[heading:def Definitions]
+[heading:def Definition]
 
-[oglplus_buffer_3]
+[oglplus_buffer_def]
 
 [heading:syntax_sugar Syntax sugar operators]
 
@@ -39,11 +35,21 @@
 [import enums/buffer_target.hpp]
 [oglplus_enums_buffer_target]
 
+[heading:target_class Target to class]
+
+[import enums/buffer_target_class.hpp]
+[oglplus_enums_buffer_target_class]
+
 [heading:indexed_target IndexedTarget]
 
 [header oglplus/buffer_target.hpp]
 [import enums/buffer_indexed_target.hpp]
 [oglplus_enums_buffer_indexed_target]
+
+[heading:indexed_target_class Indexed target to class]
+
+[import enums/buffer_indexed_target_class.hpp]
+[oglplus_enums_buffer_indexed_target_class]
 
 [heading:binding Indexed binding point numbers]
 

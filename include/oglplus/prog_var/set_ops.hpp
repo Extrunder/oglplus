@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -15,6 +15,7 @@
 
 #include <oglplus/fwd.hpp>
 #include <oglplus/glfunc.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/error/basic.hpp>
 #include <oglplus/prog_var/callers.hpp>
 
@@ -46,12 +47,12 @@ private:
 		return std::integral_constant<bool, (N > 4)>();
 	}
 
-	template <std::size_t N, typename V>
+	template <std::size_t N, typename LI, typename V>
 	static void _do_set_v(
 		_set_cont,
 		GLuint program,
-		GLuint base_location,
-		GLuint location,
+		LI base_location,
+		LI location,
 		const V* v
 	)
 	{
@@ -67,7 +68,7 @@ private:
 			Program(ProgramName(program)).
 			Index(base_location)
 		);
-		_do_set_v<N - 4, V>(
+		_do_set_v<N - 4, LI, V>(
 			_set_mode<N - 4>(),
 			program,
 			base_location,
@@ -76,12 +77,12 @@ private:
 		);
 	}
 
-	template <std::size_t N, typename V>
+	template <std::size_t N, typename LI, typename V>
 	static void _do_set_v(
 		_set_done,
 		GLuint program,
-		GLuint base_location,
-		GLuint location,
+		LI base_location,
+		LI location,
 		const V* v
 	)
 	{
@@ -99,12 +100,12 @@ private:
 		);
 	}
 
-	template <std::size_t N, typename V>
+	template <std::size_t N, typename LI, typename V>
 	static void _do_set_n(
 		_set_done,
 		GLuint program,
-		GLuint base_location,
-		GLuint location,
+		LI base_location,
+		LI location,
 		GLsizei n,
 		const V* v
 	)
@@ -126,12 +127,12 @@ private:
 
 
 #if !OGLPLUS_NO_VARIADIC_TEMPLATES
-	template <typename S, typename ... V>
+	template <typename LI, typename S, typename ... V>
 	static void _do_set_t(
 		_set_cont,
 		GLuint program,
-		GLuint base_location,
-		GLuint location,
+		LI base_location,
+		LI location,
 		S v0, S v1, S v2, S v3,
 		V ... v
 	)
@@ -157,12 +158,12 @@ private:
 		);
 	}
 
-	template <typename ... V>
+	template <typename LI, typename ... V>
 	static void _do_set_t(
 		_set_done,
 		GLuint program,
-		GLuint base_location,
-		GLuint location,
+		LI base_location,
+		LI location,
 		V ... v
 	)
 	{
@@ -184,8 +185,8 @@ private:
 protected:
 
 #if !OGLPLUS_NO_VARIADIC_TEMPLATES
-	template <typename ... V>
-	static void _do_set(GLuint program, GLuint location, V ... v)
+	template <typename LI, typename ... V>
+	static void _do_set(GLuint program, LI location, V ... v)
 	{
 		static_assert(
 			(sizeof...(V) > 0) && (sizeof...(V) <= M),
@@ -205,8 +206,8 @@ protected:
 		);
 	}
 #else
-	template <typename V>
-	static void _do_set(GLuint program, GLuint location, V v0)
+	template <typename LI, typename V>
+	static void _do_set(GLuint program, LI location, V v0)
 	{
 		std::integral_constant<std::size_t, 1> nparam;
 		Callers::_call_set_t(
@@ -222,8 +223,8 @@ protected:
 		);
 	}
 
-	template <typename V>
-	static void _do_set(GLuint program, GLuint location, V v0, V v1)
+	template <typename LI, typename V>
+	static void _do_set(GLuint program, LI location, V v0, V v1)
 	{
 		std::integral_constant<std::size_t, 2> nparam;
 		Callers::_call_set_t(
@@ -235,12 +236,12 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+			Index(location)
 		);
 	}
 
-	template <typename V>
-	static void _do_set(GLuint program, GLuint location, V v0, V v1, V v2)
+	template <typename LI, typename V>
+	static void _do_set(GLuint program, LI location, V v0, V v1, V v2)
 	{
 		std::integral_constant<std::size_t, 3> nparam;
 		Callers::_call_set_t(
@@ -252,12 +253,12 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+			Index(location)
 		);
 	}
 
-	template <typename V>
-	static void _do_set(GLuint program, GLuint location, V v0, V v1, V v2, V v3)
+	template <typename LI, typename V>
+	static void _do_set(GLuint program, LI location, V v0, V v1, V v2, V v3)
 	{
 		std::integral_constant<std::size_t, 4> nparam;
 		Callers::_call_set_t(
@@ -269,19 +270,19 @@ protected:
 		OGLPLUS_CHECK_CTXT(
 			ProgVarError,
 			Program(ProgramName(program)).
-			Index(base_location)
+			Index(location)
 		);
 	}
 #endif //NO_VARIADIC_TEMPLATES
 
-	template <std::size_t Cols, typename V>
-	static void _do_set(GLuint program, GLuint location, const V* v)
+	template <std::size_t Cols, typename LI, typename V>
+	static void _do_set(GLuint program, LI location, const V* v)
 	{
 		static_assert(
 			(Cols > 0) && (Cols <= M),
 			"The number of elements must be between 1 and M"
 		);
-		_do_set_v<Cols, V>(
+		_do_set_v<Cols, LI, V>(
 			_set_mode<Cols>(),
 			program,
 			location,
@@ -290,14 +291,14 @@ protected:
 		);
 	}
 
-	template <std::size_t Cols, typename V>
-	static void _do_set_many(GLuint prog, GLuint location, GLsizei n, const V*v)
+	template <std::size_t Cols, typename LI, typename V>
+	static void _do_set_many(GLuint prog, LI location, GLsizei n, const V*v)
 	{
 		static_assert(
 			(Cols > 0) && (Cols <= M),
 			"The number of elements must be between 1 and M"
 		);
-		_do_set_n<Cols, V>(
+		_do_set_n<Cols, LI, V>(
 			_set_mode<Cols>(),
 			prog,
 			location,
@@ -319,12 +320,12 @@ private:
 
 	OGLPLUS_ERROR_REUSE_CONTEXT(Setters)
 protected:
-	template <std::size_t Cols, std::size_t Rows, typename V>
+	template <std::size_t Cols, std::size_t Rows, typename LI, typename V>
 	static void _do_set_mat(
 		GLuint program,
-		GLuint location,
+		LI location,
 		GLsizei count,
-		bool transpose,
+		Boolean transpose,
 		V* v
 	)
 	{
@@ -342,7 +343,7 @@ protected:
 			program,
 			location,
 			count,
-			transpose ? GL_TRUE : GL_FALSE,
+			transpose._get(),
 			Setters::_fns_v(cols, rows, v),
 			v
 		);
@@ -354,10 +355,10 @@ protected:
 	}
 
 #if !OGLPLUS_NO_VARIADIC_TEMPLATES
-	template <std::size_t Cols, typename V, typename ... P>
+	template <std::size_t Cols, typename LI, typename V, typename ... P>
 	static void _do_set_mat_p(
 		GLuint program,
-		GLuint location,
+		LI location,
 		bool transpose,
 		V v,
 		P ... p
@@ -372,7 +373,7 @@ protected:
 			"Not enough values for the last row"
 		);
 		V values[] = {v, V(p)...};
-		_do_set_mat<Cols, (sizeof...(P) + 1) / Cols, V>(
+		_do_set_mat<Cols, (sizeof...(P) + 1) / Cols, LI, V>(
 			program,
 			location,
 			1,

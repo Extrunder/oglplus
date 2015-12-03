@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{028_depth_map_sss}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -40,7 +40,7 @@ private:
 	{
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4  CameraMatrix,ModelMatrix;"
 
 			"in vec4 Position;"
@@ -53,7 +53,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"void main(void)"
 			"{"
 			"}"
@@ -85,7 +85,7 @@ private:
 	{
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4  LightMatrix, ModelMatrix;"
 			"uniform vec3 LightPosition;"
 			"uniform vec3 CameraPosition;"
@@ -107,7 +107,7 @@ private:
 
 		GeometryShader gs;
 		gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout (triangles) in;"
 			"layout (triangle_strip, max_vertices=3) out;"
 
@@ -146,7 +146,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform sampler2D DepthMap;"
 
@@ -207,8 +207,8 @@ private:
 		{
 			float u = std::rand() / float(RAND_MAX);
 			float v = std::rand() / float(RAND_MAX);
-			float x = std::sqrt(v) * std::cos(2*3.1415*u);
-			float y = std::sqrt(v) * std::sin(2*3.1415*u);
+			float x = float(std::sqrt(v) * std::cos(2*3.1415*u));
+			float y = float(std::sqrt(v) * std::sin(2*3.1415*u));
 			depth_offs[i].Set(x, y);
 		}
 
@@ -344,7 +344,7 @@ public:
 		auto light =
 			CamMatrixf::Orbiting(
 				shape.BoundingSphere().Center(),
-				shape.BoundingSphere().Radius()*10.0,
+				shape.BoundingSphere().Radius()*10.0f,
 				FullCircles(time / 23.0),
 				Degrees(35 + SineWave(time / 31.0) * 50)
 			);
@@ -365,7 +365,7 @@ public:
 		auto camera =
 			CamMatrixf::Orbiting(
 				shape.BoundingSphere().Center(),
-				shape.BoundingSphere().Radius()*2.8,
+				shape.BoundingSphere().Radius()*2.8f,
 				FullCircles(time / 17.0),
 				Degrees(SineWave(time / 19.0) * 80)
 			);
@@ -378,7 +378,7 @@ public:
 		auto cam_proj =
 			CamMatrixf::PerspectiveX(
 				ArcSin(bs_rad/cam_tgt_dist)*2,
-				double(width)/height,
+				width, height,
 				cam_tgt_dist-bs_rad,
 				cam_tgt_dist+bs_rad
 			);

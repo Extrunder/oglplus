@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -41,7 +41,7 @@ namespace oalplus {
 class Error
  : public std::runtime_error
 {
-private:
+protected:
 	ALenum _code;
 #if !OALPLUS_ERROR_NO_FILE
 	const char* _file;
@@ -61,18 +61,41 @@ private:
 #if !OALPLUS_ERROR_NO_AL_SYMBOL
 	const char* _enumpar_name;
 	ALenum _enumpar;
-	ALint _index;
 #endif
 
 public:
-	static const char* Message(ALenum error_code)
-	{
-		return ::alGetString(error_code);
-	}
-
 	Error(const char* message);
 
-	~Error(void) throw() { }
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	Error(const Error&) = default;
+#else
+	Error(const Error& that)
+	 : _code(that._code)
+#if !OALPLUS_ERROR_NO_FILE
+	 , _file(that._file)
+#endif
+#if !OALPLUS_ERROR_NO_FUNC
+	 , _func(that._func)
+#endif
+#if !OALPLUS_ERROR_NO_LINE
+	 , _line(that._line)
+#endif
+#if !OALPLUS_ERROR_NO_AL_LIB
+	 , _allib_name(that._alllib_name)
+#endif
+#if !OALPLUS_ERROR_NO_AL_FUNC
+	 , _alfunc_name(that._alfunc_name)
+#endif
+#if !OALPLUS_ERROR_NO_AL_SYMBOL
+	 , _enumpar_name(that._enumpar_name)
+	 , _enumpar(that._enumpar)
+#endif
+	{ }
+#endif
+
+	~Error(void)
+	OGLPLUS_NOTHROW
+	{ }
 
 	Error& NoInfo(void) { return *this; }
 
@@ -255,6 +278,24 @@ inline void HandleError(ErrorType& error)
 }
 
 // Macro for generic error handling
+#define OALPLUS_HANDLE_ERROR(\
+	ERROR_CODE,\
+	MESSAGE,\
+	ERROR,\
+	ERROR_INFO\
+)\
+{\
+	ERROR error(MESSAGE);\
+	(void)error\
+		.ERROR_INFO\
+		.SourceFile(__FILE__)\
+		.SourceFunc(__FUNCTION__)\
+		.SourceLine(__LINE__)\
+		.Code(error_code);\
+	HandleError(error);\
+}
+
+// Macro for generic error handling
 #define OALPLUS_HANDLE_ERROR_IF(\
 	CONDITION,\
 	ERROR_CODE,\
@@ -265,45 +306,13 @@ inline void HandleError(ErrorType& error)
 {\
 	ALenum error_code = ERROR_CODE;\
 	if(CONDITION)\
-	{\
-		ERROR error(MESSAGE);\
-		(void)error\
-			.ERROR_INFO\
-			.SourceFile(__FILE__)\
-			.SourceFunc(__FUNCTION__)\
-			.SourceLine(__LINE__)\
-			.Code(error_code);\
-		HandleError(error);\
-	}\
+		OALPLUS_HANDLE_ERROR(\
+			error_code,\
+			MESSAGE,\
+			ERROR,\
+			ERROR_INFO\
+		)\
 }
-
-#define OALPLUS_ALFUNC_CHECK(FUNC_NAME, ERROR, ERROR_INFO)\
-	OALPLUS_HANDLE_ERROR_IF(\
-		error_code != AL_NO_ERROR,\
-		alGetError(),\
-		ERROR::Message(error_code),\
-		ERROR,\
-		ERROR_INFO.\
-		ALFunc(FUNC_NAME)\
-	)
-
-#define OALPLUS_CHECK(ALFUNC, ERROR, ERROR_INFO) \
-	OALPLUS_ALFUNC_CHECK(#ALFUNC, ERROR, ERROR_INFO)
-
-#define OALPLUS_CHECK_SIMPLE(ALFUNC) \
-	OALPLUS_CHECK(ALFUNC, Error, NoInfo())
-
-#if !OALPLUS_LOW_PROFILE
-#define OALPLUS_VERIFY(ALFUNC, ERROR, ERROR_INFO) \
-	OALPLUS_CHECK(ALFUNC, ERROR, ERROR_INFO)
-#else
-#define OALPLUS_VERIFY(ALFUNC, ERROR, ERROR_INFO)
-#endif
-
-#define OALPLUS_VERIFY_SIMPLE(ALFUNC) \
-	OALPLUS_CHECK(ALFUNC, Error, NoInfo())
-
-#define OALPLUS_IGNORE(ALLIB, PARAM) ::ALLIB ## GetError();
 
 } // namespace oalplus
 

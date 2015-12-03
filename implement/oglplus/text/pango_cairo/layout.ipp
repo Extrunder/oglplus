@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2013 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -17,12 +17,12 @@ OGLPLUS_LIB_FUNC
 PangoCairoLayout::PangoCairoLayout(
 	PangoCairoRendering& parent,
 	const PangoCairoFont& font,
-	GLsizei capacity
+	SizeType capacity
 ): _parent(parent)
  , _font(font)
  , _capacity(capacity)
  , _curr_width(0)
- , _width(font._essence->ApproxGlyphWidth()*_capacity*1.2f)
+ , _width(int(font._essence->ApproxGlyphWidth()*_capacity*1.2f))
  , _height(font._essence->Height())
  , _surface(
 	::cairo_image_surface_create(CAIRO_FORMAT_A8, _width, _height),
@@ -56,7 +56,7 @@ void PangoCairoLayout::Set(const char* c_str, const std::size_t size)
 		::g_object_unref
 	);
 	// set the text
-	::pango_layout_set_text(layout, c_str, size);
+	::pango_layout_set_text(layout, c_str, int(size));
 	::pango_layout_set_font_description(
 		layout,
 		_font._essence->_font_desc

@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -34,6 +34,7 @@ private:
 	GLfloat _value;
 	GLfloat _limit;
 public:
+	static const char* MessageNeg(void);
 	static const char* Message(void);
 
 	LimitError(const char* message)
@@ -48,8 +49,18 @@ public:
 		return *this;
 	}
 
+	LimitError& Value(GLuint value)
+	{
+		_value = static_cast<GLfloat>(value);
+		return *this;
+	}
+
 	/// The value assigned to the limited-type variable
-	GLfloat Value(void) const { return _value; }
+	GLfloat Value(void) const
+	OGLPLUS_OVERRIDE
+	{
+		return _value;
+	}
 
 	LimitError& Limit(GLfloat limit)
 	{
@@ -57,8 +68,17 @@ public:
 		return *this;
 	}
 
+	LimitError& Limit(GLuint limit)
+	{
+		_limit = static_cast<GLfloat>(limit);
+		return *this;
+	}
 	/// The allowed limit of the limited-type
-	GLfloat Limit(void) const { return _limit; }
+	GLfloat Limit(void) const
+	OGLPLUS_OVERRIDE
+	{
+		return _limit;
+	}
 };
 
 } // namespace oglplus

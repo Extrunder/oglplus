@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{030_cube_mapping}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -64,8 +64,8 @@ private:
 		for(GLint i=0; i!=instance_count; ++i)
 		{
 			int id = i;
-			float omax = (cubes_per_side - 1)*0.5;
-			float imax = (cpe-1)*0.5;
+			float omax = (cubes_per_side - 1)*0.5f;
+			float imax = (cpe-1)*0.5f;
 			float dx, dy, dz;
 			if(id < cpf)
 			{
@@ -196,7 +196,7 @@ public:
 	{
 		// Set the vertex shader source
 		sphere_vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform float Time;"
 			"uniform mat4 CameraMatrix, ProjectionMatrix;"
 			"uniform vec4 LightPos;"
@@ -246,7 +246,7 @@ public:
 
 		// set the fragment shader source
 		sphere_fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4 CameraMatrix;"
 			"uniform samplerCube CubeTex;"
 			"in vec3 vertNormal;"
@@ -344,7 +344,7 @@ public:
 
 		// Set the vertex shader source
 		cube_vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"uniform vec4 LightPos;"
 			"uniform vec3 Offset;"
@@ -371,7 +371,7 @@ public:
 
 		// set the fragment shader source
 		cube_fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec3 vertColor;"
 			"in vec3 vertNormal;"
 			"in vec3 vertLight;"
@@ -402,7 +402,7 @@ public:
 
 		// Set the vertex shader source
 		cmap_vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"uniform vec4 LightPos;"
 			"uniform vec3 Offset;"
 			"in vec4 Position;"
@@ -424,7 +424,7 @@ public:
 
 		// Set the geometry shader source
 		cmap_gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout(triangles) in;"
 			"layout(triangle_strip, max_vertices = 18) out;"
 			"uniform mat4 ProjectionMatrix;"
@@ -546,11 +546,8 @@ public:
 
 		Texture::Active(1);
 		gl.Bound(Texture::Target::CubeMap, dtex)
-			.MinFilter(TextureMinFilter::Nearest)
-			.MagFilter(TextureMagFilter::Nearest)
-			.WrapS(TextureWrap::ClampToEdge)
-			.WrapT(TextureWrap::ClampToEdge)
-			.WrapR(TextureWrap::ClampToEdge);
+			.Filter(TextureFilter::Nearest)
+			.Wrap(TextureWrap::ClampToEdge);
 
 		for(int i=0; i!=6; ++i)
 		{
@@ -568,11 +565,8 @@ public:
 
 		Texture::Active(0);
 		gl.Bound(Texture::Target::CubeMap, ctex)
-			.MinFilter(TextureMinFilter::Linear)
-			.MagFilter(TextureMagFilter::Linear)
-			.WrapS(TextureWrap::ClampToEdge)
-			.WrapT(TextureWrap::ClampToEdge)
-			.WrapR(TextureWrap::ClampToEdge);
+			.Filter(TextureFilter::Linear)
+			.Wrap(TextureWrap::ClampToEdge);
 
 		for(int i=0; i!=6; ++i)
 		{
@@ -643,7 +637,7 @@ public:
 		gl.Viewport(width, height);
 		auto persp = CamMatrixf::PerspectiveX(
 			Degrees(70),
-			double(width)/height,
+			float(width)/height,
 			1, 20
 		);
 		// clear it
@@ -675,7 +669,7 @@ public:
 		sphere_projection_matrix.Set(persp);
 		sphere_camera_matrix.Set(cameraMatrix);
 		sphere_light_pos.Set(lightPos);
-		sphere_time.Set(time);
+		sphere_time.Set(float(time));
 
 		gl.FrontFace(make_sphere.FaceWinding());
 		sphere.Bind();

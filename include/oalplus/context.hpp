@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2012-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2012-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -20,6 +20,7 @@
 #include <oalplus/context_attrib.hpp>
 #include <oalplus/string_query.hpp>
 #include <oalplus/attrib_list.hpp>
+#include <oalplus/error/al.hpp>
 #include <oalplus/error/alc.hpp>
 
 #include <oalplus/detail/sep_str_range.hpp>
@@ -95,7 +96,9 @@ public:
 	 */
 	static const char* Vendor(void)
 	{
-		return (const char*)GetString(StringQuery::Vendor);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Vendor)
+		);
 	}
 
 	/// Returns the version string
@@ -106,7 +109,9 @@ public:
 	 */
 	static const char* Version(void)
 	{
-		return (const char*)GetString(StringQuery::Version);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Version)
+		);
 	}
 
 	/// Returns the renderer name
@@ -117,7 +122,9 @@ public:
 	 */
 	static const char* Renderer(void)
 	{
-		return (const char*)GetString(StringQuery::Renderer);
+		return reinterpret_cast<const char*>(
+			GetString(StringQuery::Renderer)
+		);
 	}
 
 #if OALPLUS_DOCUMENTATION_ONLY
@@ -132,7 +139,9 @@ public:
 	static aux::SepStrRange Extensions(void)
 	{
 		return aux::SepStrRange(
-			(const char*)GetString(StringQuery::Extensions)
+			reinterpret_cast<const char*>(
+				GetString(StringQuery::Extensions)
+			)
 		);
 	}
 #endif
@@ -327,7 +336,7 @@ public:
 };
 
 /// A context that is made current right after construction
-class CurrentContext
+class ContextMadeCurrent
  : public Context
 {
 public:
@@ -337,7 +346,7 @@ public:
 	 *  @alcfunref{CreateContext}
 	 *  @alcfunref{MakeContextCurrent}
 	 */
-	CurrentContext(const Device& device)
+	ContextMadeCurrent(const Device& device)
 	 : Context(device)
 	{
 		MakeCurrent();
@@ -349,7 +358,7 @@ public:
 	 *  @alcfunref{CreateContext}
 	 *  @alcfunref{MakeContextCurrent}
 	 */
-	CurrentContext(
+	ContextMadeCurrent(
 		const Device& device,
 		const FinishedContextAttribs& attribs
 	): Context(device, attribs)
@@ -357,12 +366,12 @@ public:
 		MakeCurrent();
 	}
 
-	/// CurrentContext is move-constructible
+	/// ContextMadeCurrent is move-constructible
 	/**
 	 *  @alsymbols
 	 *  @alcfunref{MakeContextCurrent}
 	 */
-	CurrentContext(CurrentContext&& tmp)
+	ContextMadeCurrent(ContextMadeCurrent&& tmp)
 	 : Context(static_cast<Context&&>(tmp))
 	{
 		if(_context) MakeCurrent();

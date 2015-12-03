@@ -1,11 +1,10 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_sampler_common
-namespace oglplus {
 
 template <>
 class __ObjCommonOps<__tag_Sampler>
@@ -16,37 +15,27 @@ public:
 	Sampler bind target.
 	>*/
 
-	static __SamplerName Binding(Target target); /*<
+	static __SamplerName Binding(__TextureUnitSelector target); /*<
 	Returns the sampler currently bound to the specified [^target].
 	See [glfunc GetIntegerv].
 	>*/
-	static void Bind(Target target, __SamplerName sampler); /*<
+	static void Bind(__TextureUnitSelector target, __SamplerName sampler); /*<
 	Binds the specified [^sampler] to the specified [^target].
 	See [glfunc BindSampler].
 	>*/
 
-	void Bind(Target target) const; /*<
+	void Bind(__TextureUnitSelector target) const; /*<
 	Binds [^this] sampler to the specified [^target].
 	See [glfunc BindSampler].
 	>*/
 };
 //]
-//[oglplus_sampler_zero
-template <>
-class __ObjZeroOps<__tag_DirectState, __tag_Sampler>
- : public __ObjCommonOps<__tag_Sampler>
-{
-public: /*<
-There are no operations that can work explicitly on sampler
-object zero besides binding, so this class just inherits from
-the common sampler operations wrapper.
->*/
-};
-//]
 //[oglplus_sampler_1
 template <>
 class __ObjectOps<__tag_DirectState, __tag_Sampler>
- : public __ObjZeroOps<__tag_DirectState, __tag_Sampler>
+ : public __ObjZeroOps<__tag_DirectState, __tag_Sampler> /*<
+Indirectly inherits from __ObjCommonOps_Sampler<__tag_Sampler>.
+>*/
 {
 public:
 	__Vector<GLfloat, 4> BorderColor(__TypeTag<GLfloat>) const; /*<
@@ -107,6 +96,8 @@ public:
 	See [glfunc SamplerParameter], [glconst TEXTURE_MIN_FILTER],
 	[glconst TEXTURE_MAG_FILTER].
 	>*/
+//]
+//[oglplus_sampler_2
 
 	__TextureWrap Wrap(__TextureWrapCoord coord) const; /*<
 	Returns the currently set texture wrap mode on the specified
@@ -140,8 +131,7 @@ public:
 	>*/
 	void WrapT(TextureWrap mode);
 	void WrapR(TextureWrap mode);
-//]
-//[oglplus_sampler_2
+
 	GLfloat LODBias(void) const; /*<
 	Returns the currently set texture level-of-detail bias value
 	of this sampler object.
@@ -173,19 +163,19 @@ public:
 	>*/
 
 #if GL_ARB_seamless_cubemap_per_texture
-	bool Seamless(void) const; /*<
+	__Boolean Seamless(void) const; /*<
 	Returns the value of the seamless-cube map setting of this
 	sampler object.
 	See [glfunc GetSamplerParameter], [glconst TEXTURE_CUBE_MAP_SEAMLESS].
 	>*/
-	void Seamless(bool enable); /*<
+	void Seamless(__Boolean enable); /*<
 	Sets the seamless cubemap setting for this sampler object.
 	See [glfunc SamplerParameter], [glconst TEXTURE_CUBE_MAP_SEAMLESS].
 	>*/
 #endif
 };
 //]
-//[oglplus_sampler_3
+//[oglplus_sampler_def
 typedef ObjectOps<__tag_DirectState, __tag_Sampler>
 	SamplerOps;
 
@@ -253,6 +243,5 @@ SamplerOps& operator << (
 	const Vector<T, 4>& col
 ); /*< Border color >*/
 
-} // namespace oglplus
 //]
 

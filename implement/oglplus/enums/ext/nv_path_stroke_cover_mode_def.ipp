@@ -4,7 +4,7 @@
 //  Edit the source 'source/enums/oglplus/ext/nv_path_stroke_cover_mode.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -14,7 +14,7 @@
 #endif
 
 #if defined GL_CONVEX_HULL_NV
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined ConvexHull
@@ -30,7 +30,7 @@
 # endif
 #endif
 #if defined GL_BOUNDING_BOX_NV
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BoundingBox
@@ -46,7 +46,7 @@
 # endif
 #endif
 #if defined GL_BOUNDING_BOX_OF_BOUNDING_BOXES_NV
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined BoundingBoxOfBoundingBoxes
@@ -62,7 +62,7 @@
 # endif
 #endif
 #if defined GL_PATH_STROKE_COVER_MODE_NV
-# if OGLPLUS_LIST_NEEDS_COMMA
+# ifdef OGLPLUS_LIST_NEEDS_COMMA
    OGLPLUS_ENUM_CLASS_COMMA
 # endif
 # if defined StrokeCover

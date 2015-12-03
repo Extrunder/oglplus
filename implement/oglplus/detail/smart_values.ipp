@@ -4,7 +4,7 @@
 //  Edit the enumeration source files in 'source/enums/oglplus'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
@@ -214,6 +214,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::FileName FileName = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Fill Fill = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FillCover FillCover = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FillMode FillMode = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::FillRectangle FillRectangle = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FirstToRest FirstToRest = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FirstVertexConvention FirstVertexConvention = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Fixed Fixed = {};
@@ -252,6 +253,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::ForwardCompatible ForwardCompatible = {}
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FractionalEven FractionalEven = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FractionalOdd FractionalOdd = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Fragment Fragment = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::FragmentCoverageToColor FragmentCoverageToColor = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FragmentShader FragmentShader = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FragmentShaderDerivative FragmentShaderDerivative = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::FragmentShaderInvocations FragmentShaderInvocations = {};
@@ -379,6 +381,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::LoseContextOnReset LoseContextOnReset = 
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Low Low = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::LowFloat LowFloat = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::LowInt LowInt = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::LowerLeft LowerLeft = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Luminance Luminance = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::LuminanceAlpha LuminanceAlpha = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MapCoherent MapCoherent = {};
@@ -501,7 +504,6 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::MinFragmentInterpolationOffset MinFragme
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MinMapBufferAlignment MinMapBufferAlignment = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MinProgramTexelOffset MinProgramTexelOffset = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MinProgramTextureGatherOffset MinProgramTextureGatherOffset = {};
-OGLPLUS_CONSTEXPR oglplus::smart_enums::MinSampleShadingValue MinSampleShadingValue = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MirrorClampToEdge MirrorClampToEdge = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MirroredRepeat MirroredRepeat = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::MiterRevert MiterRevert = {};
@@ -516,6 +518,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::Nand Nand = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Nearest Nearest = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::NearestMipmapLinear NearestMipmapLinear = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::NearestMipmapNearest NearestMipmapNearest = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::NegativeOneToOne NegativeOneToOne = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Never Never = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Nicest Nicest = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::NoError NoError = {};
@@ -552,7 +555,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::PackCompressedBlockHeight PackCompressed
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackCompressedBlockSize PackCompressedBlockSize = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackCompressedBlockWidth PackCompressedBlockWidth = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackImageHeight PackImageHeight = {};
-OGLPLUS_CONSTEXPR oglplus::smart_enums::PackLsbFirst PackLsbFirst = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::PackLSBFirst PackLSBFirst = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackRowLength PackRowLength = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackSkipImages PackSkipImages = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::PackSkipPixels PackSkipPixels = {};
@@ -840,7 +843,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackCompressedBlockHeight UnpackCompre
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackCompressedBlockSize UnpackCompressedBlockSize = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackCompressedBlockWidth UnpackCompressedBlockWidth = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackImageHeight UnpackImageHeight = {};
-OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackLsbFirst UnpackLsbFirst = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackLSBFirst UnpackLSBFirst = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackRowLength UnpackRowLength = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackSkipImages UnpackSkipImages = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnpackSkipPixels UnpackSkipPixels = {};
@@ -893,6 +896,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::UnsignedShort_5_6_5 UnsignedShort_5_6_5 
 OGLPLUS_CONSTEXPR oglplus::smart_enums::UnsignedShort_5_6_5_Rev UnsignedShort_5_6_5_Rev = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Unsupported Unsupported = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Unsynchronized Unsynchronized = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::UpperLeft UpperLeft = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Use Use = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Vendor Vendor = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Version Version = {};
@@ -912,6 +916,7 @@ OGLPLUS_CONSTEXPR oglplus::smart_enums::Write Write = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::WriteOnly WriteOnly = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Xor Xor = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::Zero Zero = {};
+OGLPLUS_CONSTEXPR oglplus::smart_enums::ZeroToOne ZeroToOne = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::_0 _0 = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::_1 _1 = {};
 OGLPLUS_CONSTEXPR oglplus::smart_enums::_10 _10 = {};

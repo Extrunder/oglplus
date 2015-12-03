@@ -10,6 +10,11 @@
 
 [import drawing.hpp]
 
-[oglplus_context_Drawing]
+[heading:state State]
+[oglplus_context_DrawingState]
+
+[heading:ops Operations]
+[oglplus_context_DrawingOps1]
+[oglplus_context_DrawingOps2]
 
 [endsect]

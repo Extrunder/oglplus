@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{034_billiard_balls}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -61,7 +61,7 @@ public:
 	CommonVertShader(void)
 	 : VertexShader(
 		ObjectDesc("Common vertex shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform mat4 ModelMatrix;"
 		"uniform mat3 TextureMatrix;"
 		"uniform vec3 CameraPosition, LightPosition;"
@@ -101,7 +101,7 @@ public:
 	DefaultGeomShader(void)
 	 : GeometryShader(
 		ObjectDesc("Default geometry shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"layout(triangles) in;"
 		"layout(triangle_strip, max_vertices = 3) out;"
 		"uniform mat4 CameraMatrix, ProjectionMatrix;"
@@ -158,7 +158,7 @@ public:
 	CubemapGeomShader(void)
 	 : GeometryShader(
 		ObjectDesc("Cubemap geometry shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"layout(triangles) in;"
 		"layout(triangle_strip, max_vertices = 18) out;"
 		"uniform mat4 ProjectionMatrix, CameraMatrix;"
@@ -289,7 +289,7 @@ public:
 	ClothFragmentShader(void)
 	 : FragmentShader(
 		ObjectDesc("Cloth fragment shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform vec3 Color1, Color2;"
 		"uniform sampler2D ClothTex, LightMap;"
 		"in vec3 geomNormal;"
@@ -371,7 +371,7 @@ public:
 	BallFragmentShader(void)
 	 : FragmentShader(
 		ObjectDesc("Ball fragment shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform vec3 Color1, Color2;"
 		"uniform sampler2DArray NumberTex;"
 		"uniform samplerCube ReflectTex;"
@@ -459,7 +459,7 @@ public:
 	LightmapVertShader(void)
 	 : VertexShader(
 		ObjectDesc("Lightmap vertex shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform mat4 TransformMatrix;"
 		"in vec4 Position;"
 		"out vec3 vertPosition;"
@@ -479,7 +479,7 @@ public:
 	LightmapFragShader(void)
 	 : FragmentShader(
 		ObjectDesc("Lightmap fragment shader"),
-		StrCRef("#version 330\n"
+		StrCRef("#version 150\n"
 		"uniform vec3 LightPosition;"
 		"uniform vec3 BallPositions[" OGLPLUS_EXAMPLE_034BB_BALL_COUNT_TXT "];"
 		"in vec3 vertPosition;"
@@ -582,7 +582,7 @@ public:
 				attr.Setup<GLfloat>(npv);
 				attr.Enable();
 			}
-			catch(Error& error)
+			catch(Error&)
 			{ }
 		}
 	}
@@ -705,12 +705,12 @@ public:
 		ball_pp.UseStages(geom_prog).Geometry();
 		ball_pp.UseStages(ball_prog).Fragment();
 
-		const Vec3f light_position(0.0, 20.0, -2.0);
+		const Vec3f light_position(0.0f, 20.0f, -2.0f);
 
 		vert_prog.light_position.Set(light_position);
 
-		cloth_prog.color_1.Set(Vec3f(0.1, 0.3, 0.1));
-		cloth_prog.color_2.Set(Vec3f(0.3, 0.4, 0.3));
+		cloth_prog.color_1.Set(Vec3f(0.1f, 0.3f, 0.1f));
+		cloth_prog.color_2.Set(Vec3f(0.3f, 0.4f, 0.3f));
 
 		Texture::Active(0);
 		cloth_prog.light_map.Set(0);
@@ -764,9 +764,7 @@ public:
 				.BorderColor(Vec4f(0,0,0,0))
 				.MinFilter(TextureMinFilter::LinearMipmapLinear)
 				.MagFilter(TextureMagFilter::Linear)
-				.WrapS(TextureWrap::ClampToBorder)
-				.WrapT(TextureWrap::ClampToBorder)
-				.WrapR(TextureWrap::ClampToBorder);
+				.Wrap(TextureWrap::ClampToBorder);
 
 			for(GLuint i=0; i!=ball_count; ++i)
 			{
@@ -838,11 +836,8 @@ public:
 		for(GLuint b=0; b!=ball_count; ++b)
 		{
 			gl.Bound(Texture::Target::CubeMap, cubemaps[b])
-				.MinFilter(TextureMinFilter::Linear)
-				.MagFilter(TextureMagFilter::Linear)
-				.WrapS(TextureWrap::ClampToEdge)
-				.WrapT(TextureWrap::ClampToEdge)
-				.WrapR(TextureWrap::ClampToEdge);
+				.Filter(TextureFilter::Linear)
+				.Wrap(TextureWrap::ClampToEdge);
 
 			for(int f=0; f!=6; ++f)
 			{
@@ -880,15 +875,15 @@ public:
 
 
 		GLfloat i_u = Length(plane_u);
-		i_u = 1.0 / (i_u*i_u);
+		i_u = 1.0f / (i_u*i_u);
 		GLfloat i_v = Length(plane_v);
-		i_v = 1.0 / (i_v*i_v);
+		i_v = 1.0f / (i_v*i_v);
 		prog.transform_matrix.Set(
 			Mat4f(
-				Vec4f(plane_u * i_u, 0.0),
-				Vec4f(plane_v * i_v, 0.0),
-				Vec4f(0.0, 1.0, 0.0, 0.0),
-				Vec4f(0.0, 0.0, 0.0, 1.0)
+				Vec4f(plane_u * i_u, 0.0f),
+				Vec4f(plane_v * i_v, 0.0f),
+				Vec4f(0.0f, 1.0f, 0.0f, 0.0f),
+				Vec4f(0.0f, 0.0f, 0.0f, 1.0f)
 			)
 		);
 		prog.light_position.Set(light_position);
@@ -912,11 +907,8 @@ public:
 		Texture::Active(4);
 		Texture z_buffer;
 		gl.Bound(Texture::Target::CubeMap, z_buffer)
-			.MinFilter(TextureMinFilter::Nearest)
-			.MagFilter(TextureMagFilter::Nearest)
-			.WrapS(TextureWrap::ClampToEdge)
-			.WrapT(TextureWrap::ClampToEdge)
-			.WrapR(TextureWrap::ClampToEdge);
+			.Filter(TextureFilter::Nearest)
+			.Wrap(TextureWrap::ClampToEdge);
 
 		for(int i=0; i!=6; ++i)
 		{
@@ -1007,9 +999,9 @@ public:
 		ball_prog_pipeline.Bind();
 
 		vert_prog.texture_matrix.Set(Mat3f(
-			6.0, 0.0, 0.0,
-			0.0, 3.0,-1.0,
-			0.0, 0.0, 1.0
+			6.0f, 0.0f, 0.0f,
+			0.0f, 3.0f,-1.0f,
+			0.0f, 0.0f, 1.0f
 		));
 		for(GLuint i=0; i!=ball_count; ++i)
 		{
@@ -1024,8 +1016,14 @@ public:
 				ModelMatrixf::RotationY(FullCircles(rot.y())) *
 				ModelMatrixf::RotationX(FullCircles(rot.x()))
 			);
-			if(i > 7) ball_prog.color_1 = Vec3f(1.0, 0.9, 0.8);
-			else ball_prog.color_1 = col;
+			if(i > 7)
+			{
+				ball_prog.color_1 = Vec3f(1.0f, 0.9f, 0.8f);
+			}
+			else
+			{
+				ball_prog.color_1 = col;
+			}
 			ball_prog.color_2 = col;
 			ball_prog.ball_idx = i;
 
@@ -1038,10 +1036,10 @@ public:
 	void Render(double time)
 	{
 		// setup the camera
-		Vec3f camera_target(0.0, 2.2, 5.0);
+		Vec3f camera_target(0.0f, 2.2f, 5.0f);
 		auto camera = CamMatrixf::Orbiting(
 			camera_target,
-			16.0 - SineWave(time / 15.0)*12.0,
+			GLfloat(16.0 - SineWave(time / 15.0)*12.0),
 			FullCircles(time / 24.0),
 			Degrees(50 + SineWave(time / 20.0) * 35)
 		);
@@ -1060,7 +1058,7 @@ public:
 		geom_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				width, height,
 				1, 80
 			)
 		);

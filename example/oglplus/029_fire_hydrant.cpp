@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{029_fire_hydrant}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -42,7 +42,7 @@ private:
 		Program prog;
 		VertexShader vs(ObjectDesc("Shadow vertex"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 LightProjMatrix,LightMatrix,ModelMatrix;"
 			"mat4 Matrix =LightProjMatrix*LightMatrix*ModelMatrix;"
 
@@ -58,7 +58,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Shadow fragment"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"void main(void) { }"
 		);
 		fs.Compile();
@@ -89,7 +89,7 @@ private:
 		Program prog;
 		VertexShader vs(ObjectDesc("Draw vertex"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform vec3 LightPosition, CameraPosition;"
 			"uniform mat4 ProjectionMatrix,CameraMatrix,ModelMatrix;"
 			"mat3 ModelRotMatrix = mat3(ModelMatrix);"
@@ -125,7 +125,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Draw fragment"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform sampler2D NormalMap, LightingMap, ColorMap;"
 			"uniform sampler2DShadow ShadowMap;"
@@ -211,8 +211,8 @@ public:
 			float u = std::rand() / float(RAND_MAX);
 			float v = std::rand() / float(RAND_MAX);
 			shadow_offs[i].Set(
-				std::sqrt(v) * std::cos(2*3.1415*u),
-				std::sqrt(v) * std::sin(2*3.1415*u),
+				float(std::sqrt(v) * std::cos(2*3.1415*u)),
+				float(std::sqrt(v) * std::sin(2*3.1415*u)),
 				0.0f
 			);
 		}
@@ -309,18 +309,15 @@ public:
 				.GenerateMipmap()
 				.MinFilter(TextureMinFilter::LinearMipmapLinear)
 				.MagFilter(TextureMagFilter::Linear)
-				.WrapS(TextureWrap::Repeat)
-				.WrapT(TextureWrap::Repeat);
+				.Wrap(TextureWrap::Repeat);
 		}
 		{
 			Texture::Active(ntex);
 			ProgramUniformSampler(draw_prog, "ShadowMap").Set(ntex);
 
 			gl.Bound(Texture::Target::_2D, smap)
-				.MinFilter(TextureMinFilter::Linear)
-				.MagFilter(TextureMagFilter::Linear)
-				.WrapS(TextureWrap::ClampToEdge)
-				.WrapT(TextureWrap::ClampToEdge)
+				.Filter(TextureFilter::Linear)
+				.Wrap(TextureWrap::ClampToEdge)
 				.CompareMode(TextureCompareMode::CompareRefToTexture)
 				.Image2D(
 					0,
@@ -363,7 +360,7 @@ public:
 		draw_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				width, height,
 				1, 40
 			)
 		);

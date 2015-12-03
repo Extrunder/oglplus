@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{033_steam}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -99,7 +99,7 @@ private:
 
 		Shader vs(ShaderType::Vertex);
 		vs.Source(
-		"#version 330\n"
+		"#version 150\n"
 
 		"uniform mat4 ProjectionMatrix, CameraMatrix, ModelMatrix;"
 
@@ -124,7 +124,7 @@ private:
 
 		Shader fs(ShaderType::Fragment);
 		fs.Source(
-		"#version 330\n"
+		"#version 150\n"
 
 		"in vec3 vertNormal;"
 		"in vec3 vertBackLtDir;"
@@ -167,7 +167,7 @@ private:
 
 		Shader vs(ShaderType::Vertex);
 		vs.Source(
-		"#version 330\n"
+		"#version 150\n"
 
 		"uniform vec4 EmitPosAndCoef;"
 		"uniform vec4 EmitDirAndCoef;"
@@ -265,7 +265,7 @@ private:
 
 		Shader vs(ShaderType::Vertex);
 		vs.Source(
-		"#version 330\n"
+		"#version 150\n"
 		"in vec4 PositionAndId;"
 		"in vec4 VelocityAndAge;"
 		"out int vertID1, vertID2;"
@@ -281,7 +281,7 @@ private:
 
 		Shader gs(ShaderType::Geometry);
 		gs.Source(
-		"#version 330\n"
+		"#version 150\n"
 		"layout(points) in;"
 		"layout(triangle_strip, max_vertices = 16) out;"
 
@@ -339,7 +339,7 @@ private:
 
 		Shader fs(ShaderType::Fragment);
 		fs.Source(
-		"#version 330\n"
+		"#version 150\n"
 		"uniform mat4 CameraMatrix;"
 		"uniform sampler2D OccludeTex;"
 		"uniform sampler2D CloudTex;"
@@ -395,7 +395,7 @@ private:
 
 		Shader vs(ShaderType::Vertex);
 		vs.Source(
-		"#version 330\n"
+		"#version 150\n"
 		"uniform vec2 ScreenSize;"
 		"in vec4 Position;"
 		"in vec2 TexCoord;"
@@ -410,7 +410,7 @@ private:
 
 		Shader fs(ShaderType::Fragment);
 		fs.Source(
-		"#version 330\n"
+		"#version 150\n"
 
 		"uniform sampler2DRect GeomTex, VolmTex;"
 
@@ -645,7 +645,7 @@ public:
 		vel_and_age_buf[xfb_i].BindBase(Buffer::IndexedTarget::TransformFeedback, 1);
 
 		pp_prog.Use();
-		pp_prog.delta_t = time_diff;
+		pp_prog.delta_t = GLfloat(time_diff);
 
 		TransformFeedback::Activator xfb_act(TransformFeedbackPrimitiveType::Points);
 		gl.DrawArrays(PrimitiveType::Points, 0, particle_count);
@@ -751,7 +751,7 @@ public:
 		projection =
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				width, height,
 				1, 100
 			);
 

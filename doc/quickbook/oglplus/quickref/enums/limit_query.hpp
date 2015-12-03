@@ -4,13 +4,12 @@
 //  Edit the source 'source/enums/oglplus/limit_query.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 //[oglplus_enums_limit_query
-namespace oglplus {
 
 enum class LimitQuery : GLenum
 {
@@ -122,8 +121,7 @@ enum class LimitQuery : GLenum
 	MinFragmentInterpolationOffset             = GL_MIN_FRAGMENT_INTERPOLATION_OFFSET,
 	MinMapBufferAlignment                      = GL_MIN_MAP_BUFFER_ALIGNMENT,
 	MinProgramTexelOffset                      = GL_MIN_PROGRAM_TEXEL_OFFSET,
-	MinProgramTextureGatherOffset              = GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET,
-	MinSampleShadingValue                      = GL_MIN_SAMPLE_SHADING_VALUE
+	MinProgramTextureGatherOffset              = GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET
 };
 
 template <>
@@ -131,5 +129,4 @@ __Range<LimitQuery> __EnumValueRange<LimitQuery>(void);
 
 __StrCRef __EnumValueName(LimitQuery);
 
-} // namespace oglplus
 //]

@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{023_waves}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -61,7 +61,7 @@ public:
 	{
 		VertexShader vs(ObjectDesc("Vertex"));
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform vec3 CameraPosition;"
 
@@ -80,7 +80,7 @@ public:
 
 		TessControlShader cs(ObjectDesc("TessControl"));
 		cs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader : enable\n"
 
 			"layout(vertices = 3) out;"
@@ -126,7 +126,7 @@ public:
 
 		TessEvaluationShader es(ObjectDesc("TessEvaluation"));
 		es.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension ARB_tessellation_shader : enable\n"
 			"#define MaxWaves 5\n"
 
@@ -191,7 +191,7 @@ public:
 
 		FragmentShader fs(ObjectDesc("Fragment"));
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform samplerCube EnvMap;"
 
@@ -240,7 +240,7 @@ public:
 			attr.Enable();
 		}
 
-		Uniform<Vec3f>(prog, "LightPosition").Set(-100.0, 100.0, 20.0);
+		Uniform<Vec3f>(prog, "LightPosition").Set(-100, 100, 20);
 
 		Uniform<Vec3f> wave_directions(prog, "WaveDirections");
 		Uniform<Vec3f> wave_dimensions(prog, "WaveDimensions");
@@ -293,7 +293,7 @@ public:
 		Uniform<Mat4f>(prog, "ProjectionMatrix").Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				float(width)/height,
 				1, 150
 			)
 		);
@@ -314,14 +314,14 @@ public:
 
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(0.0f, 2.0f, 0.0f),
-			17.0f - CosineWave(time / 31.0f) * 10.0f,
+			GLfloat(17.0 - CosineWave(time / 31.0) * 10.0),
 			FullCircles(time / 43.0f),
 			Degrees(45 - SineWave(time / 29.0f) * 35)
 		);
 		camera_matrix.Set(camera);
 		camera_position.Set(camera.Position());
 
-		anim_time.Set(time);
+		anim_time.Set(GLfloat(time));
 
 		plane_instr.Draw(plane_indices);
 	}

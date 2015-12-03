@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -14,52 +14,13 @@
 #define OGLPLUS_CONTEXT_SCISSOR_TEST_1201040722_HPP
 
 #include <oglplus/glfunc.hpp>
+#include <oglplus/context/viewport.hpp>
 
 namespace oglplus {
 namespace context {
 
 /// Helper structure storing the extents of a 2D scissor rectangle
-struct ScissorRectangle
-{
-	// private implementation detail, do not use
-	GLint _v[4];
-
-	/// The x-coordinate
-	GLint X(void) const
-	{
-		return _v[0];
-	}
-
-	/// The y-coordinate
-	GLint Y(void) const
-	{
-		return _v[1];
-	}
-
-	/// The x-coordinate
-	GLint Left(void) const
-	{
-		return _v[0];
-	}
-
-	/// The y-coordinate
-	GLint Bottom(void) const
-	{
-		return _v[1];
-	}
-
-	/// The width of the viewport
-	GLint Width(void) const
-	{
-		return _v[2];
-	}
-
-	/// The height of the viewport
-	GLint Height(void) const
-	{
-		return _v[3];
-	}
-};
+typedef ViewportExtents ScissorRectangle;
 
 /// Wrapper for the scissor-buffer-related operations
 /**
@@ -78,12 +39,42 @@ public:
 	static void Scissor(
 		GLint left,
 		GLint bottom,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(Scissor)(left, bottom, width, height);
 		OGLPLUS_VERIFY_SIMPLE(Scissor);
+	}
+
+	static void Scissor(const ScissorRectangle& rect)
+	{
+		OGLPLUS_GLFUNC(Scissor)(
+			rect.Left(),
+			rect.Bottom(),
+			rect.Width(),
+			rect.Height()
+		);
+		OGLPLUS_VERIFY_SIMPLE(Scissor);
+	}
+
+	/// Returns the extents of the scissor box
+	/**
+	 *  @throws Error
+	 *
+	 *  @glsymbols
+	 *  @glfunref{Get}
+	 *  @gldefref{SCISSOR_BOX}
+	 */
+	static ScissorRectangle ScissorBox(void)
+	{
+		ScissorRectangle result;
+		OGLPLUS_GLFUNC(GetIntegerv)(
+			GL_SCISSOR_BOX,
+			result._v
+		);
+		OGLPLUS_CHECK_SIMPLE(GetIntegerv);
+		return result;
 	}
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_4_1 || GL_ARB_viewport_array
@@ -96,15 +87,15 @@ public:
 	 *  @glfunref{ScissorIndexed}
 	 */
 	static void Scissor(
-		GLuint viewport,
+		ViewportIndex viewport,
 		GLint left,
 		GLint bottom,
-		GLsizei width,
-		GLsizei height
+		SizeType width,
+		SizeType height
 	)
 	{
 		OGLPLUS_GLFUNC(ScissorIndexed)(
-			viewport,
+			GLuint(viewport),
 			left,
 			bottom,
 			width,
@@ -113,7 +104,26 @@ public:
 		OGLPLUS_CHECK(
 			ScissorIndexed,
 			Error,
-			Index(viewport)
+			Index(GLuint(viewport))
+		);
+	}
+
+	static void Scissor(
+		ViewportIndex viewport,
+		const ScissorRectangle& rect
+	)
+	{
+		OGLPLUS_GLFUNC(ScissorIndexed)(
+			GLuint(viewport),
+			rect.Left(),
+			rect.Bottom(),
+			rect.Width(),
+			rect.Height()
+		);
+		OGLPLUS_CHECK(
+			ScissorIndexed,
+			Error,
+			Index(GLuint(viewport))
 		);
 	}
 
@@ -123,13 +133,13 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{ScissorIndexedv}
 	 */
-	static void Scissor(GLuint viewport, GLint* v)
+	static void Scissor(ViewportIndex viewport, GLint* v)
 	{
-		OGLPLUS_GLFUNC(ScissorIndexedv)(viewport, v);
+		OGLPLUS_GLFUNC(ScissorIndexedv)(GLuint(viewport), v);
 		OGLPLUS_CHECK(
 			ScissorIndexedv,
 			Error,
-			Index(viewport)
+			Index(GLuint(viewport))
 		);
 	}
 
@@ -141,7 +151,7 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{ScissorArrayv}
 	 */
-	static void ScissorArray(GLuint first, GLsizei count, GLint* v)
+	static void ScissorArray(GLuint first, SizeType count, GLint* v)
 	{
 		OGLPLUS_GLFUNC(ScissorArrayv)(first, count, v);
 		OGLPLUS_CHECK_SIMPLE(ScissorArrayv);
@@ -156,18 +166,18 @@ public:
 	 *  @glfunref{Get}
 	 *  @gldefref{SCISSOR_BOX}
 	 */
-	static ScissorRectangle ScissorBox(GLuint viewport)
+	static ScissorRectangle ScissorBox(ViewportIndex viewport)
 	{
 		ScissorRectangle result;
 		OGLPLUS_GLFUNC(GetIntegeri_v)(
 			GL_SCISSOR_BOX,
-			viewport,
+			GLuint(viewport),
 			result._v
 		);
 		OGLPLUS_CHECK(
 			GetIntegeri_v,
 			Error,
-			Index(viewport)
+			Index(GLuint(viewport))
 		);
 		return result;
 	}

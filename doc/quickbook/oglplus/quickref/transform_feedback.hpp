@@ -1,11 +1,10 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_transform_feedback_common
-namespace oglplus {
 
 template <>
 class __ObjCommonOps<__tag_TransformFeedback>
@@ -17,20 +16,20 @@ public:
 	Transform feedback bind target.
 	>*/
 
-	static __TransformFeedbackName Binding(Target target); /*<
+	static __TransformFeedbackName Binding(__TransformFeedbackTarget target); /*<
 	Returns the transform feedback object currently bound
 	to the specified [^target].
 	See [glfunc GetIntegerv].
 	>*/
 	static void Bind(
-		Target target,
+		__TransformFeedbackTarget target,
 		__TransformFeedbackName transform_feedback
 	); /*<
 	Binds the specified [^transform_feedback] to the specified [^target].
 	See [glfunc BindTransformFeedback].
 	>*/
 
-	void Bind(Target target) const; /*<
+	void Bind(__TransformFeedbackTarget target) const; /*<
 	Binds [^this] transform feedback to the specified [^target].
 	See [glfunc BindTransformFeedback].
 	>*/
@@ -70,31 +69,22 @@ public:
 	typedef __TransformFeedbackPauser Pauser;
 };
 //]
-//[oglplus_transform_feedback_zero
-template <>
-class __ObjZeroOps<__tag_ImplicitSel, __tag_TransformFeedback>
- : public __ObjCommonOps<__tag_TransformFeedback>
-{
-public: /*<
-There are no operations that can work explicitly on transform feedback
-object zero besides binding, so this class just inherits from
-the common transform feedback operations wrapper.
->*/
-};
-//]
-//[oglplus_transform_feedback_1
+//[oglplus_transform_feedback_def
 
 #if GL_VERSION_4_0 || GL_ARB_transform_feedback2
-typedef ObjectOps<__tag_ImplicitSel, __tag_TransformFeedback>
+typedef ObjectOps<__tag_ImplicitSel, __tag_TransformFeedback> /*<
+Indirectly inherits from __ObjCommonOps_TransformFeedback<__tag_TransformFeedback>
+>*/
 	TransformFeedbackOps;
 
 typedef __Object<TransformFeedbackOps> TransformFeedback;
 #endif
 
-typedef __ObjectZero<__ObjZeroOps<__tag_ImplicitSel, __tag_TransformFeedback>>
+typedef __ObjectZero<__ObjZeroOps<__tag_ImplicitSel, __tag_TransformFeedback>> /*<
+Indirectly inherits from __ObjCommonOps_TransformFeedback<__tag_TransformFeedback>
+>*/
 	DefaultTransformFeedback;
 
-} // namespace oglplus
 //]
 //[oglplus_transform_feedback_activator
 class TransformFeedbackActivator

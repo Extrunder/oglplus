@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -18,6 +18,7 @@
 #include <oglplus/primitive_type.hpp>
 #include <oglplus/patch_parameter.hpp>
 #include <oglplus/data_type.hpp>
+#include <oglplus/size_type.hpp>
 #include <oglplus/object/name.hpp>
 
 namespace oglplus {
@@ -27,7 +28,7 @@ namespace context {
 /**
  *  @ingroup ogl_context
  */
-class Drawing
+class DrawingOps
 {
 public:
 	/// Draws @a count of primitives from the bound array buffers
@@ -40,11 +41,11 @@ public:
 	static void DrawArrays(
 		PrimitiveType primitive,
 		GLint first,
-		GLsizei count
+		SizeType count
 	)
 	{
 		OGLPLUS_GLFUNC(DrawArrays)(GLenum(primitive), first, count);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawArrays,
 			Error,
 			EnumParam(primitive)
@@ -63,9 +64,9 @@ public:
 	static void DrawArraysInstancedBaseInstance(
 		PrimitiveType primitive,
 		GLint first,
-		GLsizei count,
-		GLsizei inst_count,
-		GLsizei base_instance
+		SizeType count,
+		SizeType inst_count,
+		SizeType base_instance
 	)
 	{
 		OGLPLUS_GLFUNC(DrawArraysInstancedBaseInstance)(
@@ -75,7 +76,7 @@ public:
 			inst_count,
 			base_instance
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawArraysInstancedBaseInstance,
 			Error,
 			EnumParam(primitive)
@@ -95,8 +96,8 @@ public:
 	static void DrawArraysInstanced(
 		PrimitiveType primitive,
 		GLint first,
-		GLsizei count,
-		GLsizei inst_count
+		SizeType count,
+		SizeType inst_count
 	)
 	{
 		OGLPLUS_GLFUNC(DrawArraysInstanced)(
@@ -105,7 +106,7 @@ public:
 			count,
 			inst_count
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawArraysInstanced,
 			Error,
 			EnumParam(primitive)
@@ -131,7 +132,7 @@ public:
 			GLenum(primitive),
 			indirect
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawArraysIndirect,
 			Error,
 			EnumParam(primitive)
@@ -153,7 +154,7 @@ public:
 		PrimitiveType primitive,
 		const GLint* first,
 		const GLsizei* count,
-		GLsizei primcount
+		SizeType primcount
 	)
 	{
 		OGLPLUS_GLFUNC(MultiDrawArrays)(
@@ -162,7 +163,7 @@ public:
 			const_cast<GLsizei*>(count), // remove when GLEW fixed
 			primcount
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawArrays,
 			Error,
 			EnumParam(primitive)
@@ -181,8 +182,8 @@ public:
 	 */
 	static void MultiDrawArraysIndirect(
 		PrimitiveType primitive,
-		GLsizei draw_count,
-		GLsizei stride = 0,
+		SizeType draw_count,
+		SizeType stride = 0,
 		const void* indirect = nullptr
 	)
 	{
@@ -192,7 +193,7 @@ public:
 			draw_count,
 			stride
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawArraysIndirect,
 			Error,
 			EnumParam(primitive)
@@ -209,7 +210,7 @@ public:
 	 */
 	static void DrawElements(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type
 	)
 	{
@@ -219,7 +220,7 @@ public:
 			GLenum(data_type),
 			nullptr
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElements,
 			Error,
 			EnumParam(primitive)
@@ -237,7 +238,7 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElements(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices
 	)
 	{
@@ -247,7 +248,7 @@ public:
 			GLenum(GetDataType<T>()),
 			indices
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElements,
 			Error,
 			EnumParam(primitive)
@@ -263,9 +264,9 @@ public:
 	 */
 	static void DrawElementsInstanced(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
-		GLsizei instance_count
+		SizeType instance_count
 	)
 	{
 		OGLPLUS_GLFUNC(DrawElementsInstanced)(
@@ -275,7 +276,7 @@ public:
 			nullptr,
 			instance_count
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstanced,
 			Error,
 			EnumParam(primitive)
@@ -293,9 +294,9 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElementsInstanced(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
-		GLsizei instance_count
+		SizeType instance_count
 	)
 	{
 		OGLPLUS_GLFUNC(DrawElementsInstanced)(
@@ -305,7 +306,7 @@ public:
 			indices,
 			instance_count
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstanced,
 			Error,
 			EnumParam(primitive)
@@ -323,9 +324,9 @@ public:
 	 */
 	static void DrawElementsInstancedBaseInstance(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLuint base_instance
 	)
 	{
@@ -337,7 +338,7 @@ public:
 			inst_count,
 			base_instance
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseInstance,
 			Error,
 			EnumParam(primitive)
@@ -356,9 +357,9 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElementsInstancedBaseInstance(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLuint base_instance
 	)
 	{
@@ -370,7 +371,7 @@ public:
 			inst_count,
 			base_instance
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseInstance,
 			Error,
 			EnumParam(primitive)
@@ -390,7 +391,7 @@ public:
 		PrimitiveType primitive,
 		const GLsizei* count,
 		DataType data_type,
-		GLsizei draw_count
+		SizeType draw_count
 	)
 	{
 		OGLPLUS_GLFUNC(MultiDrawElements)(
@@ -400,7 +401,7 @@ public:
 			nullptr,
 			draw_count
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawElements,
 			Error,
 			EnumParam(primitive)
@@ -420,7 +421,7 @@ public:
 		PrimitiveType primitive,
 		const GLsizei* count,
 		T* const * indices,
-		GLsizei draw_count
+		SizeType draw_count
 	)
 	{
 		OGLPLUS_GLFUNC(MultiDrawElements)(
@@ -430,7 +431,7 @@ public:
 			indices,
 			draw_count
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawElements,
 			Error,
 			EnumParam(primitive)
@@ -449,7 +450,7 @@ public:
 		PrimitiveType primitive,
 		GLuint start,
 		GLuint end,
-		GLsizei count,
+		SizeType count,
 		DataType data_type
 	)
 	{
@@ -461,7 +462,7 @@ public:
 			GLenum(data_type),
 			nullptr
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawRangeElements,
 			Error,
 			EnumParam(primitive)
@@ -481,7 +482,7 @@ public:
 		PrimitiveType primitive,
 		GLuint start,
 		GLuint end,
-		GLsizei count,
+		SizeType count,
 		const T* indices
 	)
 	{
@@ -493,7 +494,7 @@ public:
 			GLenum(GetDataType<T>()),
 			indices
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawRangeElements,
 			Error,
 			EnumParam(primitive)
@@ -520,7 +521,7 @@ public:
 			GLenum(data_type),
 			indirect
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsIndirect,
 			Error,
 			EnumParam(primitive)
@@ -540,8 +541,8 @@ public:
 	static void MultiDrawElementsIndirect(
 		PrimitiveType primitive,
 		DataType data_type,
-		GLsizei draw_count,
-		GLsizei stride = 0,
+		SizeType draw_count,
+		SizeType stride = 0,
 		const void* indirect = nullptr
 	)
 	{
@@ -552,7 +553,7 @@ public:
 			draw_count,
 			stride
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawElementsIndirect,
 			Error,
 			EnumParam(primitive)
@@ -571,7 +572,7 @@ public:
 	 */
 	static void DrawElementsBaseVertex(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
 		GLint base_vertex
 	)
@@ -583,7 +584,7 @@ public:
 			nullptr,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -602,7 +603,7 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElementsBaseVertex(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
 		GLint base_vertex
 	)
@@ -614,7 +615,7 @@ public:
 			indices,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -633,7 +634,7 @@ public:
 		PrimitiveType primitive,
 		GLuint start,
 		GLuint end,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
 		GLint base_vertex
 	)
@@ -647,7 +648,7 @@ public:
 			nullptr,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawRangeElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -668,7 +669,7 @@ public:
 		PrimitiveType primitive,
 		GLuint start,
 		GLuint end,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
 		GLint base_vertex
 	)
@@ -682,7 +683,7 @@ public:
 			indices,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawRangeElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -699,9 +700,9 @@ public:
 	 */
 	static void DrawElementsInstancedBaseVertex(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLint base_vertex
 	)
 	{
@@ -713,7 +714,7 @@ public:
 			inst_count,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -732,9 +733,9 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElementsInstancedBaseVertex(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLint base_vertex
 	)
 	{
@@ -746,7 +747,7 @@ public:
 			inst_count,
 			base_vertex
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -765,7 +766,7 @@ public:
 		PrimitiveType primitive,
 		const GLsizei* count,
 		DataType data_type,
-		GLsizei draw_count,
+		SizeType draw_count,
 		const GLint* base_vertex
 	)
 	{
@@ -777,7 +778,7 @@ public:
 			draw_count,
 			const_cast<GLint*>(base_vertex) //TODO remove const_cast
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -798,7 +799,7 @@ public:
 		PrimitiveType primitive,
 		const GLsizei* count,
 		T* const * indices,
-		GLsizei draw_count,
+		SizeType draw_count,
 		const GLint* base_vertex
 	)
 	{
@@ -810,7 +811,7 @@ public:
 			draw_count,
 			const_cast<GLint*>(base_vertex) //TODO remove const_cast
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			MultiDrawElementsBaseVertex,
 			Error,
 			EnumParam(primitive)
@@ -829,9 +830,9 @@ public:
 	 */
 	static void DrawElementsInstancedBaseVertexBaseInstance(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		DataType data_type,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLint base_vertex,
 		GLuint base_instance
 	)
@@ -845,7 +846,7 @@ public:
 			base_vertex,
 			base_instance
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseVertexBaseInstance,
 			Error,
 			EnumParam(primitive)
@@ -864,9 +865,9 @@ public:
 	static typename std::enable_if<IsGLDataType<T>::value, void>::type
 	DrawElementsInstancedBaseVertexBaseInstance(
 		PrimitiveType primitive,
-		GLsizei count,
+		SizeType count,
 		const T* indices,
-		GLsizei inst_count,
+		SizeType inst_count,
 		GLint base_vertex,
 		GLuint base_instance
 	)
@@ -880,7 +881,7 @@ public:
 			base_vertex,
 			base_instance
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawElementsInstancedBaseVertexBaseInstance,
 			Error,
 			EnumParam(primitive)
@@ -898,7 +899,7 @@ public:
 			GLenum(primitive),
 			GetGLName(xfb)
 		);
-		OGLPLUS_CHECK(
+		OGLPLUS_VERIFY(
 			DrawTransformFeedback,
 			ObjectError,
 			Object(xfb).
@@ -959,7 +960,15 @@ public:
 		);
 	}
 #endif
+};
 
+/// Wrapper for primitive drawing settings
+/**
+ *  @ingroup ogl_context
+ */
+class DrawingState
+{
+public:
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_1
 	/// Sets the primitive restart index
 	/**
@@ -977,6 +986,17 @@ public:
 			Error,
 			Index(index)
 		);
+	}
+
+	static GLuint PrimitiveRestartIndex(void)
+	{
+		GLint result;
+		OGLPLUS_GLFUNC(GetIntegerv)(
+			GL_PRIMITIVE_RESTART_INDEX,
+			&result
+		);
+		OGLPLUS_VERIFY_SIMPLE(GetIntegerv);
+		return GLuint(result);
 	}
 #endif
 

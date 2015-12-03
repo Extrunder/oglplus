@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -17,42 +17,12 @@
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/object/reference.hpp>
 #include <oglplus/error/object.hpp>
-#include <oglplus/enumerations.hpp>
+#include <oglplus/enums/query_target.hpp>
+#include <oglplus/enums/conditional_render_mode.hpp>
+#include <oglplus/boolean.hpp>
 #include <cassert>
 
 namespace oglplus {
-
-/// Query bind target
-/**
- *  @ingroup enumerations
- */
-OGLPLUS_ENUM_CLASS_BEGIN(QueryTarget, GLenum)
-#include <oglplus/enums/query_target.ipp>
-OGLPLUS_ENUM_CLASS_END(QueryTarget)
-
-#if !OGLPLUS_NO_ENUM_VALUE_NAMES
-#include <oglplus/enums/query_target_names.ipp>
-#endif
-
-#if !OGLPLUS_ENUM_VALUE_RANGES
-#include <oglplus/enums/query_target_range.ipp>
-#endif
-
-/// Conditional render modes
-/**
- *  @ingroup enumerations
- */
-OGLPLUS_ENUM_CLASS_BEGIN(ConditionalRenderMode, GLenum)
-#include <oglplus/enums/conditional_render_mode.ipp>
-OGLPLUS_ENUM_CLASS_END(ConditionalRenderMode)
-
-#if !OGLPLUS_NO_ENUM_VALUE_NAMES
-#include <oglplus/enums/conditional_render_mode_names.ipp>
-#endif
-
-#if !OGLPLUS_ENUM_VALUE_RANGES
-#include <oglplus/enums/conditional_render_mode_range.ipp>
-#endif
 
 /// Class wrapping query construction/destruction functions
 /** @note Do not use this class directly, use Query instead.
@@ -100,10 +70,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteQueries);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsQuery)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsQuery)(name), 
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsQuery);
 		return result;
 	}
@@ -128,8 +100,43 @@ class ObjectOps<tag::DirectState, tag::Query>
  : public ObjZeroOps<tag::DirectState, tag::Query>
 {
 protected:
-	ObjectOps(void){ }
+	ObjectOps(QueryName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : ObjZeroOps<tag::DirectState, tag::Query>(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjectOps(ObjectOps&&) = default;
+	ObjectOps(const ObjectOps&) = default;
+	ObjectOps& operator = (ObjectOps&&) = default;
+	ObjectOps& operator = (const ObjectOps&) = default;
+#else
+	typedef ObjZeroOps<tag::DirectState, tag::Query> _base;
+
+	ObjectOps(ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<_base&&>(temp))
+	{ }
+
+	ObjectOps(const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base(static_cast<const _base&>(that))
+	{ }
+
+	ObjectOps& operator = (ObjectOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<_base&&>(temp));
+		return *this;
+	}
+
+	ObjectOps& operator = (const ObjectOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base::operator = (static_cast<const _base&>(that));
+		return *this;
+	}
+#endif
 	/// Query execution target
 	typedef QueryTarget Target;
 
@@ -140,8 +147,7 @@ public:
 	 */
 	void Begin(Target target)
 	{
-		assert(_name != 0);
-		OGLPLUS_GLFUNC(BeginQuery)(GLenum(target), _name);
+		OGLPLUS_GLFUNC(BeginQuery)(GLenum(target), _obj_name());
 		OGLPLUS_VERIFY(
 			BeginQuery,
 			ObjectError,
@@ -157,7 +163,6 @@ public:
 	 */
 	void End(Target target)
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(EndQuery)(GLenum(target));
 		OGLPLUS_VERIFY(
 			EndQuery,
@@ -175,8 +180,7 @@ public:
 	 */
 	void BeginConditionalRender(ConditionalRenderMode mode)
 	{
-		assert(_name != 0);
-		OGLPLUS_GLFUNC(BeginConditionalRender)(_name, GLenum(mode));
+		OGLPLUS_GLFUNC(BeginConditionalRender)(_obj_name(), GLenum(mode));
 		OGLPLUS_VERIFY(
 			BeginConditionalRender,
 			ObjectError,
@@ -205,8 +209,7 @@ public:
 	 */
 	void Counter(Target target)
 	{
-		assert(_name != 0);
-		OGLPLUS_GLFUNC(QueryCounter)(_name, GLenum(target));
+		OGLPLUS_GLFUNC(QueryCounter)(_obj_name(), GLenum(target));
 		OGLPLUS_VERIFY(
 			QueryCounter,
 			ObjectError,
@@ -233,21 +236,20 @@ public:
 	 *  @glfunref{GetQueryObject}
 	 *  @gldefref{QUERY_RESULT_AVAILABLE}
 	 */
-	bool ResultAvailable(void) const
+	Boolean ResultAvailable(void) const
 	{
-		assert(_name != 0);
-		GLuint result = GL_FALSE;
-		OGLPLUS_GLFUNC(GetQueryObjectuiv)(
-			_name,
+		Boolean result;
+		OGLPLUS_GLFUNC(GetQueryObjectiv)(
+			_obj_name(),
 			GL_QUERY_RESULT_AVAILABLE,
-			&result
+			result._ptr()
 		);
 		OGLPLUS_VERIFY(
-			GetQueryObjectuiv,
+			GetQueryObjectiv,
 			ObjectError,
 			Object(*this)
 		);
-		return result == GL_TRUE;
+		return result;
 	}
 
 #if OGLPLUS_DOCUMENTATION_ONLY || GL_VERSION_3_0
@@ -259,9 +261,8 @@ public:
 	 */
 	void Result(GLint& result) const
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(GetQueryObjectiv)(
-			_name,
+			_obj_name(),
 			GL_QUERY_RESULT,
 			&result
 		);
@@ -281,9 +282,8 @@ public:
 	 */
 	void Result(GLuint& result) const
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(GetQueryObjectuiv)(
-			_name,
+			_obj_name(),
 			GL_QUERY_RESULT,
 			&result
 		);
@@ -304,9 +304,8 @@ public:
 	 */
 	void Result(GLint64& result) const
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(GetQueryObjecti64v)(
-			_name,
+			_obj_name(),
 			GL_QUERY_RESULT,
 			&result
 		);
@@ -326,9 +325,8 @@ public:
 	 */
 	void Result(GLuint64& result) const
 	{
-		assert(_name != 0);
 		OGLPLUS_GLFUNC(GetQueryObjectui64v)(
-			_name,
+			_obj_name(),
 			GL_QUERY_RESULT,
 			&result
 		);

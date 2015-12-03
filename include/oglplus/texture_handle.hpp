@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -15,6 +15,7 @@
 
 #include <oglplus/fwd.hpp>
 #include <oglplus/glfunc.hpp>
+#include <oglplus/boolean.hpp>
 #include <oglplus/object/tags.hpp>
 #include <oglplus/object/name.hpp>
 #include <oglplus/prog_var/type_ops.hpp>
@@ -64,17 +65,21 @@ public:
 	}
 
 	/// Make the texture non-resident
-	bool IsResident(void) const
+	Boolean IsResident(void) const
 	{
-		GLboolean result =
-			OGLPLUS_GLFUNC(IsTextureHandleResidentARB)(_handle);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsTextureHandleResidentARB)(_handle),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsTextureHandleResidentARB);
-		return result == GL_TRUE;
+		return result;
 	}
 };
 
 /// Returns the GL handle value from TextureHandle
-inline GLuint64 GetGLHandle(TextureHandle th)
+inline
+GLuint64 GetGLHandle(TextureHandle th)
+OGLPLUS_NOEXCEPT(true)
 {
 	return th._handle;
 }
@@ -102,13 +107,13 @@ public:
 	ImageHandle(
 		TextureName texture,
 		GLint level,
-		bool layered,
+		Boolean layered,
 		GLint layer,
 		ImageUnitFormat format
 	): _handle(OGLPLUS_GLFUNC(GetImageHandleARB)(
 		GetGLName(texture),
 		level,
-		layered?GL_TRUE:GL_FALSE,
+		layered._v,
 		layer,
 		GLenum(format)
 	))
@@ -134,17 +139,21 @@ public:
 	}
 
 	/// Make the image non-resident
-	bool IsResident(void) const
+	Boolean IsResident(void) const
 	{
-		GLboolean result =
-			OGLPLUS_GLFUNC(IsImageHandleResidentARB)(_handle);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsImageHandleResidentARB)(_handle),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsImageHandleResidentARB);
-		return result == GL_TRUE;
+		return result;
 	}
 };
 
 /// Returns the GL handle value from ImageHandle
-inline GLuint64 GetGLHandle(ImageHandle ih)
+inline
+GLuint64 GetGLHandle(ImageHandle ih)
+OGLPLUS_NOEXCEPT(true)
 {
 	return ih._handle;
 }

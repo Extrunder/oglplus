@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2013 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -14,12 +14,12 @@ namespace text {
 
 OGLPLUS_LIB_FUNC
 void STBTTFontEssence::_do_make_page_bitmap_and_metric(
-	GLint page,
+	GLuint page,
 	unsigned char* bmp_data,
 	float* metric
 ) const
 {
-	float scale = _tt_font.ScaleForPixelHeight(_font_resolution);
+	float scale = _tt_font.ScaleForPixelHeight(float(_font_resolution));
 
 	const GLuint px = _font_resolution;
 	const GLuint ts = _tex_side;
@@ -35,15 +35,17 @@ void STBTTFontEssence::_do_make_page_bitmap_and_metric(
 	int xoffs = 0, oldxoffs = 0;
 	int yoffs = 0;
 	int row_height = 0;
-	int x0, y0, x1, y1, lb, width, asc, dsc, lg;
+	int x0=0, y0=0, x1=1, y1=1, lb=0, width=1, asc=0, dsc=0, lg=0;
 	for(unsigned g=0; g!=glyphs_per_page; ++g)
 	{
 		CodePoint code_point = CodePoint(glyphs_per_page*page+g);
 		auto glyph = _tt_font.GetGlyph(code_point);
 
-		if(std::isspace(code_point))
+		if(std::isspace(int(code_point)))
+		{
 			tmp[g%2]=std::vector<unsigned char>(px*px,0x00);
-		glyph.Render(tmp[g%2].data(), px, px, px, scale);
+		}
+		glyph.Render(tmp[g%2].data(), int(px), int(px), int(px), scale);
 
 		// if this glyph is not the same as the previous
 		if((g == 0) || (tmp[0] != tmp[1]))
@@ -68,10 +70,10 @@ void STBTTFontEssence::_do_make_page_bitmap_and_metric(
 			if(bmp_data)
 			{
 				glyph.Render(
-					bmp_data+ts*yoffs+xoffs,
+					bmp_data+int(ts)*yoffs+xoffs,
 					advance,
-					px,
-					ts,
+					int(px),
+					int(ts),
 					scale
 				);
 			}
@@ -105,7 +107,7 @@ void STBTTFontEssence::_do_make_page_bitmap_and_metric(
 
 OGLPLUS_LIB_FUNC
 void STBTTFontEssence::_do_load_pages(
-	const GLint* elem,
+	const GLuint* elem,
 	GLsizei size
 )
 {
@@ -114,7 +116,7 @@ void STBTTFontEssence::_do_load_pages(
 	for(GLsizei i=0; i!=size; ++i)
 	{
 		// get the page number for the glyph
-		GLint page = elem[i];
+		GLuint page = elem[i];
 		// check if the page is active
 		if(!_pager.UsePage(page))
 		{
@@ -162,8 +164,8 @@ STBTTFontEssence::STBTTFontEssence(
 	TextureUnitSelector metric_tex_unit,
 	TextureUnitSelector pg_map_tex_unit,
 	const std::string& font_name,
-	GLsizei frames,
-	GLint default_page,
+	SizeType frames,
+	GLuint default_page,
 	GLuint pixel_height
 ): _parent(parent)
  , _tt_font(ResourceFile("fonts", font_name, ".ttf"))
@@ -190,14 +192,14 @@ STBTTFontEssence::STBTTFontEssence(
 OGLPLUS_LIB_FUNC
 GLfloat STBTTFontEssence::QueryXOffsets(
 	const CodePoint* cps,
-	GLsizei size,
+	SizeType size,
 	std::vector<GLfloat>& x_offsets
 ) const
 {
 	if(size <= 0) return 0.0f;
 	x_offsets.resize(size);
 
-	float scale = _tt_font.ScaleForPixelHeight(_font_resolution);
+	float scale = _tt_font.ScaleForPixelHeight(float(_font_resolution));
 	scale /= _font_resolution;
 	STBTTFont2DGlyph g = _tt_font.GetGlyph(cps[0]);
 
@@ -215,7 +217,7 @@ GLfloat STBTTFontEssence::QueryXOffsets(
 
 		sum += STBTTFont2D::KernAdvance(pg, g)*scale;
 
-		x_offsets[i] = sum;
+		x_offsets[std::size_t(i)] = sum;
 	}
 	return sum + g.Width()*scale;
 }
@@ -227,7 +229,7 @@ Rectangle STBTTFontEssence::GetGlyphMetrics(CodePoint code_point, GLint offs) co
 	auto glyph = _tt_font.GetGlyph(code_point);
 	glyph.GetVMetrics(asc, dsc, lg);
 	glyph.GetHMetrics(lb, wi);
-	float scale = _tt_font.ScaleForPixelHeight(_font_resolution);
+	float scale = _tt_font.ScaleForPixelHeight(float(_font_resolution));
 
 	assert(offs % 4 == 0);
 	// TODO other metrics

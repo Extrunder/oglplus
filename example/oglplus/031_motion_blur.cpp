@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{031_motion_blur}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -192,7 +192,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Draw"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix, SingleModelMatrix;"
 			"uniform uint SingleModel;"
 			"layout (std140) uniform ModelBlock {"
@@ -228,7 +228,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Draw"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform sampler2D CheckerTex;"
 
@@ -295,7 +295,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Blur"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform vec2 ScreenSize;"
 
@@ -313,7 +313,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Blur"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform sampler2DRect CurrentFrame;"
 			"uniform sampler2DRect PreviousFrames;"
@@ -551,7 +551,7 @@ public:
 		auto projection =
 			CamMatrixf::PerspectiveX(
 				Degrees(60),
-				double(width)/height,
+				float(width)/height,
 				1, 300
 			);
 
@@ -627,7 +627,9 @@ public:
 
 			blur_buffers.Accumulate();
 		}
-		blur_prog.splitter.Set((SineWave(frame_time / 20.0)*0.5+0.5)*screen_width);
+		blur_prog.splitter.Set(
+			GLfloat((SineWave(frame_time / 20.0)*0.5+0.5)*screen_width)
+		);
 	}
 
 	bool Continue(double time)

@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -56,7 +56,7 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{EnableVertexArrayAttrib}
 	 */
-	const DSAVertexArrayAttrib& Enable(void) const
+	DSAVertexArrayAttrib& Enable(void)
 	{
 		OGLPLUS_GLFUNC(EnableVertexArrayAttrib)(
 			_vao,
@@ -66,12 +66,12 @@ public:
 		return *this;
 	}
 
-	/// Enable this specified vertex array attribute
+	/// Disable this specified vertex array attribute
 	/**
 	 *  @glsymbols
 	 *  @glfunref{DisableVertexArrayAttrib}
 	 */
-	const DSAVertexArrayAttrib& Disable(void) const
+	DSAVertexArrayAttrib& Disable(void)
 	{
 		OGLPLUS_GLFUNC(DisableVertexArrayAttrib)(
 			_vao,
@@ -82,7 +82,7 @@ public:
 	}
 
 	/// Set the vertex buffer for this vertex array attribute
-	const DSAVertexArrayAttrib& VertexBuffer(
+	DSAVertexArrayAttrib& VertexBuffer(
 		BufferName buffer,
 		GLintptr offset,
 		GLsizei stride
@@ -109,19 +109,19 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{VertexArrayAttribFormat}
 	 */
-	const DSAVertexArrayAttrib& Format(
+	DSAVertexArrayAttrib& Format(
 		GLint values_per_vertex,
 		DataType data_type,
-		bool normalized,
+		Boolean normalized,
 		GLuint relative_offset
-	) const
+	)
 	{
 		OGLPLUS_GLFUNC(VertexArrayAttribFormat)(
 			_vao,
 			GLuint(_location),
 			values_per_vertex,
 			GLenum(data_type),
-			normalized ? GL_TRUE : GL_FALSE,
+			normalized._get(),
 			relative_offset
 		);
 		OGLPLUS_CHECK(
@@ -138,11 +138,11 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{VertexArrayAttribIFormat}
 	 */
-	const DSAVertexArrayAttrib& IFormat(
+	DSAVertexArrayAttrib& IFormat(
 		GLint values_per_vertex,
 		DataType data_type,
 		GLuint relative_offset
-	) const
+	)
 	{
 		OGLPLUS_GLFUNC(VertexArrayAttribIFormat)(
 			_vao,
@@ -165,11 +165,11 @@ public:
 	 *  @glsymbols
 	 *  @glfunref{VertexArrayAttribLFormat}
 	 */
-	const DSAVertexArrayAttrib& LFormat(
+	DSAVertexArrayAttrib& LFormat(
 		GLint values_per_vertex,
 		DataType data_type,
 		GLuint relative_offset
-	) const
+	)
 	{
 		OGLPLUS_GLFUNC(VertexArrayAttribLFormat)(
 			_vao,

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta name="author" content="Matus Chochlik"/>
-<meta name="copyright" content="Copyright 2010-2014 Matus Chochlik"/>
+<meta name="copyright" content="Copyright 2010-2015 Matus Chochlik"/>
 <meta name="keywords" content="C++ OpenGL Graphics Library"/>
 <meta name="description" content="C++ wrapper for the OpenGL&reg; C API"/>
 
@@ -90,7 +90,7 @@
 						<li id="download"><a href="http://sourceforge.net/projects/oglplus/files/">All releases</a></li>
 						<li id="assets"><a href="http://sourceforge.net/projects/oglplus/files/assets/">Assets (models, textures) used in examples</a></li>
 
-						<li id="git-repo"><a href="https://github.com/matus-chochlik/oglplus">GIT repository</a></li>
+						<li id="git-repo"><a href="https://github.com/matus-chochlik/oglplus">GIT repository</a>, <a href="https://github.com/matus-chochlik/oglplu2">GIT repository (oglplu2)</a></li>
 					</ul>
 					<h3>Documentation</h3>
 					<ul>
@@ -194,12 +194,14 @@
 				</ul>
 				<h3>Related projects</h3>
 				<ul>
+					<li id="oglplu2"><a href="https://github.com/matus-chochlik/eagine">OGLplus 2</a></li>
+					<li id="eagine"><a href="https://github.com/matus-chochlik/eagine">EAGine</a></li>
 					<li id="angles"><a href="https://github.com/matus-chochlik/angle">Angles</a></li>
 				</ul>
 				<h3>Other resources</h3>
 				<ul>
 					<li><a href="https://github.com/jjzazuet/jgl" title="Java wrapper for OpenGL 3 and higher by Jesús Zazueta">JGL</a> by Jesús Zazueta</li>
-					<li><a href="http://science.webhostinggeeks.com/c-omot-za-opengl" title="by Anja Skrba at Webhostinggeeks.com">Serbo-Croatian translation</a> by Anja Skrba</li>
+					<li><a href="http://science-lakes.com/article78.html">Serbo-Croatian translation</a> by Anja Skrba</li>
 					<li><a href="http://onlygraphix.com/2014/01/18/oglplus-tutorialdeferred-renderer/" title="by Michael Ivanov at http://onlygraphix.com/">Tutorial: Deferred renderer</a> by Michael Ivanov</li>
 				</ul>
 			</div>
@@ -223,7 +225,7 @@
 		</div>
 	</div>
 	<div id="footer">
-		<em>Copyright &copy; 2008-2014</em> <strong>Matúš Chochlík</strong>, Žilina, Slovakia.<br/>
+		<em>Copyright &copy; 2008-2015</em> <strong>Matúš Chochlík</strong>, Žilina, Slovakia.<br/>
 		&lt;<a href="mailto:chochlik@gmail.com">chochlik -at -gmail.com</a>&gt;
 		&lt;<a href="mailto:matus.chochlik@fri.uniza.sk">matus.chochlik -at- fri.uniza.sk</a>&gt;<br/>
 

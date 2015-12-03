@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -16,6 +16,7 @@
 #include <oglplus/context/errors.hpp>
 #include <oglplus/context/capabilities.hpp>
 #include <oglplus/context/viewport.hpp>
+#include <oglplus/context/clip_control.hpp>
 #include <oglplus/context/buffer_selection.hpp>
 #include <oglplus/context/buffer_masking.hpp>
 #include <oglplus/context/buffer_clearing.hpp>
@@ -25,7 +26,7 @@
 #include <oglplus/context/depth_test.hpp>
 #include <oglplus/context/stencil_test.hpp>
 #include <oglplus/context/blending.hpp>
-#include <oglplus/context/logical_ops.hpp>
+#include <oglplus/context/logic_ops.hpp>
 #include <oglplus/context/scissor_test.hpp>
 #include <oglplus/context/pixel_ops.hpp>
 #include <oglplus/context/synchronization.hpp>
@@ -61,19 +62,26 @@ namespace context { }
 class Context
  : public context::Errors
  , public context::Capabilities
+ , public context::ViewportState
  , public context::ViewportOps
+ , public context::ClipControlState
  , public context::BufferSelection
- , public context::BufferMasking
- , public context::BufferClearing
- , public context::Rasterization
- , public context::Drawing
- , public context::Computing
+ , public context::BufferMaskingState
+ , public context::BufferClearingState
+ , public context::BufferClearingOps
+ , public context::RasterizationState
+ , public context::RasterizationOps
+ , public context::DrawingOps
+ , public context::DrawingState
+ , public context::ComputingOps
  , public context::DepthTest
  , public context::StencilTest
  , public context::ScissorTest
- , public context::LogicalOps
+ , public context::LogicOpState
+ , public context::PixelState
  , public context::PixelOps
- , public context::Blending
+ , public context::BlendingOps
+ , public context::BlendingState
  , public context::Synchronization
  , public context::Hints
  , public context::LimitQueries

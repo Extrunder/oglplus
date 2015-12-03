@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -16,6 +16,7 @@
 #include <oglplus/glfunc.hpp>
 #include <oglplus/object/wrapper.hpp>
 #include <oglplus/error/object.hpp>
+#include <oglplus/boolean.hpp>
 #include <cassert>
 
 namespace oglplus {
@@ -54,10 +55,12 @@ protected:
 		OGLPLUS_VERIFY_SIMPLE(DeleteVertexArrays);
 	}
 
-	static GLboolean IsA(GLuint name)
+	static Boolean IsA(GLuint name)
 	{
-		assert(name != 0);
-		GLboolean result = OGLPLUS_GLFUNC(IsVertexArray)(name);
+		Boolean result(
+			OGLPLUS_GLFUNC(IsVertexArray)(name),
+			std::nothrow
+		);
 		OGLPLUS_VERIFY_SIMPLE(IsVertexArray);
 		return result;
 	}
@@ -77,7 +80,8 @@ protected:
 			ObjectError,
 			EnumParam(GLenum(GL_VERTEX_ARRAY_BINDING))
 		);
-		return name;
+		assert(!(name < 0));
+		return GLuint(name);
 	}
 public:
 	/// Returns the currently bound VertexArray
@@ -116,8 +120,48 @@ class ObjCommonOps<tag::VertexArray>
  , public ObjBindingOps<tag::VertexArray>
 {
 protected:
-	ObjCommonOps(void){ }
+	ObjCommonOps(VertexArrayName name)
+	OGLPLUS_NOEXCEPT(true)
+	 : VertexArrayName(name)
+	{ }
 public:
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ObjCommonOps(ObjCommonOps&&) = default;
+	ObjCommonOps(const ObjCommonOps&) = default;
+	ObjCommonOps& operator = (ObjCommonOps&&) = default;
+	ObjCommonOps& operator = (const ObjCommonOps&) = default;
+#else
+	typedef VertexArrayName _base1;
+	typedef ObjBindingOps<tag::VertexArray> _base2;
+
+	ObjCommonOps(ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<_base1&&>(temp))
+	 , _base2(static_cast<_base2&&>(temp))
+	{ }
+
+	ObjCommonOps(const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	 : _base1(static_cast<const _base1&>(that))
+	 , _base2(static_cast<const _base2&>(that))
+	{ }
+
+	ObjCommonOps& operator = (ObjCommonOps&& temp)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<_base1&&>(temp));
+		_base2::operator = (static_cast<_base2&&>(temp));
+		return *this;
+	}
+
+	ObjCommonOps& operator = (const ObjCommonOps& that)
+	OGLPLUS_NOEXCEPT(true)
+	{
+		_base1::operator = (static_cast<const _base1&>(that));
+		_base2::operator = (static_cast<const _base2&>(that));
+		return *this;
+	}
+#endif
 	using ObjBindingOps<tag::VertexArray>::Bind;
 
 	/// Binds this vertex array object

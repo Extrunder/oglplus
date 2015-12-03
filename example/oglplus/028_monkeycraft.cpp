@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{028_monkeycraft}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -40,7 +40,7 @@ private:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec4 Position;"
 			"in ivec3 TexCoord;"
 			"out ivec3 vertTexCoord;"
@@ -55,7 +55,7 @@ private:
 
 		GeometryShader gs;
 		gs.Source(
-			"#version 330\n"
+			"#version 150\n"
 			"layout (points) in;"
 			"layout (triangle_strip, max_vertices=24) out;"
 
@@ -179,7 +179,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform sampler2DArray AmbiOcclMaps;"
 
@@ -229,7 +229,8 @@ public:
 	{
 
 		ProgramUniformSampler(prog, "AmbiOcclMaps").Set(0);
-		this->BindMulti(0, Texture::Target::_2DArray);
+		this->target = Texture::Target::_2DArray;
+		this->BindMulti(0);
 		this->Image3D(smaps);
 		this->MinFilter(TextureMinFilter::Linear);
 		this->MagFilter(TextureMagFilter::Linear);
@@ -301,28 +302,24 @@ public:
 
 
 		ProgramUniformSampler(prog, "Pattern").Set(1);
-		pattern.BindMulti(1, Texture::Target::_3D);
+		pattern.target = Texture::Target::_3D;
+		pattern.BindMulti(1);
 		pattern.Image3D(map);
-		pattern.MinFilter(TextureMinFilter::Nearest);
-		pattern.MagFilter(TextureMagFilter::Nearest);
-		pattern.WrapS(TextureWrap::ClampToBorder);
-		pattern.WrapT(TextureWrap::ClampToBorder);
-		pattern.WrapR(TextureWrap::ClampToBorder);
+		pattern.Filter(TextureFilter::Nearest);
+		pattern.Wrap(TextureWrap::ClampToBorder);
 		pattern.BorderColor(Vec4f(0,0,0,1));
 
 
 		ProgramUniformSampler(prog, "FadeMap").Set(2);
-		fademap.BindMulti(2, Texture::Target::_3D);
+		fademap.target = Texture::Target::_3D;
+		fademap.BindMulti(2);
 		fademap.Image3D(images::RandomRedUByte(
 			map.Width(),
 			map.Height(),
 			map.Depth()
 		));
-		fademap.MinFilter(TextureMinFilter::Nearest);
-		fademap.MagFilter(TextureMagFilter::Nearest);
-		fademap.WrapS(TextureWrap::ClampToBorder);
-		fademap.WrapT(TextureWrap::ClampToBorder);
-		fademap.WrapR(TextureWrap::ClampToBorder);
+		fademap.Filter(TextureFilter::Nearest);
+		fademap.Wrap(TextureWrap::ClampToBorder);
 		fademap.BorderColor(Vec4f(0,0,0,1));
 	}
 
@@ -396,14 +393,14 @@ public:
 
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(),
-			field.Radius()*(1.4 + SineWave(time / 6.0) * 0.2),
+			GLfloat(field.Radius()*(1.4 + SineWave(time / 6.0) * 0.2)),
 			FullCircles(time * 0.1),
 			Degrees(SineWave(time / 30.0) * 90)
 		);
 
 		auto light = CamMatrixf::Orbiting(
 			Vec3f(),
-			field.Radius()*1.6,
+			GLfloat(field.Radius()*1.6),
 			FullCircles(0.33-time * 0.07),
 			Degrees(SineWave(time / 31.0) * 80)
 		);
@@ -411,7 +408,7 @@ public:
 		prog.camera_matrix.Set(camera);
 		prog.light_position.Set(light.Position());
 
-		GLfloat fade_coef = 1.1*(1.0-CosineWave01(time / 90.0));
+		GLfloat fade_coef = GLfloat(1.1*(1.0-CosineWave01(time / 90.0)));
 		prog.fade_coef.Set(fade_coef);
 
 		field.Draw();

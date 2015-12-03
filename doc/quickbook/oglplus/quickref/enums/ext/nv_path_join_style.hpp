@@ -4,13 +4,12 @@
 //  Edit the source 'source/enums/oglplus/ext/nv_path_join_style.txt'
 //  or the 'source/enums/make_enum.py' script instead.
 //
-//  Copyright 2010-2014 Matus Chochlik.
+//  Copyright 2010-2015 Matus Chochlik.
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 //[oglplus_enums_ext_nv_path_join_style
-namespace oglplus {
 
 enum class PathNVJoinStyle : GLenum
 {
@@ -26,5 +25,4 @@ __Range<PathNVJoinStyle> __EnumValueRange<PathNVJoinStyle>(void);
 
 __StrCRef __EnumValueName(PathNVJoinStyle);
 
-} // namespace oglplus
 //]

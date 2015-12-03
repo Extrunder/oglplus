@@ -1,27 +1,65 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-//[oglplus_context_PixelOps
-namespace oglplus {
+//[oglplus_context_PixelState
 namespace context {
 
-class PixelOps
+class PixelState
 {
 public:
-	static void PixelStore(__PixelStorageMode parameter, GLfloat value); /*<
+	static void PixelStore(__PixelParameter parameter, GLfloat value); /*<
 	Sets the [^value] of a pixel storage [^parameter].
 	See [glfunc PixelStore].
 	>*/
-	static void PixelStore(__PixelStorageMode parameter, GLint value);
+	static void PixelStore(__PixelParameter parameter, GLint value);
+
+	template <__PixelParameter Parameter>
+	static void PixelStore(__Unspecified value); /*<
+	Sets the [^value] of a pixel storage [^Parameter].
+	[^value] has an appropriate type to hold the value
+	of the [^Parameter] being set.
+	See [glfunc PixelStore].
+	>*/
+
+	static GLfloat PixelStoreValue(
+		__PixelParameter parameter,
+		__TypeTag<float>
+	); /*<
+	Gets the [^value] of a pixel storage [^Parameter].
+	See [glfunc Get].
+	>*/
+	static GLint PixelStoreValue(
+		__PixelParameter parameter,
+		__TypeTag<int>
+	);
+	static __Boolean PixelStoreValue(
+		__PixelParameter parameter,
+		__TypeTag<bool>
+	);
+
+	template <__PixelParameter Parameter>
+	static __Unspecified PixelStoreValue(void); /*<
+	Gets the [^value] of a pixel storage [^Parameter].
+	The return value has an appropriate type to hold the value
+	of the [^Parameter] being retrieved.
+	See [glfunc Get].
+	>*/
+};
+
+//]
+//[oglplus_context_PixelOps
+class PixelOps
+{
+public:
 
 	static void ReadPixels(
 		GLint x,
 		GLint y,
-		GLsizei width,
-		GLsizei height,
+		__SizeType width,
+		__SizeType height,
 		__PixelDataFormat format,
 		__PixelDataType type,
 		void* data
@@ -48,6 +86,5 @@ public:
 };
 
 } // namespace context
-} // namespace oglplus
 //]
 

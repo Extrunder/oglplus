@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -32,7 +32,26 @@ private:
 public:
 	ProgVarError(const char* message);
 
-	~ProgVarError(void) throw() { }
+#if !OGLPLUS_NO_DEFAULTED_FUNCTIONS
+	ProgVarError(const ProgVarError&) = default;
+	ProgVarError(ProgVarError&&) = default;
+#else
+	ProgVarError(const ProgVarError& that)
+	 : Error(static_cast<const Error&>(that))
+	 , _prog_name(that._prog_name)
+	 , _identifier(that._identifier)
+	{ }
+
+	ProgVarError(ProgVarError&& temp)
+	 : Error(static_cast<Error&&>(temp))
+	 , _prog_name(std::move(temp._prog_name))
+	 , _identifier(std::move(temp._identifier))
+	{ }
+#endif
+
+	~ProgVarError(void)
+	OGLPLUS_NOTHROW
+	{ }
 
 	ProgVarError& Program(ProgramName program)
 	{
@@ -58,13 +77,22 @@ public:
 		return *this;
 	}
 
-	const char* ObjectTypeName(void) const { return "PROGRAM"; }
+	const char* ObjectTypeName(void) const
+	OGLPLUS_OVERRIDE
+	{
+		return "PROGRAM";
+	}
 
 	/// Returns the GL program name
-	GLint ObjectName(void) const { return GLint(_prog_name); }
+	GLint ObjectName(void) const
+	OGLPLUS_OVERRIDE
+	{
+		return GLint(_prog_name);
+	}
 
 	/// Returns the program variable identifer
-	const char* Identifier(void) const;
+	const char* Identifier(void) const
+	OGLPLUS_OVERRIDE;
 };
 
 } // namespace oglplus

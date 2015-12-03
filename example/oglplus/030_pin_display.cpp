@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{030_pin_display}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -47,7 +47,7 @@ public:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"#define side 128\n"
 
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
@@ -71,7 +71,7 @@ public:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"void main(void) { }"
 		).Compile();
 
@@ -104,7 +104,7 @@ public:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"#define side 128\n"
 
 			"uniform mat4 ProjectionMatrix, CameraMatrix, LightProjMatrix, LightMatrix;"
@@ -143,7 +143,7 @@ public:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform sampler2DShadow Shadows;"
 
 			"const vec3 LightDir = normalize(vec3(1, 0.3, 1));"
@@ -214,7 +214,7 @@ private:
 
 		VertexShader vs;
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix, ModelMatrix;"
 			"mat4 Matrix = ProjectionMatrix*CameraMatrix*ModelMatrix;"
 			"in vec4 Position;"
@@ -227,7 +227,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"void main(void){ }"
 		);
 
@@ -241,7 +241,7 @@ private:
 
 	std::list<shapes::ShapeWrapper> shapes;
 	std::list<shapes::ShapeWrapper>::iterator ishape;
-	double shape_time, blank_time;
+	double shape_time;
 public:
 	DisplayScene(void)
 	 : gl()
@@ -251,7 +251,6 @@ public:
 	 , model_matrix(prog, "ModelMatrix")
 	 , ishape(shapes.end())
 	 , shape_time(0)
-	 , blank_time(0)
 	{ }
 
 	template <typename ShapeGenerator>
@@ -294,21 +293,21 @@ public:
 
 		gl.Clear().DepthBuffer();
 
-		float dist = (1.0+SineWave(time / 13.0))*2.5;
+		float dist = float((1.0+SineWave(time / 13.0))*2.5);
 
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(45),
-				1.0,
-				1.0+dist,
-				shape.BoundingSphere().Radius()*2.0+1.0+dist
+				1.0f,
+				1.0f+dist,
+				shape.BoundingSphere().Radius()*2.0f+1.0f+dist
 			)
 		);
 
 		camera_matrix.Set(
 			CamMatrixf::Orbiting(
 				Vec3f(),
-				shape.BoundingSphere().Radius()+1.5+dist,
+				GLfloat(shape.BoundingSphere().Radius()+1.5+dist),
 				FullCircles(time / 27.0),
 				Degrees(SineWave(time / 23.0) * 89)
 			)
@@ -471,7 +470,7 @@ public:
 		display_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(65),
-				double(width)/height,
+				width, height,
 				1, 3*side
 			)
 		);
@@ -492,13 +491,13 @@ public:
 		gl.Clear().DepthBuffer();
 
 		auto light = CamMatrixf::Orbiting(
-			Vec3f(0, side*0.25, 0),
-			side*1.5,
+			Vec3f(0, side*0.25f, 0),
+			side*1.5f,
 			Degrees(-time * 27),
 			Degrees(SineWave(time / 19.0)*25  + 45)
 		);
 
-		shadow_prog.fade.Set(fade);
+		shadow_prog.fade.Set(GLfloat(fade));
 		shadow_prog.camera_matrix.Set(light);
 
 		shadow_prog.Use();
@@ -515,12 +514,12 @@ public:
 
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(),
-			side*1.1,
+			side*1.1f,
 			Degrees(time * 19),
 			Degrees(SineWave(time / 20.0) * 39 + 50)
 		);
 
-		display_prog.fade.Set(fade);
+		display_prog.fade.Set(GLfloat(fade));
 		display_prog.light_pos.Set(light.Position());
 		display_prog.camera_pos.Set(camera.Position());
 		display_prog.light_matrix.Set(light);

@@ -1,5 +1,5 @@
 @echo off
-:: Copyright 2010-2013 Matus Chochlik. Distributed under the Boost
+:: Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
 :: Software License, Version 1.0. (See accompanying file
 :: LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -34,6 +34,14 @@ IF DEFINED OGLPLUS_DEP_LIBRARY_DIRS (
 	IF "%~1" == "/?" CALL :print_usage && GOTO :eof
 	IF "%~1" == "--help" CALL :print_usage && GOTO :eof
 
+
+	::
+	:: Set OGLPLUS_NO_BOOST_CONFIG if we don't want to use Boost.Config
+	::
+	IF "%~1" == "--no-boost-config" (
+		SET /A OGLPLUS_NO_BOOST_CONFIG=1
+		GOTO :shift_cmd_line_args
+	)
 
 	::
 	:: Set OGLPLUS_NO_DOCS if we don't want to build docs
@@ -89,6 +97,30 @@ IF DEFINED OGLPLUS_DEP_LIBRARY_DIRS (
 		IF DEFINED OGLPLUS_LIBRARY_SEARCH_PATHS (
 			SET "OGLPLUS_LIBRARY_SEARCH_PATHS=%OGLPLUS_LIBRARY_SEARCH_PATHS%;%~2"
 		) ELSE (SET "OGLPLUS_LIBRARY_SEARCH_PATHS=%~2")
+
+		SHIFT
+		GOTO :shift_cmd_line_args
+	)
+
+	::
+	:: Parse --use-gl-api-lib <NAME>
+	::
+	IF "%~1" == "--use-gl-api-lib" (
+		IF [%2] == [] ECHO Missing name after '--use-gl-api-lib' ! && EXIT /B 2
+
+		SET "OGLPLUS_GL_API_LIB=%~2"
+
+		SHIFT
+		GOTO :shift_cmd_line_args
+	)
+
+	::
+	:: Parse --use-gl-init-lib <NAME>
+	::
+	IF "%~1" == "--use-gl-init-lib" (
+		IF [%2] == [] ECHO Missing name after '--use-gl-init-lib' ! && EXIT /B 2
+
+		SET "OGLPLUS_GL_INIT_LIB=%~2"
 
 		SHIFT
 		GOTO :shift_cmd_line_args
@@ -186,6 +218,27 @@ IF DEFINED OGLPLUS_LIBRARY_SEARCH_PATHS (
 )
 
 ::
+:: .. append the forced api lib ..
+::
+IF DEFINED OGLPLUS_GL_API_LIB (
+	SET OGLPLUS_CMAKE_COMMAND=%OGLPLUS_CMAKE_COMMAND% "-DOGLPLUS_FORCE_GL_API_LIB=%OGLPLUS_GL_API_LIB%"
+)
+
+::
+:: .. append the forced init lib ..
+::
+IF DEFINED OGLPLUS_GL_INIT_LIB (
+	SET OGLPLUS_CMAKE_COMMAND=%OGLPLUS_CMAKE_COMMAND% "-DOGLPLUS_FORCE_GL_INIT_LIB=%OGLPLUS_GL_INIT_LIB%"
+)
+
+::
+:: .. define the OGLPLUS_NO_BOOST_CONFIG option ..
+::
+IF DEFINED OGLPLUS_NO_BOOST_CONFIG (
+	SET OGLPLUS_CMAKE_COMMAND=%OGLPLUS_CMAKE_COMMAND% "-DOGLPLUS_NO_BOOST_CONFIG=On"
+)
+
+::
 :: .. define the OGLPLUS_NO_DOCS option ..
 ::
 IF DEFINED OGLPLUS_NO_DOCS (
@@ -222,6 +275,7 @@ GOTO :eof
 	SET OGLPLUS_BUILD_DIR=
 	SET OGLPLUS_CMAKE_COMMAND=
 	SET OGLPLUS_CMAKE_OPTIONS=
+	SET OGLPLUS_NO_BOOST_CONFIG=
 	SET OGLPLUS_NO_DOCS=
 	SET OGLPLUS_NO_EXAMPLES=
 	SET OGLPLUS_PREFIX=

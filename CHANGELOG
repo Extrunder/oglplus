@@ -1,3 +1,170 @@
+Version 0.67.0
+
+- LOW_PROFILE versions of the SizeType and BigSizeType types have been added.
+- Some problems with building in the LOW_PROFILE mode have been fixed.
+- The GL version and extension detection in the build system has been improved.
+- Other minor changes have been made to the build system.
+- The Quickbook documentation has been updated.
+
+Version 0.66.0
+
+- The DeferredHandler class and the Outcome<T> template have been refactored.
+- New overload of Texture::Wrap has been added.
+- The ClientContext and its SettingStack helper classes have been updated.
+- Libpng allocation checks have been added to the PNG image loader.
+- The GL3W include path has been fixed.
+- Minor fixes in the build system have been made.
+- The Quickbook documentation has been updated.
+
+Version 0.65.0
+
+- The devel/testing implementation of EGL was updated to support multisampling.
+- The GLX and EGL example harnesses were refactored and updated
+  to use multisampling when the --samples option is specified.
+- The ViewportIndex and DrawBufferIndex types were added.
+- Context and ClientContext were updated to use the new types.
+- A wrapper for NV_fragment_coverage_to_color was added.
+- The PolygonMode enumeration was updated.
+- Most of the examples were changed to use GLSL 120/130/140/150.
+- Several bugs and problems were fixed.
+- The build system was updated to detect the availability of C++ override.
+- The Quickbook documentation was updated.
+
+
+Version 0.64.0
+
+- The DeferredHandler and the Outcome<T> classes which allow
+  to defer and/or cancel calling of error handlers were added.
+- New overloads of Shader::Compile, Shader::CompileInclude,
+  Program::Link and Program::Validate and ProgramPipeline::Validate,
+  which return Outcome<T> instead of handling errors eagerly were added.
+- Some of the examples were changed to show the usage of the new features.
+- Some of the examples were changed to use GLSL 120/130/140/150.
+- Some of the older examples were removed.
+- The Quickbook documentation was updated.
+
+Version 0.63.0
+
+- Some clang -Weverything compilation warnings were fixed.
+- New overloads of CameraMatrix::Perspective functions were added.
+- The internals of OALplus and EGLplus were refactored.
+- Support for Shader-storage buffer objects was added.
+- A bug in the Cloud and BrushedMetal image generators were fixed.
+- A problem with the NV path command enumeration was fixed.
+
+
+Version 0.62.0
+
+- Some clang -Weverything compilation warnings were fixed.
+- The SizeType class was updated.
+- Other minor changes were made in the implementation details.
+- A missing-identifier bug was fixed in images::Image.
+- The Quickbook documentation was updated.
+
+
+Version 0.61.0
+
+- The GL version detection in the build system was updated
+  to work better on MacOS.
+- A preprocessor switch for enabling/disabling of Boost.Config was added.
+- Wrappers for ARB_clip_control were added.
+- Exceptions in OALplus were updated.
+  - Error code enumerations were added.
+  - ErrorAL was added.
+  - The Code member function was added to ErrorAL, ErrorALC and ErrorALUT.
+- Some compiler warnings were silenced.
+- The SizeType and BigSizeType classes were added and some occurences
+  of GLsizei and GLsizeiptr were replaced by them.
+- The Quickbook documentation was updated.
+
+
+Version 0.60.0
+
+- The Boolean wrapper was updated, the operator ~ was added.
+- The Object::HasInstance function was added.
+- The native GL context wrappers were updated.
+- The DSA Texture, Buffer and Framebuffer were partially refactored.
+- The SingleFace enumeration was added.
+- The FragmentData and FragmentDataSlot typedefs were added.
+- A new standalone example was added.
+- The oalplus::CurrentContext class was renamed to ContextMadeCurrent.
+- Missing #ifdefs were added around specializations of EnumAssocType.
+- The Quickbook documentation was updated.
+
+Version 0.59.0
+
+- Problems with move construction and move-assignment of objects
+  were fixed.
+- The Boolean wrappers were added.
+- The Quickbook documentation was updated.
+
+Version 0.58.0
+
+- Noexcept specifiers were added to some functions.
+- The oalplus::GetALName function was added.
+- Small changes were made to oalplus::Listener and Device wrappers.
+- Several assignments constructors were fixed to prevent problems with
+  self assignment.
+- The GL/AL object wrappers were refactored.
+- Most of the standalone examples were backported to MSVC.
+- Some MSVC warnings were fixed.
+- Collisions between preprocessor macros and variable names were fixed.
+- A problem that caused access violations in GL feature tests was fixed.
+- The Quickbook documentation was updated.
+
+Version 0.57.0
+
+- The setting stack functionality in oglplus::ClientContext was reimplemented.
+- Noexcept specifiers were added to some functions.
+- The script for auto-generating of the enumeration headers was updated,
+  now almost everything related to the enumerations is auto-generated.
+- A bug in the definition of EnumValueRange was fixed.
+- Minor problems in the GLSL shaders in the examples were fixed.
+- The Quickbook documentation was updated.
+
+Version 0.56.0
+
+- The new state getter/setter functions were added to oglplus::Context.
+- The oglplus::ClientContext class was updated, wrappers for other GL state
+  variables and functions were added.
+- A problem with the wxGL example harness on Windows was fixed.
+- A missing include was added to the GLFW3 example harness.
+- The GLM interoperability classes were updated to work with both older
+  and newer versions of GLM.
+- Minor fixes were made in the enumeration types.
+- The automatically-generated enumeration headers were and the related
+  tools were updated.
+- The EnumAssocType and EnumAssocGLType metafunctions were added.
+- The build system was updated, check of support for strongly-typed
+  enum template parameters was added.
+- The quickbook documentation was updated.
+
+Version 0.55.0
+
+- The EnumToClass helper template and its specializations were added.
+- Some of the base classes of oglplus::Context were refactored and updated.
+- The oglplus::ClientContext class, maintaining and managing GL state was added.
+- Some of the shape builders were backported to platforms not supporting
+  primitive restart indices.
+- A bug in the Texture::Active getter was fixed.
+- The quickbook documentation was updated.
+
+Version 0.54.0
+
+- The TransformFeedback::Activator and Pauser classes were moved
+  to namespace level.
+- A bug in Matrix-by-scalar multiplcation was fixed.
+- A new overload of Context::ClearColor with ColorClearValue parameter
+  was added.
+- Minor changes were made in the GLSLSource and BufferSize classes
+- The build system was updated make C++ SCOPED_ENUMS a requirement.
+- Clang++ warnings and errors were fixed.
+- MSVC warnings related to conversion to bool were fixed.
+- Some of the shape builders were backported to platforms not supporting
+  primitive restart indices.
+- The quickbook documentation was updated.
+
+
 Version 0.53.0
 
 - GL version detection in the build system was updated and should now

@@ -1,11 +1,10 @@
 /*
- *  Copyright 2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2014-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 //[oglplus_object_ObjGenDelOps
-namespace oglplus {
 
 template <typename __ObjTag>
 class ObjGenDelOps
@@ -24,6 +23,49 @@ protected:
 	static GLboolean IsA(GLuint name); /*<
 	Determines if [^name] is a valid name currently assigned by GL
 	to some object of the type specified by __ObjTag.
+	>*/
+};
+
+//]
+//[oglplus_object_ObjBindingOps
+
+template <typename __ObjTag>
+class ObjBindingOps
+{
+public:
+	typedef __Unspecified Target; /*<
+	Strongly typed enumeration specifying binding points for object
+	type associated with __ObjTag.
+	This typedef is available only if the object type has named,
+	explicit binding points.
+	>*/
+
+	static __ObjectName<__ObjTag> Binding(void); /*<
+	Returns the object currently bound to the implicit binding point
+	for the object type specified by __ObjTag.
+	This overload is available only if the object type has only one
+	implicit binding point.
+	>*/
+
+	static __ObjectName<__ObjTag> Binding(Target target); /*<
+	Returns the object currently bound to the explicit binding point
+	[^target] for the object type specified by __ObjTag.
+	This overload is available only if the object type has named,
+	explicit binding points.
+	>*/
+
+	static void Bind(__ObjectName<__ObjTag> object) /*<
+	Binds the specified [^object] to the implicit binding point
+	for the object type specified by __ObjTag.
+	This overload is available only if the object type has only one
+	implicit binding point.
+	>*/
+
+	static void Bind(Target target, __ObjectName<__ObjTag> object) /*<
+	Binds the specified [^object] to the explicit binding point
+	[^target] for the object type specified by __ObjTag.
+	This overload is available only if the object type has named,
+	explicit binding points.
 	>*/
 };
 
@@ -48,6 +90,9 @@ class ObjZeroOps
 {
 public: /*<
 The public interface depends on the __OpsTag and __ObjTag.
+If there are no operations that can work explicitly on
+object zero besides binding, then this class just inherits from
+the common object operations wrapper.
 >*/
 };
 
@@ -197,6 +242,5 @@ public:
 	ObjectZero(const ObjectZero&);
 };
 
-} // namespace oglplus
 //]
 

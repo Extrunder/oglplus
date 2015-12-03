@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -105,7 +105,9 @@ _binding(Target target)
 		Error,
 		EnumParam(_binding_query(target))
 	);
-	return name;
+
+	assert(!(name < 0));
+	return GLuint(name);
 }
 
 OGLPLUS_LIB_FUNC
@@ -204,7 +206,7 @@ GetImage(
 		level,
 		GLenum(format),
 		GLenum(dest.Type()),
-		dest.Size(),
+		GLsizei(dest.Size()),
 		dest.Addr()
 	);
 	OGLPLUS_CHECK(
@@ -215,7 +217,6 @@ GetImage(
 		Index(level)
 	);
 #else
-	OGLPLUS_FAKE_USE(size);
 	OGLPLUS_GLFUNC(GetTexImage)(
 		GLenum(target),
 		level,
@@ -245,7 +246,7 @@ GetCompressedImage(
 	OGLPLUS_GLFUNC(GetnCompressedTexImageARB)(
 		GLenum(target),
 		level,
-		dest.Size(),
+		GLsizei(dest.Size()),
 		dest.Addr()
 	);
 	OGLPLUS_CHECK(
@@ -255,7 +256,6 @@ GetCompressedImage(
 		Index(level)
 	);
 #else
-	OGLPLUS_FAKE_USE(size);
 	OGLPLUS_GLFUNC(GetCompressedTexImage)(
 		GLenum(target),
 		level,
@@ -278,7 +278,7 @@ GetCompressedImage(
 	std::vector<GLubyte>& dest
 )
 {
-	dest.resize(CompressedImageSize(target, level));
+	dest.resize(std::size_t(CompressedImageSize(target, level)));
 	GetCompressedImage(
 		target,
 		level,
@@ -521,7 +521,7 @@ Image(
 			break;
 		}
 #endif
-		default: assert(!"Invalid texture dimension");
+		default: OGLPLUS_ABORT("Invalid texture dimension");
 	}
 }
 
@@ -583,7 +583,7 @@ Image(
 			break;
 		}
 #endif
-		default: assert(!"Invalid texture dimension");
+		default: OGLPLUS_ABORT("Invalid texture dimension");
 	}
 }
 

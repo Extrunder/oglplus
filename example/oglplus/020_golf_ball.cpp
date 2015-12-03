@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{020_golf_ball}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -82,11 +82,11 @@ private:
 			}
 			else if(na > 1)
 			{
-				float elev = el[e] * math::Pi();
+				float elev = float(el[e] * math::Pi());
 				float a_step = 1.0f / na;
 				for(GLuint a=0; a!=na; ++a)
 				{
-					float azim = si[s]*ao[e]+a*a_step*math::TwoPi();
+					float azim = float(si[s]*ao[e]+a*a_step*math::TwoPi());
 					data[k++] = std::cos(elev)*std::cos(azim);
 					data[k++] = std::sin(elev * si[s]);
 					data[k++] = std::cos(elev)*std::sin(azim);
@@ -122,7 +122,7 @@ public:
 		// to transform the vertices used to "cut out the holes"
 		// the same way the sphere is transformed
 		vs_tfb.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 CameraMatrix, ModelMatrix;"
 			"uniform float Diameter;"
 			"in vec3 Hole;"
@@ -175,7 +175,7 @@ public:
 
 		// Set the vertex shader source
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix, ModelMatrix;"
 			"in vec4 Position;"
 			"in vec3 Normal;"
@@ -195,7 +195,7 @@ public:
 
 		// set the fragment shader source
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"in vec3 vertNormal;"
 			"in vec3 vertLight;"
 			"out vec4 fragColor;"
@@ -282,7 +282,7 @@ public:
 		Uniform<Mat4f>(prog, "ProjectionMatrix").Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				float(width)/height,
 				1, 20
 			)
 		);
@@ -303,7 +303,7 @@ public:
 		auto model =
 			ModelMatrixf::Translation(
 				0.0f,
-				sqrt(1.0f+SineWave(time / 2.0)),
+				GLfloat(sqrt(1.0f+SineWave(time / 2.0))),
 				0.0f
 			) *
 			ModelMatrixf::RotationX(FullCircles(time));

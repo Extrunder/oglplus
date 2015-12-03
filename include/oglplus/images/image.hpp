@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -14,13 +14,15 @@
 #define OGLPLUS_IMAGES_IMAGE_1107121519_HPP
 
 #include <limits>
-#include <cassert>
 #include <cstddef>
 #include <cstring>
+#include <oglplus/assert.hpp>
 #include <oglplus/math/vector.hpp>
 #include <oglplus/data_type.hpp>
+#include <oglplus/size_type.hpp>
 #include <oglplus/pixel_data.hpp>
 #include <oglplus/detail/aligned_pod_array.hpp>
+#include <oglplus/utils/type_tag.hpp>
 
 namespace oglplus {
 namespace images {
@@ -48,50 +50,63 @@ private:
 	GLsizei _width, _height, _depth, _channels;
 	PixelDataType _type;
 	oglplus::aux::AlignedPODArray _storage;
-	double (*_convert)(void*);
+	double (*_convert)(void*) OGLPLUS_NOEXCEPT(true);
 
 	template <typename T>
-	static double _do_convert(void* ptr)
+	static
+	double _do_convert(void* ptr)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(ptr != nullptr);
 		const double v = double(*static_cast<T*>(ptr));
-		const double n = double(_one((T*)nullptr));
+		const double n = double(_one(TypeTag<T>()));
 		return v / n;
 	}
 
-	bool _is_initialized(void) const;
+	bool _is_initialized(void) const
+	OGLPLUS_NOEXCEPT(true);
 
-	static PixelDataFormat _get_def_pdf(unsigned N);
-	static PixelDataInternalFormat _get_def_pdif(unsigned N);
+	static
+	PixelDataFormat _get_def_pdf(unsigned N)
+	OGLPLUS_NOEXCEPT(true);
+
+	static
+	PixelDataInternalFormat _get_def_pdif(unsigned N)
+	OGLPLUS_NOEXCEPT(true);
 
 protected:
 	PixelDataFormat _format;
 	PixelDataInternalFormat _internal;
 
 	template <typename T>
-	static T _one(T*)
+	static T _one(TypeTag<T>)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return std::numeric_limits<T>::max();
 	}
 
-	static float _one(float*)
+	static float _one(TypeTag<float>)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return 1.0f;
 	}
 
-	static double _one(double*)
+	static double _one(TypeTag<double>)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return 1.0;
 	}
 
 	template <typename T>
 	bool _type_ok(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return _type == PixelDataType(GetDataType<T>());
 	}
 
 	template <typename T>
 	T* _begin(void)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		assert(_type_ok<T>());
@@ -99,12 +114,14 @@ protected:
 	}
 
 	unsigned char* _begin_ub(void)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return _begin<unsigned char>();
 	}
 
 	template <typename T>
 	T* _end(void)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		assert(_type_ok<T>());
@@ -112,6 +129,7 @@ protected:
 	}
 
 	unsigned char* _end_ub(void)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		return _end<unsigned char>();
 	}
@@ -123,11 +141,13 @@ protected:
 	}
 
 	void _bzero(void)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		_storage.fill(0x00);
 	}
 
 	Image(void)
+	OGLPLUS_NOEXCEPT(true)
 	 : _width(0)
 	 , _height(0)
 	 , _depth(0)
@@ -149,6 +169,7 @@ public:
 	{ }
 
 	Image(Image&& tmp)
+	OGLPLUS_NOEXCEPT(true)
 	 : _width(tmp._width)
 	 , _height(tmp._height)
 	 , _depth(tmp._depth)
@@ -162,28 +183,32 @@ public:
 
 	template <typename T>
 	Image(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		GLsizei channels,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		SizeType channels,
 		const T* data
 	): _width(width)
 	 , _height(height)
 	 , _depth(depth)
 	 , _channels(channels)
 	 , _type(PixelDataType(GetDataType<T>()))
-	 , _storage(oglplus::aux::AlignedPODArray(data, _width*_height*_depth*_channels))
-	 , _convert(&_do_convert<T>)
-	 , _format(_get_def_pdf(channels))
-	 , _internal(_get_def_pdif(channels))
+	 , _storage(
+		oglplus::aux::AlignedPODArray(
+			data,
+			std::size_t(_width*_height*_depth*_channels)
+		)
+	), _convert(&_do_convert<T>)
+	 , _format(_get_def_pdf(unsigned(channels)))
+	 , _internal(_get_def_pdif(unsigned(channels)))
 	{ }
 
 	template <typename T>
 	Image(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		GLsizei channels,
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		SizeType channels,
 		const T* data,
 		PixelDataFormat format,
 		PixelDataInternalFormat internal
@@ -192,13 +217,18 @@ public:
 	 , _depth(depth)
 	 , _channels(channels)
 	 , _type(PixelDataType(GetDataType<T>()))
-	 , _storage(oglplus::aux::AlignedPODArray(data, _width*_height*_depth*_channels))
-	 , _convert(&_do_convert<T>)
+	 , _storage(
+		oglplus::aux::AlignedPODArray(
+			data,
+			std::size_t(_width*_height*_depth*_channels)
+		)
+	), _convert(&_do_convert<T>)
 	 , _format(format)
 	 , _internal(internal)
 	{ }
 
 	Image& operator = (Image&& tmp)
+	OGLPLUS_NOEXCEPT(true)
 	{
 		_width = tmp._width;
 		_height = tmp._height;
@@ -219,43 +249,49 @@ public:
 	 *  2: Depth
 	 *  3: Channels
 	 */
-	GLsizei Dimension(std::size_t i) const
+	SizeType Dimension(std::size_t i) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		if(i == 0) return Width();
 		if(i == 1) return Height();
 		if(i == 2) return Depth();
 		if(i == 3) return Channels();
-		assert(!"Invalid image dimension specified");
+		OGLPLUS_ABORT("Invalid image dimension specified");
 		return -1;
 	}
 
 
 	/// Returns the width of the image
-	GLsizei Width(void) const
+	SizeType Width(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
-		return _width;
+		return MakeSizeType(_width, std::nothrow);
 	}
 
 	/// Returns the height of the image
-	GLsizei Height(void) const
+	SizeType Height(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
-		return _height;
+		return MakeSizeType(_height, std::nothrow);
 	}
 
 	/// Returns the depth of the image
-	GLsizei Depth(void) const
+	SizeType Depth(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
-		return _depth;
+		return MakeSizeType(_depth, std::nothrow);
 	}
 
 	/// Returns the number of channels
-	GLsizei Channels(void) const
+	SizeType Channels(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
-		return _channels;
+		return MakeSizeType(_channels, std::nothrow);
 	}
 
 	/// Returns the pixel data type
 	PixelDataType Type(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		return _type;
@@ -263,6 +299,7 @@ public:
 
 	/// Return the pixel data format
 	PixelDataFormat Format(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		return _format;
@@ -270,6 +307,7 @@ public:
 
 	/// Return a suitable pixel data internal format
 	PixelDataInternalFormat InternalFormat(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		return _internal;
@@ -278,6 +316,7 @@ public:
 	/// Returns a pointer to the data
 	template <typename T>
 	const T* Data(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		assert(_type_ok<T>());
@@ -286,6 +325,7 @@ public:
 
 	/// Returns an untyped pointer to the data
 	const void* RawData(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		return _storage.begin();
@@ -293,15 +333,16 @@ public:
 
 	/// Returns the size of data in bytes
 	std::size_t DataSize(void) const
+	OGLPLUS_NOEXCEPT(true)
 	{
 		assert(_is_initialized());
 		return _storage.size();
 	}
 
 	std::size_t PixelPos(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth
+		SizeType width,
+		SizeType height,
+		SizeType depth
 	) const
 	{
 		assert(_is_initialized());
@@ -317,9 +358,9 @@ public:
 
 	/// Returns the pixel at the specified coordinates
 	Vector<double, 4> Pixel(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth
+		SizeType width,
+		SizeType height,
+		SizeType depth
 	) const
 	{
 		assert(_convert);
@@ -334,22 +375,22 @@ public:
 	}
 
 	std::size_t ComponentPos(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		GLsizei component
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		SizeType component
 	) const
 	{
 		std::size_t ppos = PixelPos(width, height, depth);
-		return std::size_t(ppos+component);
+		return ppos+std::size_t(component);
 	}
 
 	/// Returns the component of the pixel at the specified coordinates
 	double Component(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		GLsizei component
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		SizeType component
 	) const
 	{
 		if(component >= Channels()) return 0.0;
@@ -365,10 +406,10 @@ public:
 	/// Returns the component of the pixel at the specified coordinates
 	template <typename T>
 	T ComponentAs(
-		GLsizei width,
-		GLsizei height,
-		GLsizei depth,
-		GLsizei component
+		SizeType width,
+		SizeType height,
+		SizeType depth,
+		SizeType component
 	) const
 	{
 		assert(_type_ok<T>());

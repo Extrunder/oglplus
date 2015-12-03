@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{029_muddy_stones}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -41,7 +41,7 @@ private:
 		Program prog;
 		VertexShader vs;
 		vs.Source(StrCRef(
-			"#version 330\n"
+			"#version 150\n"
 			"in vec3 Position;"
 			"in vec2 TexCoord;"
 			"out vec2 vertTexCoord;"
@@ -55,7 +55,7 @@ private:
 
 		GeometryShader gs;
 		gs.Source(StrCRef(
-			"#version 330\n"
+			"#version 150\n"
 			"#extension GL_ARB_gpu_shader5 : enable\n"
 			"layout(triangles, invocations = 7) in;"
 			"layout(triangle_strip, max_vertices = 21) out;"
@@ -229,7 +229,7 @@ private:
 
 		FragmentShader fs;
 		fs.Source(StrCRef(
-			"#version 330\n"
+			"#version 150\n"
 
 			"uniform float Time;"
 			"uniform sampler2D ColorMap;"
@@ -368,7 +368,7 @@ public:
 		projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(70),
-				double(width)/height,
+				width, height,
 				1, 20
 			)
 		);
@@ -380,7 +380,7 @@ public:
 
 		auto camera = CamMatrixf::Orbiting(
 			Vec3f(),
-			2.9,
+			2.9f,
 			FullCircles(time / 17.0),
 			Degrees(45 + SineWave(time / 20.0) * 40)
 		);
@@ -390,9 +390,9 @@ public:
 
 		auto langle = FullCircles(time / 31.0);
 		light_position.Set(
-			Cos(langle)*20.0f,
-			(1.2+Sin(langle))*15.0f,
-			Sin(langle)*20.0f
+			GLfloat(Cos(langle)*20.0f),
+			GLfloat((1.2+Sin(langle))*15.0f),
+			GLfloat(Sin(langle)*20.0f)
 		);
 
 		shape.Draw();

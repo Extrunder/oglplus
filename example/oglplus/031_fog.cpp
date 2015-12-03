@@ -4,7 +4,7 @@
  *
  *  @oglplus_screenshot{031_fog}
  *
- *  Copyright 2008-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2008-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  *
@@ -200,7 +200,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Sky"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 
 			"in vec4 Position;"
@@ -217,7 +217,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Sky"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform sampler2D Noise;"
 
@@ -265,7 +265,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Draw"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 			"uniform mat4 ProjectionMatrix, CameraMatrix;"
 			"layout (std140) uniform ModelBlock {"
 			"	mat4 ModelMatrices[128];"
@@ -294,7 +294,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Draw"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"in vec3 vertLightDir;"
 			"in vec3 vertNormal;"
@@ -336,7 +336,7 @@ private:
 
 		VertexShader vs(ObjectDesc("Fog"));
 		vs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform vec2 ScreenSize;"
 
@@ -354,7 +354,7 @@ private:
 
 		FragmentShader fs(ObjectDesc("Fog"));
 		fs.Source(
-			"#version 330\n"
+			"#version 140\n"
 
 			"uniform sampler2DRect Noise;"
 			"uniform sampler2DRect Color;"
@@ -405,8 +405,8 @@ private:
 			float u = std::rand() / float(RAND_MAX);
 			float v = std::rand() / float(RAND_MAX);
 			shadow_offs[i].Set(
-				std::sqrt(v) * std::cos(2*3.1415*u),
-				std::sqrt(v) * std::sin(2*3.1415*u)
+				GLfloat(std::sqrt(v) * std::cos(2*3.1415*u)),
+				GLfloat(std::sqrt(v) * std::sin(2*3.1415*u))
 			);
 		}
 
@@ -599,7 +599,7 @@ public:
 		sky_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				width, height,
 				1, 2000
 			)
 		);
@@ -608,7 +608,7 @@ public:
 		draw_prog.projection_matrix.Set(
 			CamMatrixf::PerspectiveX(
 				Degrees(75),
-				double(width)/height,
+				width, height,
 				1, 200
 			)
 		);

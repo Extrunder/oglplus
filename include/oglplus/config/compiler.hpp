@@ -4,7 +4,7 @@
  *
  *  @author Matus Chochlik
  *
- *  Copyright 2010-2014 Matus Chochlik. Distributed under the Boost
+ *  Copyright 2010-2015 Matus Chochlik. Distributed under the Boost
  *  Software License, Version 1.0. (See accompanying file
  *  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
@@ -38,7 +38,8 @@
 
 #ifndef OGLPLUS_NO_VARIADIC_TEMPLATES
 #if	defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) ||\
-	defined(BOOST_NO_VARIADIC_TEMPLATES)
+	defined(BOOST_NO_VARIADIC_TEMPLATES) ||\
+	defined(_MSC_VER)
 #define OGLPLUS_NO_VARIADIC_TEMPLATES 1
 #else
 #define OGLPLUS_NO_VARIADIC_TEMPLATES 0
@@ -65,7 +66,8 @@
 
 #ifndef OGLPLUS_NO_DEFAULTED_FUNCTIONS
 #if	defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS) ||\
-	defined(BOOST_NO_DEFAULTED_FUNCTIONS)
+	defined(BOOST_NO_DEFAULTED_FUNCTIONS) ||\
+	defined(_MSC_VER)
 #define OGLPLUS_NO_DEFAULTED_FUNCTIONS 1
 #else
 #define OGLPLUS_NO_DEFAULTED_FUNCTIONS 0
@@ -140,7 +142,8 @@
  * Update this if/when it is implemented
  */
 #if	defined(BOOST_NO_CXX11_INHERITED_CONSTRUCTORS) ||\
-	defined(BOOST_NO_INHERITED_CONSTRUCTORS)
+	defined(BOOST_NO_INHERITED_CONSTRUCTORS) ||\
+	defined(_MSC_VER)
 #define OGLPLUS_NO_INHERITED_CONSTRUCTORS 1
 #else
 #define OGLPLUS_NO_INHERITED_CONSTRUCTORS 0
@@ -156,6 +159,15 @@
 #endif
 #endif
 
+#ifndef OGLPLUS_NO_OVERRIDE
+#if	defined(BOOST_NO_CXX11_OVERRIDE) ||\
+	defined(BOOST_NO_OVERRIDER)
+#define OGLPLUS_NO_OVERRIDE 1
+#else
+#define OGLPLUS_NO_OVERRIDE 0
+#endif
+#endif
+
 #ifndef OGLPLUS_NO_NOEXCEPT
 #if	defined(BOOST_NO_CXX11_NOEXCEPT) ||\
 	defined(BOOST_NO_NOEXCEPT)
@@ -163,6 +175,10 @@
 #else
 #define OGLPLUS_NO_NOEXCEPT 0
 #endif
+#endif
+
+#ifndef OGLPLUS_NO_GENERALIZED_ATTRIBUTES
+#define OGLPLUS_NO_GENERALIZED_ATTRIBUTES 1
 #endif
 
 #ifndef OGLPLUS_NO_LAMBDAS
@@ -183,9 +199,17 @@
 #endif
 #endif
 
+#ifndef OGLPLUS_NO_SCOPED_ENUM_TEMPLATE_PARAMS
+#ifdef _MSC_VER // TODO < specific version
+#define OGLPLUS_NO_SCOPED_ENUM_TEMPLATE_PARAMS 1
+#else
+#define OGLPLUS_NO_SCOPED_ENUM_TEMPLATE_PARAMS 0
+#endif
+#endif
+
 // ------- C++11 feature availability detection -------
 
-#if OGLPLUS_NO_NULLPTR
+#if defined(OGLPLUS_NO_NULLPTR) && OGLPLUS_NO_NULLPTR
 #define nullptr 0
 #endif
 
@@ -195,12 +219,33 @@
 #define OGLPLUS_CONSTEXPR const
 #endif
 
+#if !OGLPLUS_NO_OVERRIDE
+#define OGLPLUS_OVERRIDE override
+#else
+#define OGLPLUS_OVERRIDE
+#endif
+
 #if !OGLPLUS_NO_NOEXCEPT
 #define OGLPLUS_NOEXCEPT(...) noexcept(__VA_ARGS__)
 #define OGLPLUS_NOEXCEPT_IF(...) noexcept(noexcept(__VA_ARGS__))
+#define OGLPLUS_NOTHROW noexcept
 #else
 #define OGLPLUS_NOEXCEPT(...)
 #define OGLPLUS_NOEXCEPT_IF(...)
+#define OGLPLUS_NOTHROW throw()
+#endif
+
+#if !OGLPLUS_NO_GENERALIZED_ATTRIBUTES
+#define OGLPLUS_NORETURN [[noreturn]]
+#if defined(__clang__)
+#define OGLPLUS_FALLTHROUGH [[clang::fallthrough]];
+#endif
+#else
+#define OGLPLUS_NORETURN
+#endif
+
+#ifndef OGLPLUS_FALLTHROUGH
+#define OGLPLUS_FALLTHROUGH
 #endif
 
 // -------- disable certain warnings ---------
