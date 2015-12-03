@@ -212,21 +212,21 @@ public:
 	STBTTFont2D(std::istream&& input)
 	 : _ttf_data(_load_ttf(input))
 	{
-		_load_font(_ttf_data.data());
+		_load_font(&_ttf_data.front());
 	}
 
 	/// Creates a font from an open ttf input stream
 	STBTTFont2D(std::istream& input)
 	 : _ttf_data(_load_ttf(input))
 	{
-		_load_font(_ttf_data.data());
+		_load_font(&_ttf_data.front());
 	}
 
 	/// Creates a font from an open ttf input data
 	STBTTFont2D(std::vector<unsigned char>&& ttf_data)
 	 : _ttf_data(std::move(ttf_data))
 	{
-		_load_font(_ttf_data.data());
+		_load_font(&_ttf_data.front());
 	}
 
 	/// A Glyph type
@@ -267,7 +267,7 @@ public:
 	/// Makes a glyph sequence from code points
 	Layout MakeLayout(const CodePoints& code_points) const
 	{
-		return MakeLayout(code_points.data(), code_points.size());
+		return MakeLayout(&code_points.front(), code_points.size());
 	}
 
 	/// Get the base line for the layout in pixels

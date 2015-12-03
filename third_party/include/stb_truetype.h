@@ -71,7 +71,9 @@
 #ifdef STB_TRUETYPE_IMPLEMENTATION
    // #define your own (u)stbtt_int8/16/32 before including to override this
    #ifndef stbtt_uint8
+#ifndef __S3E__
    #include <cstdint>
+#endif
    typedef uint8_t stbtt_uint8;
    typedef int8_t stbtt_int8;
    typedef uint16_t stbtt_uint16;

@@ -38,7 +38,7 @@ std::vector<unsigned char> STBTTFont2D::_load_ttf(std::istream& input)
 	std::streampos size = input.tellg();
 	input.seekg(0, std::ios_base::beg);
 	std::vector<unsigned char> result(size, 0x00);
-	if(input.read((char*)result.data(), size).gcount() != size)
+	if(input.read((char*)&result.front(), size).gcount() != size)
 	{
 		throw std::runtime_error("Error reading TTF input");
 	}
@@ -133,7 +133,7 @@ void STBTTFont2D::Render(
 
 		::stbtt_MakeGlyphBitmapSubpixel(
 			&_font,
-			tmp_buffer.data(),
+			&tmp_buffer.front(),
 			tmp_width,
 			tmp_height,
 			tmp_width,
